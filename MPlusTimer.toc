@@ -1,0 +1,16 @@
+## Interface: 120000
+
+## Title: |cFF00FFFFMythic Plus Timer|r
+## Version: @project-version@
+## Author: Reloe, Rav
+## DefaultState: Enable
+## SavedVariables: MPTSV
+
+Libs\libs.xml
+
+MPlusTimer.lua
+Functions.lua
+UI.lua
+SlashCommands.lua
+EventHandler.lua
+Comms.lua
