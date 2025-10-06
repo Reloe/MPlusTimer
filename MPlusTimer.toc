@@ -14,3 +14,4 @@ UI.lua
 SlashCommands.lua
 EventHandler.lua
 Comms.lua
+Data.lua
