@@ -1,6 +1,6 @@
 ## Interface: 120000
 
-## Title: |cFF00FFFFMythic Plus Timer|r
+## Title: Mythic Plus Timer
 ## Version: @project-version@
 ## Author: Reloe, Rav
 ## DefaultState: Enable
@@ -15,3 +15,4 @@ SlashCommands.lua
 EventHandler.lua
 Comms.lua
 Data.lua
+Display.lua

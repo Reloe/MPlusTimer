@@ -9,13 +9,19 @@ f:RegisterEvent("CHALLENGE_MODE_START")
 f:RegisterEvent("CHALLENGE_MODE_DEATH_COUNT_UPDATED")
 f:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+f:RegisterEvent("ADDON_LOADED")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
 end)
 
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
-    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
+    if e == "ADDON_LOADED" and wowevent then
+        local name = ...
+        if name == "MPlusTimer" then
+            if not MPTSV then MPT:DefaultValues() end -- first load of the addon
+        end
+    elseif e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
         CloseAllBags()
     elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPTSV.KeySlot then
         local index = select(3, GetInstanceInfo())
@@ -52,7 +58,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         if C_ChallengeMode.IsChallengeModeActive() then
             MPT:Init(false)
-        elseif MPT.Frame:IsShown() then 
+        elseif MPT.Frame and MPT.Frame:IsShown() then 
             MPT.Frame:Hide()
         end
     elseif e == "ZONE_CHANGED_NEW_AREA" then
