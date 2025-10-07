@@ -1,4 +1,8 @@
 local _, MPT = ...
+
+local LSM = LibStub("LibSharedMedia-3.0")
+LSM:Register("font","Expressway", [[Interface\Addons\MPlusTimer\Expressway.TTF]])
+
 MPT.maptoID = { -- MapChallengeMode = JournalInstance
     -- Wrath of the Lich King
     [556] = {278, "Pit of Saron"},
@@ -116,6 +120,80 @@ function MPT:DefaultValues()
     MPTSV.UpdateRate = 0.2
     MPTSV.Scale = 1
     MPTSV.ChestTimerdisplay = 1 -- currently unused
+    
+    MPTSV.Background = {
+        enabled = true,
+        Color = {0, 0, 0, 0.57},
+        BorderColor = {0, 0, 0, 1},
+    }
+    MPTSV.Position = {
+        XOffset = 0,
+        YOffset = 0,
+    }
+
+    MPTSV.KeyInfo = {
+        Width = 330,
+        Height = 16,
+        XOffset = 0,
+        YOffset = 0,
+        KeyLevel = {
+            enabled = true,
+            Anchor = "LEFT",
+            RelativeTo = "LEFT",
+            XOffset = 0,
+            YOffset = -2,
+            Font = LSM:Fetch("font", "Expressway"),
+            FontSize = 16,
+            Outline = "OUTLINE",
+            Color = {1, 1, 1, 1},
+            ShadowColor = {0, 0, 0, 1},
+            ShadowOffset = {0, 0}
+        },
+        DungeonName = {
+            enabled = true,
+            Anchor = "LEFT",
+            RelativeTo = "RIGHT",
+            XOffset = 0,
+            YOffset = 0,
+            Font = LSM:Fetch("font", "Expressway"),
+            FontSize = 16,
+            Outline = "OUTLINE",
+            Color = {1, 1, 1, 1},
+            ShadowColor = {0, 0, 0, 1},
+            ShadowOffset = {0, 0}
+        },
+        AffixIcons = {
+            enabled = true,
+            Anchor = "LEFT",
+            RelativeTo = "RIGHT",
+            XOffset = 0,
+            YOffset = -2,
+            Font = LSM:Fetch("font", "Expressway"),
+            FontSize = 16,
+            Outline = "OUTLINE",
+            Color = {1, 1, 1, 1},
+            ShadowColor = {0, 0, 0, 1},
+            ShadowOffset = {0, 0}
+        },
+        DeathCounter = {
+            enabled = true,
+            IconAnchor = "RIGHT",
+            IconRelativeTo = "RIGHT",
+            Anchor = "RIGHT",
+            RelativeTo = "LEFT",
+            XOffset = 0,
+            YOffset = 0,
+            IconXOffset = 0,
+            IconYOffset = 0,
+            Font = LSM:Fetch("font", "Expressway"),
+            FontSize = 16,
+            Outline = "OUTLINE",
+            Color = {1, 1, 1, 1},
+            ShadowColor = {0, 0, 0, 1},
+            ShadowOffset = {0, 0}
+        },
+    }
+
     MPTSV.TimerBar = {
         Splits = true,
         Width = 330,
@@ -181,77 +259,7 @@ function MPT:DefaultValues()
         Width = 2,  
         Color = {1, 1, 1, 1},
     }
-    MPTSV.Background = {
-        enabled = true,
-        Color = {0, 0, 0, 0.57},
-        BorderColor = {0, 0, 0, 1},
-    }
-    MPTSV.Position = {
-        XOffset = 0,
-        YOffset = 0,
-    }
-    MPTSV.KeyInfo = {
-        Width = 330,
-        Height = 16,
-        XOffset = 0,
-        YOffset = 0,
-        KeyLevel = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "LEFT",
-            XOffset = 0,
-            YOffset = -2,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        DungeonName = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "RIGHT",
-            XOffset = 0,
-            YOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        AffixIcons = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "RIGHT",
-            XOffset = 0,
-            YOffset = -2,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        DeathCounter = {
-            enabled = true,
-            IconAnchor = "RIGHT",
-            IconRelativeTo = "RIGHT",
-            Anchor = "RIGHT",
-            RelativeTo = "LEFT",
-            XOffset = 0,
-            YOffset = 0,
-            IconXOffset = 0,
-            IconYOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-    }
+    
     MPTSV.Bosses = {
         Width = 330,
         Height = 16,

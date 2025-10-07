@@ -1,9 +1,5 @@
 local _, MPT = ...
 
-local LSM = LibStub("LibSharedMedia-3.0")
-LSM:Register("font","Expressway", [[Interface\Addons\MPlusTimer\Expressway.TTF]])
-
-
 
 
 -- /run MPTAPI:Init()
