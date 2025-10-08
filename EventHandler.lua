@@ -10,20 +10,16 @@ f:RegisterEvent("CHALLENGE_MODE_DEATH_COUNT_UPDATED")
 f:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
 end)
 
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
-    if e == "ADDON_LOADED" and wowevent then
-        local name = ...
-        if name == "MPlusTimer" then
-            if not MPTSV then MPT:DefaultValues() end -- first load of the addon
-        end
-    elseif e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
+    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPT.CloseBags then
         CloseAllBags()
-    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPTSV.KeySlot then
+    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPT.KeySlot then
         local index = select(3, GetInstanceInfo())
         if index == 8 or index == 23 then
             local IDs = {138019, 158923, 180653, 186159, 187786, 151086}
@@ -49,7 +45,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "PLAYER_ENTERING_WORLD" then
-        if MPTSV.HideTracker and not MPT.Hooked then
+        if MPT.HideTracker and not MPT.Hooked then
             MPT.Hooked = true
             local frame = MPT.Kaliels and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
             hooksecurefunc(frame, "Show", function() 
@@ -68,13 +64,17 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         MPT:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
-        MPT:UpdateAllStates(Full)
+        MPT:Init()
         C_Timer.After(MPT.UpdateRate, function()
             MPT:EventHandler("FRAME_UPDATE")
         end)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         MPT:UpdateTimerBar(false, true)
-
+        MPT:UpdateEnemyForces(false, false)
+        MPT:SaveToSV(true) -- 
+    elseif e == "SCENARIO_CRITERIA_UPDATE" then
+        MPT:UpdateBosses(false, false)
+        MPT:UpdateEnemeyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         C_Timer.After(MPT.UpdateRate, function()
             MPT:EventHandler("FRAME_UPDATE")
@@ -83,8 +83,13 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
 
         
 
-    elseif e == "PLAYER_LOGIN" then
-        if not MPTSV then MPTSV = {} end
+    elseif e == "PLAYER_LOGIN" then        
+        if not MPTSV then -- first load of the addon
+            MPTSV = {}
+            MPT:CreateProfile("default") 
+        else       
+            MPT:LoadProfile()
+        end
         C_MythicPlus.RequestMapInfo()
         local seasonID = C_MythicPlus.GetCurrentSeason()
         if C_ChallengeMode.IsChallengeModeActive() then
@@ -94,20 +99,30 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end)
         end
         if seasonID > 0 then
-            if MPTSV.BestTime and MPTSV.BestTime.seasonID then
-                if seasonID > MPTSV.BestTime.seasonID then
-                    MPTSV.BestTime.saved = {}
+            if MPT.BestTime and MPT.BestTime.seasonID then
+                if seasonID > MPT.BestTime.seasonID then                    
+                    if MPTSV.Profiles[MPT.ActiveProfile] then
+                        MPTSV.Profiles[MPT.ActiveProfile].BestTime = {}
+                        MPTSV.Profiles[MPT.ActiveProfile].BestTime.seasonID = seasonID
+                    end
                 end
             else 
-                MPTSV.BestTime = {}
-                MPTSV.BestTime.seasonID = seasonID
+                MPT.BestTime = {}
+                MPT.BestTime.seasonID = seasonID
+                if MPTSV.Profiles[MPT.ActiveProfile] then
+                    MPTSV.Profiles[MPT.ActiveProfile].BestTime = {}
+                    MPTSV.Profiles[MPT.ActiveProfile].BestTime.seasonID = seasonID
+                end
             end
+        end
+        if MPTSV.debug then
+            print("Debug mode for Mythic Plus Timer is currently enabled. You can disable it with '/mpt debug'")
         end
     
         
         --[[
     elseif e == "GOSSIP_SHOW" then
-        if MPT.Kaliels and MPTSV.HideTracker then
+        if MPT.Kaliels and MPT.HideTracker then
             local frame = aura_env.frame
             C_Timer.After(0.2, function()
                     if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end

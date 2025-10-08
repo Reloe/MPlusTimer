@@ -9,10 +9,6 @@ local _, MPT = ...
 -- Call MPT:UpdateStates(Full, TimerBar, Bosses, ForcesBar, KeystoneInfo) to update states on M+ changes
 
 
-
-
-
-
 local SoundsToMute = {
     [567457] = true,
     [567507] = true,
@@ -47,7 +43,7 @@ function MPT:ApplyTextSettings(frame, settings, text, Color, parent)
     parent = parent or frame:GetParent()
     if settings.enabled and parent then
         Color = Color or settings.Color
-        frame:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.XOffset, settings.YOffset)
+        frame:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
         frame:SetFont(settings.Font, settings.FontSize, settings.Outline)
         if Color then
             frame:SetTextColor(unpack(Color))
@@ -63,7 +59,7 @@ end
 
 function MPT:CreateText(parent, name, settings)    
     parent[name] = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    parent[name]:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.XOffset, settings.YOffset)
+    parent[name]:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
     parent[name]:SetFont(settings.Font, settings.FontSize, settings.Outline)
     parent[name]:SetShadowColor(unpack(settings.ShadowColor))
     parent[name]:SetShadowOffset(unpack(settings.ShadowOffset))
@@ -130,7 +126,7 @@ end
 
 function MPT:UpdateScale()
     if MPT.Frame then
-        MPT.Frame:SetScale(MPTSV.Scale)
+        MPT.Frame:SetScale(MPT.Scale)
     end
 end
 
