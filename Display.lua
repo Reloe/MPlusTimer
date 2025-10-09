@@ -552,6 +552,13 @@ function MPT:UpdateEnemyForces(Start, preview)
         if MPT.ForcesBar.PercentCount.enabled then MPT:ApplyTextSettings(F.ForcesBar.PercentCount, MPT.ForcesBar.PercentCount, string.format("%.2f%%", percent)) end
         if MPT.ForcesBar.RealCount.enabled then MPT:ApplyTextSettings(F.ForcesBar.RealCount, MPT.ForcesBar.RealCount, total-current) end
         F.ForcesBar:Show()
+        if preview then            
+            local diff = math.random(-200, 200)
+            local color = (diff == 0 and MPT.ForcesBar.Splits.EqualColor) or (diff < 0 and MPT.ForcesBar.Splits.SuccessColor) or MPT.ForcesBar.Splits.FailColor
+            local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
+            if diff < 0 then diff = diff * -1 end
+            MPT:ApplyTextSettings(F.ForcesBar.Splits, MPT.ForcesBar.Splits, prefix..MPT:FormatTime(diff), color)
+        end
     else
         F.ForcesBar:SetValue(current)
         local forcesColor =
