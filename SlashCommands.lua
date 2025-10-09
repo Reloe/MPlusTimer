@@ -1,9 +1,7 @@
 local _, MPT = ...
 
-SLASH_MPT1 = "/mpt"
-SLASH_MPT2 = "/mythicplus"
-SLASH_MPT3 = "/mythicplustimer"
-SlashCmdList["MPT"] = function(msg)
+
+function MPTUI:SlashCommand(msg)
     if msg == "debug" then
         if MPTSV.debug then
             MPTSV.debug = false
@@ -14,7 +12,16 @@ SlashCmdList["MPT"] = function(msg)
             MPTAPI = MPT
             print("Enabled debug mode for Mythic Plus Timer, which allows accessing all local functions")
         end
+    elseif msg == "preview" then
+        if MPT.Movable then
+            MPT:MoveFrame(false) 
+        else
+            if not MPT.Frame or not MPT.Frame:IsShown() then
+                MPT:Init(true)
+            end
+            MPT:MoveFrame(true)
+        end
     else
-        MPT:ToggleOptions()
+        Settings.OpenToCategory(self.optionsFrame.name)
     end
 end
