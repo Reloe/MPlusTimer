@@ -100,19 +100,11 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         if seasonID > 0 then
             if MPT.BestTime and MPT.BestTime.seasonID then
-                if seasonID > MPT.BestTime.seasonID then                    
-                    if MPTSV.Profiles[MPT.ActiveProfile] then
-                        MPTSV.Profiles[MPT.ActiveProfile].BestTime = {}
-                        MPTSV.Profiles[MPT.ActiveProfile].BestTime.seasonID = seasonID
-                    end
+                if seasonID > MPT.BestTime.seasonID then
+                    MPT:SetSV("BestTime", {seasonID = seasonID})              
                 end
             else 
-                MPT.BestTime = {}
-                MPT.BestTime.seasonID = seasonID
-                if MPTSV.Profiles[MPT.ActiveProfile] then
-                    MPTSV.Profiles[MPT.ActiveProfile].BestTime = {}
-                    MPTSV.Profiles[MPT.ActiveProfile].BestTime.seasonID = seasonID
-                end
+                MPT:SetSV("BestTime", {seasonID = seasonID})
             end
         end
         if MPTSV.debug then

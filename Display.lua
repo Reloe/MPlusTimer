@@ -103,14 +103,10 @@ function MPT:CreateStates(preview)
             local Anchor, _, relativeTo, xOffset, yOffset = self:GetPoint()
             xOffset = Round(xOffset)
             yOffset = Round(yOffset)
-            MPT.Position.xOffset = xOffset
-            MPT.Position.yOffset = yOffset
-            MPT.Position.Anchor = Anchor
-            MPT.Position.relativeTo = relativeTo
-            MPTSV.Profiles[MPT.ActiveProfile].Position.xOffset = xOffset
-            MPTSV.Profiles[MPT.ActiveProfile].Position.yOffset = yOffset
-            MPTSV.Profiles[MPT.ActiveProfile].Position.Anchor = Anchor
-            MPTSV.Profiles[MPT.ActiveProfile].Position.relativeTo = relativeTo
+            MPT:SetSV({"Position", "xOffset"}, xOffset)
+            MPT:SetSV({"Position", "yOffset"}, yOffset)
+            MPT:SetSV({"Position", "Anchor"}, Anchor)
+            MPT:SetSV({"Position", "relativeTo"}, relativeTo)
             MPT.Frame:SetPoint(Anchor, UIParent, relativeTo, xOffset, yOffset)
         end)
 
