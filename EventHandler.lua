@@ -116,6 +116,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
         if MPTSV.debug then
+            MPTAPI = MPT
             print("Debug mode for Mythic Plus Timer is currently enabled. You can disable it with '/mpt debug'")
         end
     
