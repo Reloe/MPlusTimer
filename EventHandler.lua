@@ -71,8 +71,8 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         MPT:UpdateTimerBar(false, true)
         MPT:UpdateEnemyForces(false, false)
-        MPT:SaveToSV(true) -- 
-    elseif e == "SCENARIO_CRITERIA_UPDATE" then
+        MPT:SetSV(false, false, false, true) 
+    elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         MPT:UpdateBosses(false, false)
         MPT:UpdateEnemeyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
