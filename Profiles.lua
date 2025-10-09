@@ -90,7 +90,7 @@ function MPT:CreateProfile(name)
     
     data.Background = {
         enabled = true,
-        Color = {0, 0, 0, 0.57},
+        Color = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},
     }
     data.Position = {
@@ -286,7 +286,7 @@ function MPT:CreateProfile(name)
         enabled = true,
         Width = 330,
         Height = 24,
-        xOffset = 0,
+        xOffset = -1,
         yOffset = 0,
         Texture = LSM:Fetch("statusbar", "Details Flat"),
         Color = {{1, 117/255, 128/255, 1}, {1, 130/255, 72/255, 1}, {1, 197/255, 103/255, 1}, {1, 249/255, 150/255, 1}, {104/255, 205/255, 1, 1}},
@@ -298,7 +298,7 @@ function MPT:CreateProfile(name)
             enabled = true,
             Anchor = "LEFT",
             RelativeTo = "LEFT",
-            xOffset = 0,
+            xOffset = 2,
             yOffset = 0,
             Font = LSM:Fetch("font", "Expressway"),
             FontSize = 16,
