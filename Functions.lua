@@ -104,10 +104,12 @@ function MPT:MoveFrame(Unlock)
         MPT.Frame:Show()
         MPT.Frame:SetMovable(true)
         MPT.Frame:EnableMouse(true)
+        MPT.Movable = true
         MPT.Frame:RegisterForDrag("LeftButton")
         MPT.Frame:SetClampedToScreen(true)
     elseif MPT.Frame then        
         MPT.Frame:SetMovable(false)
+        MPT.Movable = false
         MPT.Frame:EnableMouse(false)
     end
 end
