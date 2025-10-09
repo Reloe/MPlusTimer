@@ -59,7 +59,7 @@ local options = {
                     step = 0.05,
 			        name = "Group Scale",
 			        desc = "Scale of the entire Display",
-			        set = function(_, value) MPT:SetSV("Scale", value, true) end,
+			        set = function(_, value) MPT:SetSV("Scale", value) if MPT.Frame and MPT.Frame:IsShown() then MPT.Frame:SetScale(value) end end,
                     get = function() return MPT.Scale end,
 		        },
         		
