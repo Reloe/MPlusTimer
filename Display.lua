@@ -48,28 +48,26 @@ function MPT:CreateStates(preview)
         F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")   
         F.BGBorder:SetBackdrop({
             edgeFile = "Interface\\Buttons\\WHITE8x8",
-            edgeSize = 1,
-                })
+            edgeSize = 1,            
+        })
+
+        -- Keystone Info
+        MPT:CreateStatusBar(F, "KeyInfo", false, false)
+        MPT:CreateText(F.KeyInfo, "KeyLevel", MPT.KeyInfo.KeyLevel)
+        MPT:CreateText(F.KeyInfo, "DungeonName", MPT.KeyInfo.DungeonName)
+        MPT:CreateText(F.KeyInfo, "AffixIcons", MPT.KeyInfo.AffixIcons)
+        F.KeyInfo.Icon = CreateFrame("Button", nil, F.KeyInfo)
+        F.KeyInfo.Icon.Texture = F.KeyInfo.Icon:CreateTexture(nil, "ARTWORK")
+        MPT:CreateText(F.KeyInfo, "DeathCounter", MPT.KeyInfo.DeathCounter)
 
         -- Timer Bar
-        F.TimerBar = CreateFrame("StatusBar", nil, F, "BackdropTemplate")
-
-        -- Background Timer Bar
-        F.TimerBar:SetBackdrop({ 
-            bgFile = "Interface\\Buttons\\WHITE8x8", 
-            tileSize = 0, 
-        })    
-
-        -- Border Timer Bar
-        F.TimerBarBorder = CreateFrame("Frame", nil, F.TimerBar, "BackdropTemplate")
-
+        MPT:CreateStatusBar(F, "TimerBar", true, true)
         MPT:CreateText(F.TimerBar, "TimerText", MPT.TimerText) -- Current Timer
         for i=1, 3 do
             MPT:CreateText(F.TimerBar, "ChestTimer"..i, MPT.ChestTimer[i]) -- Chest Timer
         end
         MPT:CreateText(F.TimerBar, "ComparisonTimer", MPT.ComparisonTimer) -- Comparison Timer
-
-        -- Ticks on Timer Bar
+        -- Timer Bar Ticks
         F.TimerBar.Ticks = {}
         for i=1, 2 do
             F.TimerBar.Ticks[i] = F.TimerBar:CreateTexture(nil, "OVERLAY")
@@ -78,39 +76,24 @@ function MPT:CreateStates(preview)
             F.TimerBar.Ticks[i]:SetPoint("BOTTOM")
             F.TimerBar.Ticks[i]:Hide()
         end
-        
-        -- Keystone Info
-        F.KeyInfo = CreateFrame("StatusBar", nil, F, "BackdropTemplate")
-        MPT:CreateText(F.KeyInfo, "KeyLevel", MPT.KeyInfo.KeyLevel)
-        MPT:CreateText(F.KeyInfo, "DungeonName", MPT.KeyInfo.DungeonName)
-        MPT:CreateText(F.KeyInfo, "AffixIcons", MPT.KeyInfo.AffixIcons)
-        F.KeyInfo.Icon = CreateFrame("Button", nil, F.KeyInfo)
-        F.KeyInfo.Icon.Texture = F.KeyInfo.Icon:CreateTexture(nil, "ARTWORK")
-        MPT:CreateText(F.KeyInfo, "DeathCounter", MPT.KeyInfo.DeathCounter)
 
-        -- Boss Bars & Texts
+        -- Bosses            
         F.Bosses = {}
-        for i=1, 5 do
-            F.Bosses[i] = CreateFrame("StatusBar", nil, F, "BackdropTemplate")
-            F.Bosses[i]:SetStatusBarColor(0, 0, 0, 0)
-            F.Bosses[i]:Hide()
-            MPT:CreateText(F.Bosses[i], "BossName"..i, MPT.BossName)
-            MPT:CreateText(F.Bosses[i], "BossTimer"..i, MPT.BossTimer)
-            MPT:CreateText(F.Bosses[i], "BossSplit"..i, MPT.BossSplit)
+        for i=1, 5 do -- Boss Bars & Texts
+            MPT:CreateStatusBar(F, "Bosses"..i, false, false)
+            F["Bosses"..i]:SetStatusBarColor(0, 0, 0, 0)
+            F["Bosses"..i]:Hide()
+            MPT:CreateText(F["Bosses"..i], "BossName"..i, MPT.BossName)
+            MPT:CreateText(F["Bosses"..i], "BossTimer"..i, MPT.BossTimer)
+            MPT:CreateText(F["Bosses"..i], "BossSplit"..i, MPT.BossSplit)
         end
-    
-        -- Enemy Forces Bar
-        F.ForcesBar = CreateFrame("StatusBar", nil, F, "BackdropTemplate") -- change which boss number this is anchored to in the display
-        F.ForcesBar:SetBackdrop({
-            bgFile = "Interface\\Buttons\\WHITE8x8",
-            tileSize = 0
-        })
-        -- Text on Enemy Forces Bar
+
+        -- Enemy Forces
+        MPT:CreateStatusBar(F, "ForcesBar", true, true)
         MPT:CreateText(F.ForcesBar, "PercentCount", MPT.ForcesBar.PercentCount)
         MPT:CreateText(F.ForcesBar, "Splits", MPT.ForcesBar.Splits)
-        MPT:CreateText(F.ForcesBar, "RealCount", MPT.ForcesBar.RealCount)
-        -- Border Forces Bar
-        F.ForcesBarBorder = CreateFrame("Frame", nil, F.ForcesBar, "BackdropTemplate")
+        MPT:CreateText(F.ForcesBar, "RealCount", MPT.ForcesBar.RealCount)       
+    
         -- Move Scripts
         F:SetScript("OnDragStart", function(self)
             self:StartMoving()
@@ -378,18 +361,18 @@ function MPT:UpdateBosses(Start, count, preview)
             name = MPT:Utf8Sub(name, 20) or "Boss "..i
             killtime = killtime+math.random(240, 420)
             local time = MPT:FormatTime(killtime, true)
-            local frame = F.Bosses[i]
+            local frame = F["Bosses"..i]
             MPT.BossNames[i] = name
             frame:SetPoint("TOPLEFT", F.TimerBar, "TOPLEFT", MPT.Bosses.xOffset, -MPT.TimerBar.Height-(i*MPT.Spacing)-(i-1)*(MPT.Bosses.Height)+MPT.Bosses.yOffset)
             frame:SetSize(MPT.Bosses.Width, MPT.Bosses.Height)
             local BossColor = i <= 3 and MPT.BossName.CompletionColor or MPT.BossName.Color
-            MPT:ApplyTextSettings(F.Bosses[i]["BossName"..i], MPT.BossName, name, BossColor)
+            MPT:ApplyTextSettings(frame["BossName"..i], MPT.BossName, name, BossColor)
             local timercolor = (i == 1 and MPT.BossTimer.FailColor) or (i == 2 and MPT.BossTimer.EqualColor) or (i == 3 and MPT.BossTimer.SuccessColor) or MPT.BossTimer.Color
             local splitcolor = (i == 1 and MPT.BossSplit.FailColor) or (i == 2 and MPT.BossSplit.EqualColor) or (i == 3 and MPT.BossSplit.SuccessColor) or MPT.BossSplit.Color
             local splittext = (i == 2 and "+-0") or (i == 1 and "+"..MPT:FormatTime(math.random(20, 60))) or (i == 3 and "-"..MPT:FormatTime(math.random(20, 60)))
-            MPT:ApplyTextSettings(F.Bosses[i]["BossTimer"..i], MPT.BossTimer, time, timercolor)
+            MPT:ApplyTextSettings(frame["BossTimer"..i], MPT.BossTimer, time, timercolor)
             frame:Show()
-            if splittext then MPT:ApplyTextSettings(F.Bosses[i]["BossSplit"..i], MPT.BossSplit, splittext, splitcolor) end
+            if splittext then MPT:ApplyTextSettings(frame["BossSplit"..i], MPT.BossSplit, splittext, splitcolor) end
         end
     elseif Start then
         MPT.BossTimes = {}
@@ -450,7 +433,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 if name and name ~= "" then      
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
-                    local frame = F.Bosses[i]                    
+                    local frame = F["Bosses"..i]
                     frame:SetPoint("TOPLEFT", F.TimerBar, "TOPLEFT", MPT.Bosses.xOffset, -MPT.TimerBar.Height-(i*MPT.Spacing)-(i-1)*(MPT.Bosses.Height)+MPT.Bosses.yOffset)
                     frame:SetSize(MPT.Bosses.Width, MPT.Bosses.Height)
                     local BossColor = completed and MPT.BossName.CompletionColor or MPT.BossName.Color
@@ -529,7 +512,7 @@ function MPT:UpdateEnemyForces(Start, preview)
     end
     if Start or preview then
         local bosscount = preview and 5 or #MPT.BossNames
-        F.ForcesBar:SetPoint("TOPLEFT", F.Bosses[bosscount], "TOPLEFT", MPT.ForcesBar.xOffset, -MPT.Bosses.Height-MPT.Spacing+MPT.ForcesBar.yOffset) 
+        F.ForcesBar:SetPoint("TOPLEFT", F["Bosses"..bosscount], "TOPLEFT", MPT.ForcesBar.xOffset, -MPT.Bosses.Height-MPT.Spacing+MPT.ForcesBar.yOffset) 
         F.ForcesBar:SetSize(MPT.ForcesBar.Width, MPT.ForcesBar.Height)
         F.ForcesBar:SetStatusBarTexture(MPT.ForcesBar.Texture)
         F.ForcesBar:SetBackdropColor(unpack(MPT.ForcesBar.BackgroundColor))

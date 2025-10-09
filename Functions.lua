@@ -68,6 +68,18 @@ function MPT:CreateText(parent, name, settings)
     end
 end
 
+function MPT:CreateStatusBar(parent, name, Backdrop, border)
+    parent[name] = CreateFrame("StatusBar", nil, parent, "BackdropTemplate")        
+    if Backdrop then 
+        parent[name]:SetBackdrop({ 
+            bgFile = "Interface\\Buttons\\WHITE8x8", 
+            tileSize = 0,
+        }) 
+    end
+    if border then 
+        parent[name.."Border"] = CreateFrame("Frame", nil, parent[name], "BackdropTemplate")
+    end
+end
 
 function MPT:FormatTime(time, round)
     if time then
