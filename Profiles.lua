@@ -39,14 +39,6 @@ function MPT:LoadProfile(name)
     end
 end
 
-function MPT:SaveToSV(All, data) 
-    if MPTSV.Profiles[MPT.ActiveProfile] then
-        for k, v in pairs(MPTSV.Profiles[MPT.ActiveProfile]) do
-            v = MPT.k
-        end
-    end
-end
-
 function MPT:ModernizeProfile(profile)
     if MPT:GetVersion() > profile.Version then
         if profile.Version < 2 then  
@@ -69,6 +61,37 @@ function MPT:CreateImportedProfile(data, name)
     end
 end
 
+function MPT:SetSV(key, value, update, BestTimes)
+    if key and MPTSV.Profiles[MPT.ActiveProfile] then
+        if type(key) == "table" then
+            local ref = MPTSV.Profiles[MPT.ActiveProfile]
+            local MPTref = MPT
+            for i=1, #key-1 do
+                ref = ref[key[i]]
+                MPTref = MPTref[key[i]]
+            end
+            ref[key[#key]] = value
+            MPTref[key[#key]] = value
+        else
+            MPTSV.Profiles[MPT.ActiveProfile][key] = value
+            MPT[key] = value
+        end
+    elseif BestTimes and MPTSV.Profiles[MPT.ActiveProfile] then -- Save Best Times to SV at end of run
+        MPTSV.Profiles[MPT.ActiveProfile].BestTime = MPT.BestTime
+    elseif MPTSV.Profiles[MPT.ActiveProfile] then -- full SV update
+        for k, v in pairs(MPTSV.Profiles[MPT.ActiveProfile]) do
+            v = MPT.k
+        end
+    end
+    if update then
+        if MPT.IsPreview then
+            MPT:Init(true)
+        elseif C_ChallengeMode.IsChallengeModeActive() then
+            MPT:Init(false)
+        end
+    end
+end
+
 function MPT:CreateProfile(name)
     if not MPTSV.Profiles then MPTSV.Profiles = {} end
     if not MPTSV.ProfileKey then MPTSV.ProfileKey = {} end
@@ -79,11 +102,10 @@ function MPT:CreateProfile(name)
     local data = {}
     
     data.Version = MPT:GetVersion()
-    data.name = name
+    data.name = name    
     data.Spacing = 3
     data.UpdateRate = 0.2
     data.Scale = 1
-    data.ChestTimerDisplay = 1 -- 1 == relevant timers. 2 == all timers. 3 = no timers
     data.HideTracker = true
     data.LowerKey = true
     data.BestTime = {}
@@ -170,6 +192,7 @@ function MPT:CreateProfile(name)
         xOffset = 0,
         yOffset = 0,
         Texture = LSM:Fetch("statusbar", "Details Flat"),
+        ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
         Color = {128/255, 1, 0, 1},
         ChestColor = {{89/255, 90/255, 92/255, 1}, {1, 112/255, 0, 1}, {1, 1, 0, 1}, {128/255, 1, 0, 1}},
         BorderSize = 1,
