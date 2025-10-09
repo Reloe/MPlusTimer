@@ -51,7 +51,7 @@ function MPT:CreateStates(preview)
                 })
 
         -- Timer Bar
-        F.TimerBar = CreateFrame("StatusBar", nil, F, "BackdropTemplate")    
+        F.TimerBar = CreateFrame("StatusBar", nil, F, "BackdropTemplate")
 
         -- Background Timer Bar
         F.TimerBar:SetBackdrop({ 
@@ -117,6 +117,8 @@ function MPT:CreateStates(preview)
         F:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()       
             local Anchor, _, relativeTo, xOffset, yOffset = self:GetPoint()
+            xOffset = Round(xOffset)
+            yOffset = Round(yOffset)
             MPT.Position.xOffset = xOffset
             MPT.Position.yOffset = yOffset
             MPT.Position.Anchor = Anchor
@@ -125,6 +127,7 @@ function MPT:CreateStates(preview)
             MPTSV.Profiles[MPT.ActiveProfile].Position.yOffset = yOffset
             MPTSV.Profiles[MPT.ActiveProfile].Position.Anchor = Anchor
             MPTSV.Profiles[MPT.ActiveProfile].Position.relativeTo = relativeTo
+            MPT.Frame:SetPoint(Anchor, UIParent, relativeTo, xOffset, yOffset)
         end)
 
     end  
