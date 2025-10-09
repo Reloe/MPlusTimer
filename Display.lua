@@ -20,6 +20,7 @@ function MPT:Init(preview)
     MPT.level = level
     MPT.opened = false
     MPT.done = false
+    MPT.IsPreview = preview
 
     MPT:HideStates()
     MPT:CreateStates(preview)
@@ -144,10 +145,7 @@ function MPT:CreateStates(preview)
         MPT:UpdateTimerBar(true, true, true)
         
         -- Bosses
-        MPT:UpdateBosses(false, false, true)          
-        local F = MPT.Frame
-        
-
+        MPT:UpdateBosses(false, false, true)    
         -- Forces Bar
         MPT:UpdateEnemyForces(true, true)
         
@@ -373,6 +371,7 @@ function MPT:UpdateBosses(Start, count, preview)
     if preview then
         local killtime = 0
         MPT:MuteJournalSounds()
+        MPT.BossNames = {}
         for i=1, 5 do
             EJ_SelectInstance(721)
             local name = EJ_GetEncounterInfoByIndex(i, 721)
@@ -380,6 +379,7 @@ function MPT:UpdateBosses(Start, count, preview)
             killtime = killtime+math.random(240, 420)
             local time = MPT:FormatTime(killtime, true)
             local frame = F.Bosses[i]
+            MPT.BossNames[i] = name
             frame:SetPoint("TOPLEFT", F.TimerBar, "TOPLEFT", MPT.Bosses.xOffset, -MPT.TimerBar.Height-(i*MPT.Spacing)-(i-1)*(MPT.Bosses.Height)+MPT.Bosses.yOffset)
             frame:SetSize(MPT.Bosses.Width, MPT.Bosses.Height)
             local BossColor = i <= 3 and MPT.BossName.CompletionColor or MPT.BossName.Color
@@ -388,6 +388,7 @@ function MPT:UpdateBosses(Start, count, preview)
             local splitcolor = (i == 1 and MPT.BossSplit.FailColor) or (i == 2 and MPT.BossSplit.EqualColor) or (i == 3 and MPT.BossSplit.SuccessColor) or MPT.BossSplit.Color
             local splittext = (i == 2 and "+-0") or (i == 1 and "+"..MPT:FormatTime(math.random(20, 60))) or (i == 3 and "-"..MPT:FormatTime(math.random(20, 60)))
             MPT:ApplyTextSettings(F.Bosses[i]["BossTimer"..i], MPT.BossTimer, time, timercolor)
+            frame:Show()
             if splittext then MPT:ApplyTextSettings(F.Bosses[i]["BossSplit"..i], MPT.BossSplit, splittext, splitcolor) end
         end
     elseif Start then
@@ -513,11 +514,11 @@ end
 
 function MPT:UpdateEnemyForces(Start, preview)
     local F = MPT.Frame
-    local steps = select(3, C_Scenario.GetStepInfo())
+    local steps = preview and 5 or select(3, C_Scenario.GetStepInfo())
     if not steps or steps <= 0 then
         return
     end
-    local criteria = C_ScenarioInfo.GetCriteriaInfo(steps)
+    local criteria = preview and {} or C_ScenarioInfo.GetCriteriaInfo(steps)
     local total = preview and 100 or criteria.totalQuantity
     local current = preview and math.random(20, 90) or criteria.quantityString:gsub("%%", "")
     current = tonumber(current)
@@ -526,7 +527,7 @@ function MPT:UpdateEnemyForces(Start, preview)
         percent = current / total * 100
         percent = math.floor(percent*100)/100
     end
-    if Start then
+    if Start or preview then
         local bosscount = preview and 5 or #MPT.BossNames
         F.ForcesBar:SetPoint("TOPLEFT", F.Bosses[bosscount], "TOPLEFT", MPT.ForcesBar.xOffset, -MPT.Bosses.Height-MPT.Spacing+MPT.ForcesBar.yOffset) 
         F.ForcesBar:SetSize(MPT.ForcesBar.Width, MPT.ForcesBar.Height)
@@ -539,7 +540,7 @@ function MPT:UpdateEnemyForces(Start, preview)
             edgeSize = MPT.ForcesBar.BorderSize
         })
         F.ForcesBarBorder:SetBackdropBorderColor(unpack(MPT.ForcesBar.BorderColor))
-        F.ForcesBar:SetMinMaxValues(current, total)
+        F.ForcesBar:SetMinMaxValues(0, total)
         F.ForcesBar:SetValue(current)
         local forcesColor =
         (percent < 20 and MPT.ForcesBar.Color[1]) or
@@ -550,6 +551,7 @@ function MPT:UpdateEnemyForces(Start, preview)
         F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
         if MPT.ForcesBar.PercentCount.enabled then MPT:ApplyTextSettings(F.ForcesBar.PercentCount, MPT.ForcesBar.PercentCount, string.format("%.2f%%", percent)) end
         if MPT.ForcesBar.RealCount.enabled then MPT:ApplyTextSettings(F.ForcesBar.RealCount, MPT.ForcesBar.RealCount, total-current) end
+        F.ForcesBar:Show()
     else
         F.ForcesBar:SetValue(current)
         local forcesColor =
