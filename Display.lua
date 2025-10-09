@@ -25,7 +25,7 @@ function MPT:Init(preview)
     MPT:HideStates()
     MPT:CreateStates(preview)
     if not preview then MPT:UpdateAllStates() end
-    MPT.Frame:Show()
+    MPT:ShowFrame(true)
 end
 
 function MPT:UpdateAllStates()
@@ -130,6 +130,7 @@ function MPT:CreateStates(preview)
         
         -- Fix Background Size
         MPT:UpdateMainFrame(true)
+        MPT:MoveFrame(true)
     end
 end
 

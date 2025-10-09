@@ -54,8 +54,8 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         if C_ChallengeMode.IsChallengeModeActive() then
             MPT:Init(false)
-        elseif MPT.Frame and MPT.Frame:IsShown() then 
-            MPT.Frame:Hide()
+        else  
+            MPT:ShowFrame(false)
         end
     elseif e == "ZONE_CHANGED_NEW_AREA" then
         if C_ChallengeMode.IsChallengeModeActive() then

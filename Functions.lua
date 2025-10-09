@@ -1,14 +1,5 @@
 local _, MPT = ...
 
-
-
--- /run MPTAPI:Init()
--- Call MPT:CreateStates(true) to create a preview
--- Call MPT:HideStates() to remove the preview and when leaving the dunugeon
--- Call MPT:CreateStates(false) at the start of M+ or logging into an active M+
--- Call MPT:UpdateStates(Full, TimerBar, Bosses, ForcesBar, KeystoneInfo) to update states on M+ changes
-
-
 local SoundsToMute = {
     [567457] = true,
     [567507] = true,
@@ -113,7 +104,7 @@ end
 function MPT:MoveFrame(Unlock)
     if Unlock then        
         if not MPT.Frame then MPT:Init(true) end
-        MPT.Frame:Show()
+        MPT:ShowFrame(true)
         MPT.Frame:SetMovable(true)
         MPT.Frame:EnableMouse(true)
         MPT.Movable = true
@@ -128,13 +119,12 @@ end
 
 function MPT:ShowFrame(Show)
     if Show then
-        if not MPT.Frame then 
-            MPT:Init(true)
-        else
+        if MPT.Frame then 
             MPT.Frame:Show()
         end
     elseif MPT.Frame then
         MPT.Frame:Hide()
+        MPT.IsPreview = false
     end
 end
 
