@@ -80,10 +80,10 @@ function MPT:SetSV(key, value, update, BestTimes)
         MPTSV.Profiles[MPT.ActiveProfile].BestTime = MPT.BestTime
     elseif MPTSV.Profiles[MPT.ActiveProfile] then -- full SV update
         for k, v in pairs(MPTSV.Profiles[MPT.ActiveProfile]) do
-            v = MPT.k
+            v = MPT[k]
         end
     end
-    if update then
+    if update then -- update display if settings were changed while the display is shown
         if MPT.IsPreview then
             MPT:Init(true)
         elseif C_ChallengeMode.IsChallengeModeActive() then
