@@ -13,14 +13,14 @@ function MPTUI:SlashCommand(msg)
             print("Enabled debug mode for Mythic Plus Timer, which allows accessing all local functions")
         end
     elseif msg == "preview" then
-        if MPT.Movable then
-            MPT:MoveFrame(false) 
-        else
-            if not MPT.Frame or not MPT.Frame:IsShown() then
-                MPT:Init(true)
-            end
-            MPT:MoveFrame(true)
-        end
+        if not MPT.IsPreview then -- not currently in preview
+            MPT:Init(true) -- Frame is set to movable in here as well
+        elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
+            MPT:Init(false)
+            MPT:MoveFrame(false)
+        elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
+            MPT:ShowFrame(false)
+        end 
     else
         Settings.OpenToCategory(self.optionsFrame.name)
     end
