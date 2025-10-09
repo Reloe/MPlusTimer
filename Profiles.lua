@@ -108,6 +108,8 @@ function MPT:CreateProfile(name)
     data.Scale = 1
     data.HideTracker = true
     data.LowerKey = true
+    data.CloseBags = true
+    data.KeySlot = true
     data.BestTime = {}
     
     data.Background = {
