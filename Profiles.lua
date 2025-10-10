@@ -152,8 +152,8 @@ function MPT:CreateProfile(name)
     data.DungeonName = {
         enabled = true,
         Anchor = "LEFT",
-        RelativeTo = "RIGHT",
-        xOffset = 0,
+        RelativeTo = "LEFT",
+        xOffset = 30,
         yOffset = 0,
         Font = "Expressway",
         FontSize = 15,
@@ -164,8 +164,8 @@ function MPT:CreateProfile(name)
     }
     data.AffixIcons = {
         enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "RIGHT",
+        Anchor = "CENTER",
+        RelativeTo = "CENTER",
         xOffset = 0,
         yOffset = 0,
         Font = "Expressway",

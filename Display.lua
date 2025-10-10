@@ -206,8 +206,8 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         self:SetPoint(F.KeyInfo, "TOPLEFT", F, "TOPLEFT", self.KeyInfo.xOffset, self.KeyInfo.yOffset)
         F.KeyInfo:SetSize(self.KeyInfo.Width, self.KeyInfo.Height)
         self:ApplyTextSettings(F.KeyInfo.KeyLevel, self.KeyLevel, keyLevel)
-        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, DungeonName, false, F.KeyInfo.KeyLevel)
-        self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo.DungeonName) 
+        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, DungeonName, false, F.KeyInfo)
+        self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo)
         if self.DeathCounter.enabled then
             local icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
             F.KeyInfo.Icon:SetSize(self.KeyInfo.Height, self.KeyInfo.Height)

@@ -22,18 +22,18 @@ function MPT:CreateTextSetting(name, key, order, Color)
         order = order,
         args = {}
     }    
-    settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"})
-    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {key, "Anchor"})
-    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {key, "RelativeTo"})
-    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -100, 100, 1, {key, "xOffset"})
-    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -100, 100, 1, {key, "yOffset"})
-    settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"})
-    settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 32, 1, {key, "FontSize"})
-    settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"})
-    settings.args.ShadowColor = self:CreateColor(9, "Shadow Color", "", {key, "ShadowColor"})
-    settings.args.ShadowXOffset = self:CreateRange(10, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1})
-    settings.args.ShadowYOffset = self:CreateRange(11, "Shadow Y Offset", "Shadow Y Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 2})
-    if Color then settings.args.Color = self:CreateColor(12, "Color", "", {key, "Color"}) end
+    settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
+    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {key, "Anchor"}, true)
+    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {key, "RelativeTo"}, true)
+    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -100, 100, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -100, 100, 1, {key, "yOffset"}, true)
+    settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"}, true)
+    settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 32, 1, {key, "FontSize"}, true)
+    settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
+    settings.args.ShadowColor = self:CreateColor(9, "Shadow Color", "", {key, "ShadowColor"}, true)
+    settings.args.ShadowXOffset = self:CreateRange(10, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)
+    settings.args.ShadowYOffset = self:CreateRange(11, "Shadow Y Offset", "Shadow Y Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 2}, true)
+    if Color then settings.args.Color = self:CreateColor(12, "Color", "", {key, "Color"}, true) end
     return settings
 end
 
@@ -44,53 +44,53 @@ function MPT:CreateStatusBarSettings(name, key, order)
         order = order,
         args = {}
     }    
-    settings.args.Width = self:CreateRange(1, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"})
-    settings.args.Height = self:CreateRange(2, "Height", "Height of the Status Bar", 10, 200, 1, {key, "Height"})
-    settings.args.xOffset = self:CreateRange(3, "X Offset", "X Offset of the Status Bar", -500, 500, 1, {key, "xOffset"})
-    settings.args.yOffset = self:CreateRange(4, "Y Offset", "Y Offset of the Status Bar", -500, 500, 1, {key, "yOffset"})
-    settings.args.Texture = self:CreateDropDown(5, textureTable, "Texture", "", {key, "Texture"})
-    settings.args.BorderColor = self:CreateColor(7, "Border Color", "", {key, "BorderColor"})
-    settings.args.BorderSize = self:CreateRange(8, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"})
-    settings.args.BackgroundColor = self:CreateColor(9, "Background Color", "", {key, "BackgroundColor"})    
+    settings.args.Width = self:CreateRange(1, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
+    settings.args.Height = self:CreateRange(2, "Height", "Height of the Status Bar", 10, 200, 1, {key, "Height"}, true)
+    settings.args.xOffset = self:CreateRange(3, "X Offset", "X Offset of the Status Bar", -500, 500, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(4, "Y Offset", "Y Offset of the Status Bar", -500, 500, 1, {key, "yOffset"}, true)
+    settings.args.Texture = self:CreateDropDown(5, textureTable, "Texture", "", {key, "Texture"}, true)
+    settings.args.BorderColor = self:CreateColor(7, "Border Color", "", {key, "BorderColor"}, true)
+    settings.args.BorderSize = self:CreateRange(8, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"}, true)
+    settings.args.BackgroundColor = self:CreateColor(9, "Background Color", "", {key, "BackgroundColor"}, true)
     return settings
 end
 
-function MPT:CreateToggle(order, name, desc, key)
+function MPT:CreateToggle(order, name, desc, key, update)
     local t = {}
     t.order = order
     t.type = "toggle"
     t.name = name
     t.desc = desc
-    t.set = function(_, value) self:SetSV(key, value, true) end
+    t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
 end
 
-function MPT:CreateColor(order, name, desc, key)
+function MPT:CreateColor(order, name, desc, key, update)
     local t = {}
     t.order = order
     t.type = "color"
     t.hasAlpha = true
     t.name = name
     t.desc = desc
-    t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, true) end
+    t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, update) end
     t.get = function() return unpack(self:GetSV(key)) end
     return t
 end
 
-function MPT:CreateDropDown(order, values, name, desc, key)
+function MPT:CreateDropDown(order, values, name, desc, key, update)
     local t = {}
     t.order = order
     t.values = values
     t.type = "select"
     t.name = name
     t.desc = desc
-    t.set = function(_, value) self:SetSV(key, value, true) end
+    t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
 end
 
-function MPT:CreateRange(order, name, desc, min, max, step, key)
+function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     local t = {}
     t.order = order
     t.type = "range"
@@ -99,7 +99,7 @@ function MPT:CreateRange(order, name, desc, min, max, step, key)
     t.min = min
     t.max = max
     t.step = step
-    t.set = function(_, value) self:SetSV(key, value, true) end
+    t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
 end
@@ -128,9 +128,9 @@ local GeneralOptions = {
         },        
         HideTracker = MPT:CreateToggle(2, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
         LowerKey = MPT:CreateToggle(3, "Data from Lower KeyLevel", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
-        Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing"),
+        Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
         UpdateRate = MPT:CreateRange(5, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
-        Scale = MPT:CreateRange(6, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale"),
+        Scale = MPT:CreateRange(6, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
         CloseBags = MPT:CreateToggle(7, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
         Keyslot = MPT:CreateToggle(8, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
     }
@@ -140,10 +140,10 @@ local Position = {
     name = "Frame Position",
     order = 2,
     args = {
-        Anchor = MPT:CreateDropDown(1, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}),
-        relativeTo = MPT:CreateDropDown(2, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}),
-        xOffset = MPT:CreateRange(3, "X Offset", "X Offset", -2000, 2000, 1, {"Position", "xOffset"}),
-        yOffset = MPT:CreateRange(4, "Y Offset", "Y Offset", -2000, 2000, 1, {"Position", "yOffset"}),        
+        Anchor = MPT:CreateDropDown(1, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(2, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        xOffset = MPT:CreateRange(3, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(4, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),        
     }
 }
 local Background = {
@@ -151,10 +151,10 @@ local Background = {
     name = "Background",
     order = 3,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}),
-        Color = MPT:CreateColor(2, "Color", "Color of the Background", {"Background", "Color"}),
-        BorderColor = MPT:CreateColor(3, "Border Color", "Color of the Border", {"Background", "BorderColor"}),
-        BorderSize = MPT:CreateRange(4, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}),
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
+        Color = MPT:CreateColor(2, "Color", "Color of the Background", {"Background", "Color"}, true),
+        BorderColor = MPT:CreateColor(3, "Border Color", "Color of the Border", {"Background", "BorderColor"}, true),
+        BorderSize = MPT:CreateRange(4, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}, true),
     }
 }
 
@@ -177,11 +177,11 @@ local KeyInfoBar = {
     name = "Key Info Bar",
     order = 2,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Key Info Bar", {"KeyInfo", "enabled"}),
-        Width = MPT:CreateRange(2, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}),
-        Height = MPT:CreateRange(3, "Height", "Height of the Key Info Bar", 10, 200, 1, {"KeyInfo", "Height"}),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "xOffset"}),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "yOffset"}), 
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Key Info Bar", {"KeyInfo", "enabled"}, true),
+        Width = MPT:CreateRange(2, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}, true),
+        Height = MPT:CreateRange(3, "Height", "Height of the Key Info Bar", 10, 200, 1, {"KeyInfo", "Height"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "xOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "yOffset"}, true),
     }
 }
 local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
@@ -216,9 +216,9 @@ local Ticks = {
     name = "Ticks",
     order = 5,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Timer Ticks", {"Ticks", "enabled"}),
-        Width = MPT:CreateRange(2, "Tick Width", "Width of each Tick", 1, 10, 1, {"Ticks", "Width"}),
-        Color = MPT:CreateColor(3, "Tick Color", "Color of the Ticks", {"Ticks", "Color"}),
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Timer Ticks", {"Ticks", "enabled"}, true),
+        Width = MPT:CreateRange(2, "Tick Width", "Width of each Tick", 1, 10, 1, {"Ticks", "Width"}, true),
+        Color = MPT:CreateColor(3, "Tick Color", "Color of the Ticks", {"Ticks", "Color"}, true),
     },
 }
 local TimerBar = {
@@ -245,10 +245,10 @@ local BossesBar = {
     name = "Bosses Bar",
     order = 4,
     args = {
-        Width = MPT:CreateRange(1, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}),
-        Height = MPT:CreateRange(2, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}),
-        XOffset = MPT:CreateRange(3, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}),
-        YOffset = MPT:CreateRange(4, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}),
+        Width = MPT:CreateRange(1, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}, true),
+        Height = MPT:CreateRange(2, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}, true),
+        XOffset = MPT:CreateRange(3, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}, true),
+        YOffset = MPT:CreateRange(4, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}, true),
     }
 }   
 
