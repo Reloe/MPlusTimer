@@ -29,13 +29,23 @@ function MPT:MuteJournalSounds()
     end)
 end
 
+function MPT:SetPoint(frame, Anchor, parent, relativeTo, xOffset, yOffset)
+    frame:ClearAllPoints()
+    frame:SetPoint(Anchor, parent, relativeTo, xOffset, yOffset)
+end
 
-function MPT:ApplyTextSettings(frame, settings, text, Color, parent)
+function MPT:ApplyTextSettings(frame, settings, text, Color, parent, num)
     parent = parent or frame:GetParent()
     if settings.enabled and parent then
+        if type(settings.xOffset) == "table" then
+            settings.xOffset = settings.xOffset[num] or 0
+        end
         Color = Color or settings.Color
+        frame:ClearAllPoints()
         frame:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
-        frame:SetFont(settings.Font, settings.FontSize, settings.Outline)
+        frame:SetFont(MPT.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
+        frame:SetShadowColor(unpack(settings.ShadowColor))
+        frame:SetShadowOffset(unpack(settings.ShadowOffset))
         if Color then
             frame:SetTextColor(unpack(Color))
         end
@@ -48,15 +58,15 @@ function MPT:ApplyTextSettings(frame, settings, text, Color, parent)
     end
 end
 
-function MPT:CreateText(parent, name, settings)    
+function MPT:CreateText(parent, name, settings, num)    
     parent[name] = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    if type(settings.xOffset) == "table" then
+        settings.xOffset = settings.xOffset[num] or 0
+    end
     parent[name]:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
-    parent[name]:SetFont(settings.Font, settings.FontSize, settings.Outline)
+    parent[name]:SetFont(MPT.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
     parent[name]:SetShadowColor(unpack(settings.ShadowColor))
     parent[name]:SetShadowOffset(unpack(settings.ShadowOffset))
-    if settings.Justify then
-        parent[name]:SetJustifyH(settings.Justify)
-    end
 end
 
 function MPT:CreateStatusBar(parent, name, Backdrop, border)

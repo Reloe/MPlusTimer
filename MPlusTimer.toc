@@ -8,13 +8,13 @@
 
 MPlusTimer.lua
 Functions.lua
-UI.lua
 SlashCommands.lua
 EventHandler.lua
 Comms.lua
 Data.lua
 Display.lua
 Profiles.lua
+UI.lua
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

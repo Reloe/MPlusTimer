@@ -1,8 +1,5 @@
 local _, MPT = ...
 
-local LSM = LibStub("LibSharedMedia-3.0")
-LSM:Register("font","Expressway", [[Interface\Addons\MPlusTimer\Expressway.TTF]])
-
 function MPT:SetMainProfile(name)
     if MPTSV.Profiles[name] then
         MPTSV.MainProfile = name
@@ -61,15 +58,30 @@ function MPT:CreateImportedProfile(data, name)
     end
 end
 
+function MPT:GetSV(key)
+    local ref = MPT
+    if type(key) == "table" and ref then           
+        for i=1, #key do
+            ref = ref[key[i]]
+        end
+    else
+        ref = MPT[key]
+    end
+    return ref
+end
+
 function MPT:SetSV(key, value, update, BestTimes)
     if key and MPTSV.Profiles[MPT.ActiveProfile] then
         if type(key) == "table" then
             local ref = MPTSV.Profiles[MPT.ActiveProfile]
             local MPTref = MPT
+            local keyname = ""
             for i=1, #key-1 do
                 ref = ref[key[i]]
                 MPTref = MPTref[key[i]]
+                keyname = keyname..key[i].."."
             end
+            keyname = keyname..key[#key]
             ref[key[#key]] = value
             MPTref[key[#key]] = value
         else
@@ -123,68 +135,68 @@ function MPT:CreateProfile(name)
         Anchor = "RIGHT",
         relativeTo = "RIGHT",
     }
-
+    data.KeyLevel = {
+        enabled = true,
+        Anchor = "LEFT",
+        RelativeTo = "LEFT",
+        xOffset = 0,
+        yOffset = -1,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
+    data.DungeonName = {
+        enabled = true,
+        Anchor = "LEFT",
+        RelativeTo = "RIGHT",
+        xOffset = 0,
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 15,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
+    data.AffixIcons = {
+        enabled = true,
+        Anchor = "LEFT",
+        RelativeTo = "RIGHT",
+        xOffset = 0,
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 14,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
+    data.DeathCounter = {
+        enabled = true,
+        IconAnchor = "RIGHT",
+        IconRelativeTo = "RIGHT",
+        Anchor = "RIGHT",
+        RelativeTo = "LEFT",
+        xOffset = 0,
+        yOffset = -1,
+        IconxOffset = 0,
+        IconyOffset = 0,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
     data.KeyInfo = {
+        enabled = true,
         Width = 330,
         Height = 16,
         xOffset = 0,
         yOffset = 0,
-        KeyLevel = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "LEFT",
-            xOffset = 0,
-            yOffset = -1,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        DungeonName = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "RIGHT",
-            xOffset = 0,
-            yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 15,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        AffixIcons = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "RIGHT",
-            xOffset = 0,
-            yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 14,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        DeathCounter = {
-            enabled = true,
-            IconAnchor = "RIGHT",
-            IconRelativeTo = "RIGHT",
-            Anchor = "RIGHT",
-            RelativeTo = "LEFT",
-            xOffset = 0,
-            yOffset = -1,
-            IconxOffset = 0,
-            IconyOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
     }
 
     data.TimerBar = {
@@ -193,10 +205,9 @@ function MPT:CreateProfile(name)
         Height = 24,
         xOffset = 0,
         yOffset = 0,
-        Texture = LSM:Fetch("statusbar", "Details Flat"),
+        Texture = "Details Flat",
         ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
-        Color = {128/255, 1, 0, 1},
-        ChestColor = {{89/255, 90/255, 92/255, 1}, {1, 112/255, 0, 1}, {1, 1, 0, 1}, {128/255, 1, 0, 1}},
+        Color = {{89/255, 90/255, 92/255, 1}, {1, 112/255, 0, 1}, {1, 1, 0, 1}, {128/255, 1, 0, 1}},
         BorderSize = 1,
         BackgroundColor = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},    
@@ -207,7 +218,7 @@ function MPT:CreateProfile(name)
         RelativeTo = "LEFT",
         xOffset = 2,
         yOffset = 0,
-        Font = LSM:Fetch("font", "Expressway"),
+        Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
@@ -220,7 +231,7 @@ function MPT:CreateProfile(name)
         RelativeTo = "LEFT",
         xOffset = 0,
         yOffset = 0,
-        Font = LSM:Fetch("font", "Expressway"),
+        Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
         SuccessColor = {0, 1, 0, 1},
@@ -228,26 +239,21 @@ function MPT:CreateProfile(name)
         FailColor = {1, 0, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
-        Justify = "RIGHT",
     }
-    data.ChestTimer = {}
-    for i=1, 3 do
-        local t = {
-            enabled = true,
-            Anchor = "RIGHT",
-            RelativeTo = "RIGHT",
-            xOffset = (i-1)*-65,
-            yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            DepleteColor = {1, 0, 0, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0},
-        }
-        table.insert(data.ChestTimer, t)
-    end
+    data.ChestTimer = {
+        enabled = true,
+        Anchor = "RIGHT",
+        RelativeTo = "RIGHT",
+        xOffset = {0, -65, -130},
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        DepleteColor = {1, 0, 0, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0},
+    }
     data.Ticks = {        
         enabled = true,
         Width = 2,  
@@ -267,7 +273,7 @@ function MPT:CreateProfile(name)
         MaxLength = 20,
         xOffset = 2,
         yOffset = 0,
-        Font = LSM:Fetch("font", "Expressway"),
+        Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
@@ -281,7 +287,7 @@ function MPT:CreateProfile(name)
         RelativeTo = "RIGHT",
         xOffset = 0,
         yOffset = 0,
-        Font = LSM:Fetch("font", "Expressway"),
+        Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
@@ -297,7 +303,7 @@ function MPT:CreateProfile(name)
         RelativeTo = "RIGHT",
         xOffset = -70,
         yOffset = 0,
-        Font = LSM:Fetch("font", "Expressway"),
+        Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
@@ -313,9 +319,9 @@ function MPT:CreateProfile(name)
         Height = 24,
         xOffset = 0,
         yOffset = 0,
-        Texture = LSM:Fetch("statusbar", "Details Flat"),
+        Texture = "Details Flat",
         Color = {{1, 117/255, 128/255, 1}, {1, 130/255, 72/255, 1}, {1, 197/255, 103/255, 1}, {1, 249/255, 150/255, 1}, {104/255, 205/255, 1, 1}},
-        CompletionColor = {205/255, 1, 167/255, 1},
+        CompletionColor = {205/255, 1, 167/255, 1},        
         BorderSize = 1,
         BackgroundColor = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},  
@@ -325,7 +331,7 @@ function MPT:CreateProfile(name)
             RelativeTo = "LEFT",
             xOffset = 2,
             yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
+            Font = "Expressway",
             FontSize = 16,
             Outline = "OUTLINE",
             Color = {1, 1, 1, 1},
@@ -338,7 +344,7 @@ function MPT:CreateProfile(name)
             RelativeTo = "RIGHT",
             xOffset = -1,
             yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
+            Font = "Expressway",
             FontSize = 16,
             Outline = "OUTLINE",
             Color = {1, 1, 1, 1},
@@ -351,7 +357,7 @@ function MPT:CreateProfile(name)
             RelativeTo = "CENTER",
             xOffset = 0,
             yOffset = 0,
-            Font = LSM:Fetch("font", "Expressway"),
+            Font = "Expressway",
             FontSize = 16,
             Outline = "OUTLINE",
             Color = {1, 1, 1, 1},
