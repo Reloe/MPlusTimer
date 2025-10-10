@@ -1,7 +1,7 @@
 local _, MPT = ...
 
 
-function MPTUI:SlashCommand(msg)
+function MPT.UI:SlashCommand(msg)
     if msg == "debug" then
         if MPTSV.debug then
             MPTSV.debug = false

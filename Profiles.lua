@@ -16,33 +16,33 @@ function MPT:LoadProfile(name)
     end
     local ProfileKey = CharName.."-"..Realm
     if name and MPTSV.Profiles[name] then -- load requested profile
-        MPT:ModernizeProfile(MPTSV.Profiles[name])
+        self:ModernizeProfile(MPTSV.Profiles[name])
         for k, v in pairs(MPTSV.Profiles[name]) do
-            MPT[k] = v
+            self[k] = v
         end
 
-        MPT.ActiveProfile = name
+        self.ActiveProfile = name
         MPTSV.ProfileKey[ProfileKey] = name
         
         if not MPTSV.MainProfile then
-            MPT:SetMainProfile(name)
+            self:SetMainProfile(name)
         end
     elseif MPTSV.ProfileKey[ProfileKey] and MPTSV.Profiles[MPTSV.ProfileKey[ProfileKey]] then -- load saved profile if no profile name was provided/the requested profile doesn't exist
-        MPT:LoadProfile(MPTSV.ProfileKey[ProfileKey])
+        self:LoadProfile(MPTSV.ProfileKey[ProfileKey])
     elseif MPTSV.MainProfile then -- load the selected Main Profile -> player is logging onto a new character
-        MPT:LoadProfile(MPTSV.MainProfile)
+        self:LoadProfile(MPTSV.MainProfile)
     else
-        MPT:CreateProfile("default") -- no valid profile found so we make/load the default profile
+        self:CreateProfile("default") -- no valid profile found so we make/load the default profile
     end
 end
 
 function MPT:ModernizeProfile(profile)
-    if MPT:GetVersion() > profile.Version then
+    if self:GetVersion() > profile.Version then
         if profile.Version < 2 then  
             -- add stuff to profile that was missing in that version.
         end
 
-        profile.Version = MPT:GetVersion()
+        profile.Version = self:GetVersion()
     end
 end
 
@@ -50,31 +50,31 @@ function MPT:CreateImportedProfile(data, name)
     if data and name then
         if MPTSV.Profiles[name] then -- change name if profile already exists
             name = name.." 2"
-            MPT:CreateImportedProfile(data, name)
+            self:CreateImportedProfile(data, name)
         else
             MPTSV.Profiles[name] = data
-            MPT:LoadProfile(name)
+            self:LoadProfile(name)
         end
     end
 end
 
 function MPT:GetSV(key)
-    local ref = MPT
+    local ref = self
     if type(key) == "table" and ref then           
         for i=1, #key do
             ref = ref[key[i]]
         end
     else
-        ref = MPT[key]
+        ref = self[key]
     end
     return ref
 end
 
 function MPT:SetSV(key, value, update, BestTimes)
-    if key and MPTSV.Profiles[MPT.ActiveProfile] then
+    if key and MPTSV.Profiles[self.ActiveProfile] then
         if type(key) == "table" then
-            local ref = MPTSV.Profiles[MPT.ActiveProfile]
-            local MPTref = MPT
+            local ref = MPTSV.Profiles[self.ActiveProfile]
+            local MPTref = self
             local keyname = ""
             for i=1, #key-1 do
                 ref = ref[key[i]]
@@ -85,21 +85,21 @@ function MPT:SetSV(key, value, update, BestTimes)
             ref[key[#key]] = value
             MPTref[key[#key]] = value
         else
-            MPTSV.Profiles[MPT.ActiveProfile][key] = value
-            MPT[key] = value
+            MPTSV.Profiles[self.ActiveProfile][key] = value
+            self[key] = value
         end
-    elseif BestTimes and MPTSV.Profiles[MPT.ActiveProfile] then -- Save Best Times to SV at end of run
-        MPTSV.Profiles[MPT.ActiveProfile].BestTime = MPT.BestTime
-    elseif MPTSV.Profiles[MPT.ActiveProfile] then -- full SV update
-        for k, v in pairs(MPTSV.Profiles[MPT.ActiveProfile]) do
-            v = MPT[k]
+    elseif BestTimes and MPTSV.Profiles[self.ActiveProfile] then -- Save Best Times to SV at end of run
+        MPTSV.Profiles[self.ActiveProfile].BestTime = self.BestTime
+    elseif MPTSV.Profiles[self.ActiveProfile] then -- full SV update
+        for k, v in pairs(MPTSV.Profiles[self.ActiveProfile]) do
+            v = self[k]
         end
     end
     if update then -- update display if settings were changed while the display is shown
-        if MPT.IsPreview then
-            MPT:Init(true)
+        if self.IsPreview then
+            self:Init(true)
         elseif C_ChallengeMode.IsChallengeModeActive() then
-            MPT:Init(false)
+            self:Init(false)
         end
     end
 end
@@ -108,12 +108,12 @@ function MPT:CreateProfile(name)
     if not MPTSV.Profiles then MPTSV.Profiles = {} end
     if not MPTSV.ProfileKey then MPTSV.ProfileKey = {} end
     if MPTSV.Profiles[name] then -- if profile with that name already exists we load it instead.
-        MPT:LoadProfile(name)
+        self:LoadProfile(name)
         return 
     end
     local data = {}
-    
-    data.Version = MPT:GetVersion()
+
+    data.Version = self:GetVersion()
     data.name = name    
     data.Spacing = 3
     data.UpdateRate = 0.2
@@ -369,5 +369,5 @@ function MPT:CreateProfile(name)
         },
     }
     MPTSV.Profiles[name] = data
-    MPT:LoadProfile(name)
+    self:LoadProfile(name)
 end

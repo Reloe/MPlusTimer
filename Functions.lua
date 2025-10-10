@@ -43,7 +43,7 @@ function MPT:ApplyTextSettings(frame, settings, text, Color, parent, num)
         Color = Color or settings.Color
         frame:ClearAllPoints()
         frame:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
-        frame:SetFont(MPT.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
+        frame:SetFont(self.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
         frame:SetShadowColor(unpack(settings.ShadowColor))
         frame:SetShadowOffset(unpack(settings.ShadowOffset))
         if Color then
@@ -64,7 +64,7 @@ function MPT:CreateText(parent, name, settings, num)
         settings.xOffset = settings.xOffset[num] or 0
     end
     parent[name]:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
-    parent[name]:SetFont(MPT.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
+    parent[name]:SetFont(self.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
     parent[name]:SetShadowColor(unpack(settings.ShadowColor))
     parent[name]:SetShadowOffset(unpack(settings.ShadowOffset))
 end
@@ -113,34 +113,34 @@ end
 
 function MPT:MoveFrame(Unlock)
     if Unlock then        
-        if not MPT.Frame then MPT:Init(true) end
-        MPT:ShowFrame(true)
-        MPT.Frame:SetMovable(true)
-        MPT.Frame:EnableMouse(true)
-        MPT.Movable = true
-        MPT.Frame:RegisterForDrag("LeftButton")
-        MPT.Frame:SetClampedToScreen(true)
-    elseif MPT.Frame then        
-        MPT.Frame:SetMovable(false)
-        MPT.Movable = false
-        MPT.Frame:EnableMouse(false)
+        if not self.Frame then self:Init(true) end
+        self:ShowFrame(true)
+        self.Frame:SetMovable(true)
+        self.Frame:EnableMouse(true)
+        self.Movable = true
+        self.Frame:RegisterForDrag("LeftButton")
+        self.Frame:SetClampedToScreen(true)
+    elseif self.Frame then
+        self.Frame:SetMovable(false)
+        self.Movable = false
+        self.Frame:EnableMouse(false)
     end
 end
 
 function MPT:ShowFrame(Show)
     if Show then
-        if MPT.Frame then 
-            MPT.Frame:Show()
+        if self.Frame then 
+            self.Frame:Show()
         end
-    elseif MPT.Frame then
-        MPT.Frame:Hide()
-        MPT.IsPreview = false
+    elseif self.Frame then
+        self.Frame:Hide()
+        self.IsPreview = false
     end
 end
 
 function MPT:UpdateScale()
-    if MPT.Frame then
-        MPT.Frame:SetScale(MPT.Scale)
+    if self.Frame then
+        self.Frame:SetScale(self.Scale)
     end
 end
 
