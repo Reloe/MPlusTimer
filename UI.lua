@@ -104,10 +104,78 @@ function MPT:CreateRange(order, name, desc, min, max, step, key)
     return t
 end
 
+local GeneralOptions = {
+    type = "group",
+    name = "General Options",
+    order = 1,
+    args = {
+        Preview = {
+            type = "execute",
+            order = 1,
+            name = "Preview",
+            desc = "Show a preview of the Display",
+            func = function() 
+                if not MPT.IsPreview then -- not currently in preview
+                    MPT:Init(true) -- Frame is set to movable in here as well
+                elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
+                    MPT:Init(false)
+                    MPT:MoveFrame(false)
+                elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
+                    MPT:MoveFrame(false)
+                    MPT:ShowFrame(false)
+                end 
+            end,         
+        },        
+        HideTracker = MPT:CreateToggle(2, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
+        LowerKey = MPT:CreateToggle(3, "Data from Lower KeyLevel", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
+        Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing"),
+        UpdateRate = MPT:CreateRange(5, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
+        Scale = MPT:CreateRange(6, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale"),
+        CloseBags = MPT:CreateToggle(7, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
+        Keyslot = MPT:CreateToggle(8, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
+    }
+}
+local Position = {
+    type = "group",
+    name = "Frame Position",
+    order = 2,
+    args = {
+        Anchor = MPT:CreateDropDown(1, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}),
+        relativeTo = MPT:CreateDropDown(2, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}),
+        xOffset = MPT:CreateRange(3, "X Offset", "X Offset", -2000, 2000, 1, {"Position", "xOffset"}),
+        yOffset = MPT:CreateRange(4, "Y Offset", "Y Offset", -2000, 2000, 1, {"Position", "yOffset"}),        
+    }
+}
+local Background = {
+    type = "group",
+    name = "Background",
+    order = 3,
+    args = {
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}),
+        Color = MPT:CreateColor(2, "Color", "Color of the Background", {"Background", "Color"}),
+        BorderColor = MPT:CreateColor(3, "Border Color", "Color of the Border", {"Background", "BorderColor"}),
+        BorderSize = MPT:CreateRange(4, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}),
+    }
+}
+
+local General = {
+    type = "group",
+    name = "General",
+    handler = MPTUI,
+    order = 1,
+    childGroups = "tab",
+    args = {
+        GeneralOptions = GeneralOptions,
+        Position = Position,
+        Background = Background,  
+    },
+}
+
+
 local KeyInfoBar = {
     type = "group",
     name = "Key Info Bar",
-    order = 1,
+    order = 2,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Key Info Bar", {"KeyInfo", "enabled"}),
         Width = MPT:CreateRange(2, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}),
@@ -222,35 +290,7 @@ local options= {
     childGroups = "tab",
 	type = "group",
 	args = {
-        General = {
-            type = "group",
-            name = "General",
-            order = 1,
-            args = {                		
-                Preview = {
-                    type = "execute",
-                    order = 1,
-                    name = "Preview",
-                    desc = "Show a preview of the Display",
-                    func = function() 
-                        if not MPT.IsPreview then -- not currently in preview
-                            MPT:Init(true) -- Frame is set to movable in here as well
-                        elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
-                            MPT:Init(false)
-                            MPT:MoveFrame(false)
-                        elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
-                            MPT:MoveFrame(false)
-                            MPT:ShowFrame(false)
-                        end 
-                    end,         
-                },
-                HideTracker = MPT:CreateToggle(2, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-                LowerKey = MPT:CreateToggle(3, "Data from Lower KeyLevel", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
-                Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing"),
-                UpdateRate = MPT:CreateRange(5, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
-                Scale = MPT:CreateRange(6, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale"),       
-            },
-        },   
+        General = General,
         KeyInfoBar = KeyInfo,
         TimerBar = TimerBar,
         Bosses = Bosses,

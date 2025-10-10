@@ -46,11 +46,7 @@ function MPT:CreateStates(preview)
         -- Background Main Frame
         F.BG = F:CreateTexture(nil, "BACKGROUND")
         -- Background Border Main Frame
-        F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")   
-        F.BGBorder:SetBackdrop({
-            edgeFile = "Interface\\Buttons\\WHITE8x8",
-            edgeSize = 1,            
-        })
+        F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")           
 
         -- Keystone Info
         self:CreateStatusBar(F, "KeyInfo", false, false)
@@ -143,8 +139,14 @@ function MPT:UpdateMainFrame(BackgroundOnly)
         F:SetSize(self.TimerBar.Width, self.TimerBar.Height+self.KeyInfo.Height+self.ForcesBar.Height+(self.Bosses.Height*bosscount)+(self.Spacing*(bosscount+1))+1)
         if self.Background.enabled then
             F.BG:SetAllPoints(F)
+            F.BG:SetColorTexture(unpack(self.Background.Color))  
             F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)
             F.BGBorder:SetAllPoints(F)
+            F.BGBorder:SetBackdrop({
+                edgeFile = "Interface\\Buttons\\WHITE8x8",
+                edgeSize = self.Background.BorderSize,
+            })
+            F.BGBorder:SetBackdropBorderColor(unpack(self.Background.BorderColor))
             F.BG:Show()
             F.BGBorder:Show()
         else
@@ -158,8 +160,13 @@ function MPT:UpdateMainFrame(BackgroundOnly)
         self:SetPoint(F, self.Position.Anchor, UIParent, self.Position.relativeTo, self.Position.xOffset, self.Position.yOffset)
         if self.Background.enabled then
             F.BG:SetAllPoints(F)
-            F.BG:SetColorTexture(unpack(self.Background.Color))
+            F.BG:SetColorTexture(unpack(self.Background.Color))    
+            F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)        
             F.BGBorder:SetAllPoints(F)
+            F.BGBorder:SetBackdrop({
+                edgeFile = "Interface\\Buttons\\WHITE8x8",
+                edgeSize = self.Background.BorderSize,
+            })
             F.BGBorder:SetBackdropBorderColor(unpack(self.Background.BorderColor))
         else
             F.BG:Hide()

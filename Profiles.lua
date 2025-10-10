@@ -128,6 +128,7 @@ function MPT:CreateProfile(name)
         enabled = true,
         Color = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},
+        BorderSize = 1,
     }
     data.Position = {
         xOffset = 0,
