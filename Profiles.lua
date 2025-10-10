@@ -313,6 +313,48 @@ function MPT:CreateProfile(name)
         EqualColor = {1, 0.8, 0, 1},
         FailColor = {1, 0, 0, 1},
     }
+    data.PercentCount = {
+        enabled = true,
+        Anchor = "LEFT",
+        RelativeTo = "LEFT",
+        xOffset = 2,
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
+    data.RealCount = {
+        enabled = true,
+        Anchor = "RIGHT",
+        RelativeTo = "RIGHT",
+        xOffset = -1,
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
+    data.ForcesSplits = {
+        enabled = true,
+        Anchor = "CENTER",
+        RelativeTo = "CENTER",
+        xOffset = 0,
+        yOffset = 0,
+        Font = "Expressway",
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        CompletionColor = {0, 1, 0, 1},
+        FailColor = {1, 0, 0, 1},
+        EqualColor = {1, 1, 0, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0}
+    }
     data.ForcesBar = {
         enabled = true,
         Width = 330,
@@ -324,49 +366,7 @@ function MPT:CreateProfile(name)
         CompletionColor = {205/255, 1, 167/255, 1},        
         BorderSize = 1,
         BackgroundColor = {0, 0, 0, 0.5},
-        BorderColor = {0, 0, 0, 1},  
-        PercentCount = {
-            enabled = true,
-            Anchor = "LEFT",
-            RelativeTo = "LEFT",
-            xOffset = 2,
-            yOffset = 0,
-            Font = "Expressway",
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
-        RealCount = {
-            enabled = true,
-            Anchor = "RIGHT",
-            RelativeTo = "RIGHT",
-            xOffset = -1,
-            yOffset = 0,
-            Font = "Expressway",
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },        
-        Splits = {
-            enabled = true,
-            Anchor = "CENTER",
-            RelativeTo = "CENTER",
-            xOffset = 0,
-            yOffset = 0,
-            Font = "Expressway",
-            FontSize = 16,
-            Outline = "OUTLINE",
-            Color = {1, 1, 1, 1},
-            CompletionColor = {0, 1, 0, 1},
-            FailColor = {1, 0, 0, 1},
-            EqualColor = {1, 1, 0, 1},
-            ShadowColor = {0, 0, 0, 1},
-            ShadowOffset = {0, 0}
-        },
+        BorderColor = {0, 0, 0, 1},          
     }
     MPTSV.Profiles[name] = data
     self:LoadProfile(name)

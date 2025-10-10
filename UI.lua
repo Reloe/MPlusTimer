@@ -23,8 +23,8 @@ function MPT:CreateTextSetting(name, key, order, Color)
         args = {}
     }    
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"})
-    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT"}, "Anchor", "", {key, "Anchor"})
-    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT"}, "Relative To", "", {key, "RelativeTo"})
+    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {key, "Anchor"})
+    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {key, "RelativeTo"})
     settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -100, 100, 1, {key, "xOffset"})
     settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -100, 100, 1, {key, "yOffset"})
     settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"})
@@ -168,6 +168,54 @@ local TimerBar = {
     },
 }
 
+
+local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 1, true)
+local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 2, true)
+local BossTimer = MPT:CreateTextSetting("Boss Timer", "BossTimer", 3, true)
+local BossesBar = {
+    type = "group",
+    name = "Bosses Bar",
+    order = 4,
+    args = {
+        Width = MPT:CreateRange(1, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}),
+        Height = MPT:CreateRange(2, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}),
+        XOffset = MPT:CreateRange(3, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}),
+        YOffset = MPT:CreateRange(4, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}),
+    }
+}   
+
+local Bosses = {
+    type = "group",
+    name = "Bosses",
+    handler = MPTUI,
+    order = 4,
+    childGroups = "tab",
+    args = {
+        BossName = BossName,
+        BossSplit = BossSplit,
+        BossTimer = BossTimer,
+        BossesBar = BossesBar,
+    }
+}
+
+local ForcesBar = MPT:CreateStatusBarSettings("Forces Bar", "ForcesBar", 1)
+local PercentText = MPT:CreateTextSetting("Percent Text", "PercentCount", 2, true)
+local CurrentText = MPT:CreateTextSetting("Current Text", "RealCount", 3, true)
+local ForcesSplits = MPT:CreateTextSetting("Split Text", "ForcesSplits", 4, true)
+local EnemyForces = {
+    type = "group",
+    name = "Forces",
+    handler = MPTUI,
+    order = 5,
+    childGroups = "tab",
+    args = {
+        ForcesBar = ForcesBar,
+        PercentText = PercentText,
+        CurrentText = CurrentText,
+        ForcesSplits = ForcesSplits,
+    }
+}
+
 local options= { 
 	name = "General Settings",
 	handler = MPTUI,
@@ -205,6 +253,8 @@ local options= {
         },   
         KeyInfoBar = KeyInfo,
         TimerBar = TimerBar,
+        Bosses = Bosses,
+        EnemyForces = EnemyForces,
     },    
 }
 

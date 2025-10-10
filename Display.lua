@@ -91,9 +91,9 @@ function MPT:CreateStates(preview)
 
         -- Enemy Forces
         self:CreateStatusBar(F, "ForcesBar", true, true)
-        self:CreateText(F.ForcesBar, "PercentCount", self.ForcesBar.PercentCount)
-        self:CreateText(F.ForcesBar, "Splits", self.ForcesBar.Splits)
-        self:CreateText(F.ForcesBar, "RealCount", self.ForcesBar.RealCount)
+        self:CreateText(F.ForcesBar, "PercentCount", self.PercentCount)
+        self:CreateText(F.ForcesBar, "Splits", self.ForcesSplits)
+        self:CreateText(F.ForcesBar, "RealCount", self.RealCount)
 
         -- Move Scripts
         F:SetScript("OnDragStart", function(self)
@@ -138,7 +138,7 @@ end
 function MPT:UpdateMainFrame(BackgroundOnly)
     local F = self.Frame
     -- Main Frame    
-    if BackgroundOnly and self.Background.enabled then    
+    if BackgroundOnly then    
         local bosscount = #self.BossNames
         F:SetSize(self.TimerBar.Width, self.TimerBar.Height+self.KeyInfo.Height+self.ForcesBar.Height+(self.Bosses.Height*bosscount)+(self.Spacing*(bosscount+1))+1)
         if self.Background.enabled then
@@ -161,6 +161,9 @@ function MPT:UpdateMainFrame(BackgroundOnly)
             F.BG:SetColorTexture(unpack(self.Background.Color))
             F.BGBorder:SetAllPoints(F)
             F.BGBorder:SetBackdropBorderColor(unpack(self.Background.BorderColor))
+        else
+            F.BG:Hide()
+            F.BGBorder:Hide()
         end
     end
 end
@@ -205,10 +208,10 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)     
             F.KeyInfo.Icon.Texture:SetTexture(icon)
             F.KeyInfo.Icon:EnableMouse(true)
-            F.KeyInfo.Icon:SetScript("OnEnter", function(self)
+            F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
                 local text = "Time lost: "..timelost
-                GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+                GameTooltip:SetOwner(Frame, "ANCHOR_CURSOR")
                 GameTooltip:SetText(text)
                 GameTooltip:Show()                
             end)
@@ -347,7 +350,7 @@ function MPT:DisplayTimerElements(chest)
             F.TimerBar.Ticks[i-1]:SetHeight(self.TimerBar.Height)
             self:SetPoint(F.TimerBar.Ticks[i-1], "LEFT", F.TimerBar, "LEFT", (i == 2 and self.TimerBar.Width*0.8) or (i == 3 and self.TimerBar.Width*0.6) , 0)
             F.TimerBar.Ticks[i-1]:Show()
-    elseif i >= 2 then
+        elseif i >= 2 then
             F.TimerBar.Ticks[i-1]:Hide()
         end
     end
@@ -446,7 +449,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         frame["BossTimer"..i]:SetText("")
                         frame["BossSplit"..i]:SetText("")
                     end
-                    if completed and defeated and defeated ~= 0 and self.BossTimer.enabled then
+                    if completed and defeated and defeated ~= 0 then
                         local timercolor = self.BossTimer.Color
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         if pb and pb[i] then
@@ -454,7 +457,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         end
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     end
-                    if completed and defeated and defeated ~= 0 and pb and pb[i] and self.BossSplit.enabled then
+                    if completed and defeated and defeated ~= 0 and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -476,7 +479,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 local defeated = criteria.elapsed
                 local frame = F.Bosses[i]                    
                 frame["BossName"..i]:SetTextColor(self.BossName.CompletionColor)                
-                if defeated and defeated ~= 0 and self.BossTimer.enabled then                        
+                if defeated and defeated ~= 0 then                        
                     local timercolor = self.BossTimer.Color
                     local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                     if pb and pb[i] then
@@ -484,7 +487,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                 end
-                if completed and defeated and defeated ~= 0 and pb and pb[i] and self.BossSplit.enabled then
+                if completed and defeated and defeated ~= 0 and pb and pb[i]then
                     local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                     local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                     local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -537,15 +540,15 @@ function MPT:UpdateEnemyForces(Start, preview)
         (percent < 80 and self.ForcesBar.Color[4]) or
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
         F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
-        if self.ForcesBar.PercentCount.enabled then self:ApplyTextSettings(F.ForcesBar.PercentCount, self.ForcesBar.PercentCount, string.format("%.2f%%", percent)) end
-        if self.ForcesBar.RealCount.enabled then self:ApplyTextSettings(F.ForcesBar.RealCount, self.ForcesBar.RealCount, total-current) end
+        self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, string.format("%.2f%%", percent))
+        self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, total-current)
         F.ForcesBar:Show()
         if preview then            
             local diff = math.random(-200, 200)
-            local color = (diff == 0 and self.ForcesBar.Splits.EqualColor) or (diff < 0 and self.ForcesBar.Splits.SuccessColor) or self.ForcesBar.Splits.FailColor
+            local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
             local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
             if diff < 0 then diff = diff * -1 end
-            self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesBar.Splits, prefix..self:FormatTime(diff), color)
+            self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
         end
     else
         F.ForcesBar:SetValue(current)
@@ -562,17 +565,17 @@ function MPT:UpdateEnemyForces(Start, preview)
             local cur = select(2, GetWorldElapsedTime(1)) - defeat
             local cmap = self.cmap
             local level = self.level
-            local pb = self.ForcesBar.Splits.enabled and self.BestTime and self.BestTime[cmap] and (self.BestTime[cmap][level] or (self.LowerKey and self.BestTime[cmap][level-1]))
+            local pb = self.BestTime and self.BestTime[cmap] and (self.BestTime[cmap][level] or (self.LowerKey and self.BestTime[cmap][level-1]))
             if pb and pb["forces"] then
                 local diff = cur - pb["forces"]
-                local color = (diff == 0 and self.ForcesBar.Splits.EqualColor) or (diff < 0 and self.ForcesBar.Splits.SuccessColor) or self.ForcesBar.Splits.FailColor
+                local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
                 local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
                 if diff < 0 then diff = diff * -1 end
-                self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesBar.Splits, prefix..self:FormatTime(diff), color)
+                self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
             end
             self.done = true
         end
-        if self.ForcesBar.PercentCount.enabled then self:ApplyTextSettings(F.ForcesBar.PercentCount, self.ForcesBar.PercentCount, string.format("%.2f%%", percent)) end
-        if self.ForcesBar.RealCount.enabled then self:ApplyTextSettings(F.ForcesBar.RealCount, self.ForcesBar.RealCount, total-current) end
+        self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, string.format("%.2f%%", percent))
+        self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, total-current)
     end
 end
