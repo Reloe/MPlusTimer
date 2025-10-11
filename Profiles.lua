@@ -1,8 +1,84 @@
 local _, MPT = ...
+local Serialize = LibStub("AceSerializer-3.0")
+local Compress = LibStub("LibCompress")
+
+function MPTAPI:ImportProfile(string, key)
+    if string then
+        local decoded = Compress:DecodeForPrint(string)
+        local decompressed = Compress:DecompressDeflate(decoded)
+        local success, data = Serialize:Deserialize(decompressed)
+        local name = key or data.name
+        if success and data and name then
+            data.name = name -- ensure the profile key has the same name as stored in the profile table
+            MPT:CreateImportedProfile(data, name)
+            return true
+        else
+            print("Failed to import profile into Mythic Plus Timer")
+            return false
+        end
+    end
+end
+
+function MPT:CreateImportedProfile(data, name)
+    if data then
+        name = name or data.name
+        if not name then return end
+        if MPTSV.Profiles[name] then -- change name if profile already exists
+            name = name.." 2"
+            self:CreateImportedProfile(data, name)
+        else
+            MPTSV.Profiles[name] = data
+            self:LoadProfile(name)
+        end
+    end
+end
+
+function MPTAPI:GetExportString(key)
+    key = key or MPT.ActiveProfile
+    if key and MPTSV.Profiles[key] then
+        local serialized = Serialize:Serialize(MPTSV.Profiles[key])
+        local compressed = Compress:CompressDeflate(serialized)
+        local encoded = Compress:EncodeForPrint(compressed)
+        return encoded
+    end
+end
+
+function MPT:ExportProfile(key)
+    local exportString = MPTAPI:GetExportString(key or self.ActiveProfile)
+end
 
 function MPT:SetMainProfile(name)
     if MPTSV.Profiles[name] then
         MPTSV.MainProfile = name
+    end
+end
+
+function MPT:ResetProfile()
+    if self.ActiveProfile and MPTSV.Profiles[self.ActiveProfile] then
+        local oldname = MPTSV.Profiles[self.ActiveProfile].name
+        MPTSV.Profiles[self.ActiveProfile] = nil
+        MPT:CreateProfile(oldname)
+    end
+
+end
+function MPT:DeleteProfile(name)
+    if name and MPTSV.Profiles[name] and name ~= "default" then
+        MPTSV.Profiles[name] = nil
+        if MPTSV.MainProfile == name then
+            MPTSV.MainProfile = nil
+        end
+        if self.ActiveProfile == name then
+            self:CreateProfile("default") -- if current active profile gets deleted, we either load or create a default profile
+        end
+    end
+end
+
+function MPT:CopyProfile(name)
+    if name and MPTSV.Profiles[self.ActiveProfile] and MPTSV.Profiles[name] then
+        local oldname = MPTSV.Profiles[self.ActiveProfile].name
+        MPTSV.Profiles[self.ActiveProfile] = CopyTable(MPTSV.Profiles[name])
+        MPTSV.Profiles[self.ActiveProfile].name = oldname
+        self:LoadProfile(self.ActiveProfile)
     end
 end
 
@@ -20,13 +96,9 @@ function MPT:LoadProfile(name)
         for k, v in pairs(MPTSV.Profiles[name]) do
             self[k] = v
         end
-
         self.ActiveProfile = name
         MPTSV.ProfileKey[ProfileKey] = name
-        
-        if not MPTSV.MainProfile then
-            self:SetMainProfile(name)
-        end
+        self:UpdateDisplay()
     elseif MPTSV.ProfileKey[ProfileKey] and MPTSV.Profiles[MPTSV.ProfileKey[ProfileKey]] then -- load saved profile if no profile name was provided/the requested profile doesn't exist
         self:LoadProfile(MPTSV.ProfileKey[ProfileKey])
     elseif MPTSV.MainProfile then -- load the selected Main Profile -> player is logging onto a new character
@@ -43,18 +115,6 @@ function MPT:ModernizeProfile(profile)
         end
 
         profile.Version = self:GetVersion()
-    end
-end
-
-function MPT:CreateImportedProfile(data, name)
-    if data and name then
-        if MPTSV.Profiles[name] then -- change name if profile already exists
-            name = name.." 2"
-            self:CreateImportedProfile(data, name)
-        else
-            MPTSV.Profiles[name] = data
-            self:LoadProfile(name)
-        end
     end
 end
 
@@ -96,11 +156,7 @@ function MPT:SetSV(key, value, update, BestTimes)
         end
     end
     if update then -- update display if settings were changed while the display is shown
-        if self.IsPreview then
-            self:Init(true)
-        elseif C_ChallengeMode.IsChallengeModeActive() then
-            self:Init(false)
-        end
+        MPT:UpdateDisplay()
     end
 end
 
@@ -111,264 +167,9 @@ function MPT:CreateProfile(name)
         self:LoadProfile(name)
         return 
     end
-    local data = {}
-
+    local data = CopyTable(MPT.DefaultProfile)
     data.Version = self:GetVersion()
-    data.name = name    
-    data.Spacing = 3
-    data.UpdateRate = 0.2
-    data.Scale = 1
-    data.HideTracker = true
-    data.LowerKey = true
-    data.CloseBags = true
-    data.KeySlot = true
-    data.BestTime = {}
-    
-    data.Background = {
-        enabled = true,
-        Color = {0, 0, 0, 0.5},
-        BorderColor = {0, 0, 0, 1},
-        BorderSize = 1,
-    }
-    data.Position = {
-        xOffset = 0,
-        yOffset = 250,
-        Anchor = "RIGHT",
-        relativeTo = "RIGHT",
-    }
-    data.KeyLevel = {
-        enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "LEFT",
-        xOffset = 0,
-        yOffset = -1,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.DungeonName = {
-        enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "LEFT",
-        xOffset = 30,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 15,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.AffixIcons = {
-        enabled = true,
-        Anchor = "CENTER",
-        RelativeTo = "CENTER",
-        xOffset = 0,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 14,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.DeathCounter = {
-        enabled = true,
-        IconAnchor = "RIGHT",
-        IconRelativeTo = "RIGHT",
-        Anchor = "RIGHT",
-        RelativeTo = "LEFT",
-        xOffset = 0,
-        yOffset = -1,
-        IconxOffset = 0,
-        IconyOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.KeyInfo = {
-        enabled = true,
-        Width = 330,
-        Height = 16,
-        xOffset = 0,
-        yOffset = 0,
-    }
-
-    data.TimerBar = {
-        Splits = true,
-        Width = 330,
-        Height = 24,
-        xOffset = 0,
-        yOffset = 0,
-        Texture = "Details Flat",
-        ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
-        Color = {{89/255, 90/255, 92/255, 1}, {1, 112/255, 0, 1}, {1, 1, 0, 1}, {128/255, 1, 0, 1}},
-        BorderSize = 1,
-        BackgroundColor = {0, 0, 0, 0.5},
-        BorderColor = {0, 0, 0, 1},    
-    }
-    data.TimerText = {
-        enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "LEFT",
-        xOffset = 2,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.ComparisonTimer = {
-        enabled = true,
-        Anchor = "RIGHT",
-        RelativeTo = "LEFT",
-        xOffset = 0,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        SuccessColor = {0, 1, 0, 1},
-        EqualColor = {1, 0.8, 0, 1},
-        FailColor = {1, 0, 0, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0},
-    }
-    data.ChestTimer = {
-        enabled = true,
-        Anchor = "RIGHT",
-        RelativeTo = "RIGHT",
-        xOffset = {0, -65, -130},
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        DepleteColor = {1, 0, 0, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0},
-    }
-    data.Ticks = {        
-        enabled = true,
-        Width = 2,  
-        Color = {1, 1, 1, 1},
-    }
-    
-    data.Bosses = {
-        Width = 330,
-        Height = 16,
-        xOffset = 0,
-        yOffset = 0,
-    }
-    data.BossName = {
-        enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "LEFT",
-        MaxLength = 20,
-        xOffset = 2,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        CompletionColor = {0, 1, 0, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0} 
-    }
-    data.BossTimer = {
-        enabled = true,
-        Anchor = "RIGHT",
-        RelativeTo = "RIGHT",
-        xOffset = 0,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0},
-        SuccessColor = {0, 1, 0, 1},
-        EqualColor = {1, 0.8, 0, 1},
-        FailColor = {1, 0, 0, 1},  
-    }
-    data.BossSplit = {
-        enabled = true,
-        Anchor = "RIGHT",
-        RelativeTo = "RIGHT",
-        xOffset = -70,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0},
-        SuccessColor = {0, 1, 0, 1},
-        EqualColor = {1, 0.8, 0, 1},
-        FailColor = {1, 0, 0, 1},
-    }
-    data.PercentCount = {
-        enabled = true,
-        Anchor = "LEFT",
-        RelativeTo = "LEFT",
-        xOffset = 2,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.RealCount = {
-        enabled = true,
-        Anchor = "RIGHT",
-        RelativeTo = "RIGHT",
-        xOffset = -1,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.ForcesSplits = {
-        enabled = true,
-        Anchor = "CENTER",
-        RelativeTo = "CENTER",
-        xOffset = 0,
-        yOffset = 0,
-        Font = "Expressway",
-        FontSize = 16,
-        Outline = "OUTLINE",
-        Color = {1, 1, 1, 1},
-        CompletionColor = {0, 1, 0, 1},
-        FailColor = {1, 0, 0, 1},
-        EqualColor = {1, 1, 0, 1},
-        ShadowColor = {0, 0, 0, 1},
-        ShadowOffset = {0, 0}
-    }
-    data.ForcesBar = {
-        enabled = true,
-        Width = 330,
-        Height = 24,
-        xOffset = 0,
-        yOffset = 0,
-        Texture = "Details Flat",
-        Color = {{1, 117/255, 128/255, 1}, {1, 130/255, 72/255, 1}, {1, 197/255, 103/255, 1}, {1, 249/255, 150/255, 1}, {104/255, 205/255, 1, 1}},
-        CompletionColor = {205/255, 1, 167/255, 1},        
-        BorderSize = 1,
-        BackgroundColor = {0, 0, 0, 0.5},
-        BorderColor = {0, 0, 0, 1},          
-    }
+    data.name = name
     MPTSV.Profiles[name] = data
     self:LoadProfile(name)
 end

@@ -25,10 +25,10 @@ function MPT:CreateTextSetting(name, key, order, Color)
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
     settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {key, "Anchor"}, true)
     settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {key, "RelativeTo"}, true)
-    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -100, 100, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -100, 100, 1, {key, "yOffset"}, true)
+    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -1000, 1000, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -1000, 1000, 1, {key, "yOffset"}, true)
     settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"}, true)
-    settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 32, 1, {key, "FontSize"}, true)
+    settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
     settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
     settings.args.ShadowColor = self:CreateColor(9, "Shadow Color", "", {key, "ShadowColor"}, true)
     settings.args.ShadowXOffset = self:CreateRange(10, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)
@@ -45,9 +45,9 @@ function MPT:CreateStatusBarSettings(name, key, order)
         args = {}
     }    
     settings.args.Width = self:CreateRange(1, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
-    settings.args.Height = self:CreateRange(2, "Height", "Height of the Status Bar", 10, 200, 1, {key, "Height"}, true)
-    settings.args.xOffset = self:CreateRange(3, "X Offset", "X Offset of the Status Bar", -500, 500, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(4, "Y Offset", "Y Offset of the Status Bar", -500, 500, 1, {key, "yOffset"}, true)
+    settings.args.Height = self:CreateRange(2, "Height", "Height of the Status Bar", 6, 200, 1, {key, "Height"}, true)
+    settings.args.xOffset = self:CreateRange(3, "X Offset", "X Offset of the Status Bar", -1000, 1000, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(4, "Y Offset", "Y Offset of the Status Bar", -1000, 1000, 1, {key, "yOffset"}, true)
     settings.args.Texture = self:CreateDropDown(5, textureTable, "Texture", "", {key, "Texture"}, true)
     settings.args.BorderColor = self:CreateColor(7, "Border Color", "", {key, "BorderColor"}, true)
     settings.args.BorderSize = self:CreateRange(8, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"}, true)
@@ -188,6 +188,18 @@ local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
 local DungeonName = MPT:CreateTextSetting("Dungeon Name", "DungeonName", 3, true)
 local Affixes = MPT:CreateTextSetting("Affixes", "AffixIcons", 4, true)
 local Deaths = MPT:CreateTextSetting("Deaths", "DeathCounter", 5, true)
+local DeathIcon = {
+    type = "group",
+    name = "Death Icon",
+    order = 6,
+    args = {
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"enabled", "Iconenabled"}, true),
+        iconAnchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {"DeathCounter", "IconAnchor"}, true),
+        iconRelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {"DeathCounter", "IconRelativeTo"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Death Icon", -500, 500, 1, {"Icon XOffset", "IconxOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Death Icon", -500, 500, 1, {"Icon YOffset", "IconyOffset"}, true),
+    }
+}
 local KeyInfo = {
     name = "Key Info Bar",
     handler = MPTUI,
@@ -204,13 +216,36 @@ local KeyInfo = {
 }
 
 local TimerStatusBar = MPT:CreateStatusBarSettings("Timer Bar", "TimerBar", 1)
+TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(10, {[1] = "Relevant Chest Timer", [2] = "All Chest Timers", [3] = "No Chest Timer"}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
 TimerStatusBar.args.DepleteColor = MPT:CreateColor(10, "Deplete Color", "Color of the Timer Bar when the timer is depleted", {"TimerBar", "Color", 1})
 TimerStatusBar.args.OneChestColor = MPT:CreateColor(11, "One Chest Color", "Color of the Timer Bar when you are in the one chest range", {"TimerBar", "Color", 2})
 TimerStatusBar.args.TwoChestColor = MPT:CreateColor(12, "Two Chest Color", "Color of the Timer Bar when you are in the two chest range", {"TimerBar", "Color", 3})
 TimerStatusBar.args.ThreeChestColor = MPT:CreateColor(13, "Three Chest Color", "Color of the Timer Bar when you are in the three chest range", {"TimerBar", "Color", 4})
 local TimerText = MPT:CreateTextSetting("Main Timer", "TimerText", 2, true)
-local ChestTimer = MPT:CreateTextSetting("Chest Timer", "ChestTimer", 3, true)
+local ChestTimer1 = MPT:CreateTextSetting("Chest Timer 1", "ChestTimer1", 1, true)
+ChestTimer1.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
+ChestTimer1.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
+local ChestTimer2 = MPT:CreateTextSetting("Chest Timer 2", "ChestTimer2", 2, true)
+ChestTimer2.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 2 Chest Timer when behind the timer", {"ChestTimer2", "BehindColor"}, true)
+ChestTimer2.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 2 Chest Timer when ahead of the timer", {"ChestTimer2", "AheadColor"}, true)
+local ChestTimer3 = MPT:CreateTextSetting("Chest Timer 3", "ChestTimer3", 3, true)
+ChestTimer3.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 3 Chest Timer when behind the timer", {"ChestTimer3", "BehindColor"}, true)
+ChestTimer3.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 3 Chest Timer when ahead of the timer", {"ChestTimer3", "AheadColor"}, true)
+local ChestTimer = {
+    type = "group",
+    name = "Chest Timer",
+    childGroups = "tab",
+    order = 3,
+    args = {
+        ChestTimer1 = ChestTimer1,
+        ChestTimer2 = ChestTimer2,
+        ChestTimer3 = ChestTimer3,
+    }
+}
 local ComparisonTimer = MPT:CreateTextSetting("Comparison Timer", "ComparisonTimer", 4)
+ComparisonTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Comparison Timer when a new PB was achieved", {"ComparisonTimer", "SuccessColor", 1}, true)
+ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color of the Comparison Timer on slower Runs", {"ComparisonTimer", "FailColor", 1}, true)
+ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor", 1}, true)
 local Ticks = {
     type = "group",
     name = "Ticks",
@@ -238,8 +273,16 @@ local TimerBar = {
 
 
 local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 1, true)
+BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 0, 100, 1, {"BossName", "MaxLength"}, true)
+BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
 local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 2, true)
+BossSplit.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Split if the timer is faster than the previous best", {"BossSplit", "SuccessColor"}, true)
+BossSplit.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Split if the timer is slower than the previous best", {"BossSplit", "FailColor"}, true)
+BossSplit.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Split if the timer is equal to the previous best", {"BossSplit", "EqualColor"}, true)
 local BossTimer = MPT:CreateTextSetting("Boss Timer", "BossTimer", 3, true)
+BossTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Timer if the timer is faster than the previous best", {"BossTimer", "SuccessColor"}, true)
+BossTimer.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Timer if the timer is slower than the previous best", {"BossTimer", "FailColor"}, true)
+BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Timer if the timer is equal to the previous best", {"BossTimer", "EqualColor"}, true)
 local BossesBar = {
     type = "group",
     name = "Bosses Bar",
@@ -267,9 +310,22 @@ local Bosses = {
 }
 
 local ForcesBar = MPT:CreateStatusBarSettings("Forces Bar", "ForcesBar", 1)
+ForcesBar.args.Zero = MPT:CreateColor(10, "0-20 Color", "Color of the Forces Bar from 0 to 20%", {"ForcesBar", "Color", 1}, true)
+ForcesBar.args.Twenty = MPT:CreateColor(11, "21-40 Color", "Color of the Forces Bar from 21 to 40%", {"ForcesBar", "Color", 2}, true)
+ForcesBar.args.Forty = MPT:CreateColor(12, "41-60 Color", "Color of the Forces Bar from 41 to 60%", {"ForcesBar", "Color", 3}, true)
+ForcesBar.args.Sixty = MPT:CreateColor(13, "61-80 Color", "Color of the Forces Bar from 61 to 80%", {"ForcesBar", "Color", 4}, true)
+ForcesBar.args.Eighty = MPT:CreateColor(14, "81-99 Color", "Color of the Forces Bar from 81 to 99%", {"ForcesBar", "Color", 5}, true)
+ForcesBar.args.Completion = MPT:CreateColor(15, "100% Color", "Color of the Forces Bar at 100%", {"ForcesBar", "CompletionColor"}, true)
 local PercentText = MPT:CreateTextSetting("Percent Text", "PercentCount", 2, true)
+PercentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Percent instead of current Percent", {"PercentCount", "remaining"}, true)
 local CurrentText = MPT:CreateTextSetting("Current Text", "RealCount", 3, true)
+CurrentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Count instead of current Count", {"RealCount", "remaining"}, true)
+CurrentText.args.total = MPT:CreateToggle(12, "Show Total", "Show Total Count", {"RealCount", "total"}, true)
 local ForcesSplits = MPT:CreateTextSetting("Split Text", "ForcesSplits", 4, true)
+ForcesSplits.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Split if the timer is faster than the previous best", {"ForcesSplits", "SuccessColor"}, true)
+ForcesSplits.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Split if the timer is slower than the previous best", {"ForcesSplits", "FailColor"}, true)
+ForcesSplits.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Split if the timer is equal to the previous best", {"ForcesSplits", "EqualColor"}, true)
+local ForcesCompletion = MPT:CreateTextSetting("Completion Time", "ForcesCompletion", 5, true)
 local EnemyForces = {
     type = "group",
     name = "Forces",
@@ -280,7 +336,139 @@ local EnemyForces = {
         ForcesBar = ForcesBar,
         PercentText = PercentText,
         CurrentText = CurrentText,
+        ForcesCompletion = ForcesCompletion,
         ForcesSplits = ForcesSplits,
+    }
+}
+local MainProfile = {
+    type = "select",
+    name = "Main Profile",
+    desc = "Select a Main Profile, which will automatically load on any new character",
+    order = 4,
+    values = function()
+        local profiles = {}
+        for _, profile in pairs(MPTSV.Profiles) do
+            profiles[profile.name] = profile.name
+        end
+        return profiles
+    end,            
+    set = function(_, value) 
+        MPT:SetMainProfile(value)
+     end,
+    get = function() return MPTSV.MainProfile end,
+}
+local NewProfile = {
+    type = "input",
+    name = "New Profile",
+    desc = "Create a new profile with the entered name",
+    order = 5,
+    set = function(_, value) MPT:CreateProfile(value) end,
+    get = function() return "" end,
+}
+
+local ActiveProfile = {
+    type = "select",
+    name = "Active Profile",
+    desc = "Select Active Profile",
+    order = 6,
+    values = function()
+        local profiles = {}
+        for _, profile in pairs(MPTSV.Profiles) do
+            profiles[profile.name] = profile.name
+        end
+        return profiles
+    end,
+    set = function(_, value) MPT:LoadProfile(value) end,
+    get = function() return MPT.ActiveProfile end,
+}
+local CopyProfile = {
+    type = "select",
+    name = "Copy from Profile",
+    desc = "Copy settings from the selected profile into the current profile",
+    order = 7,
+    values = function()
+        local profiles = {}
+        for _, profile in pairs(MPTSV.Profiles) do
+            profiles[profile.name] = profile.name
+        end
+        return profiles
+    end,
+    set = function(_, value) MPT:CopyProfile(value) end,
+    get = function() return "" end,
+}
+local DeleteProfile = {
+    type = "select",
+    name = "Delete Profile",
+    desc = "Delete the selected profile",
+    order = 8,
+    values = function()
+        local profiles = {}
+        for _, profile in pairs(MPTSV.Profiles) do
+            if profile.name ~= "default" then
+                profiles[profile.name] = profile.name
+            end
+        end
+        return profiles
+    end,
+    set = function(_, value) MPT:DeleteProfile(value) end,
+    get = function() return "" end,
+}
+
+
+local Profiles = {
+    type = "group",
+    name = "Profiles",
+    order = 6,
+    args = {
+        Description = {
+            type = "description",
+            order = 1,
+            name = "You can change the Active Profile here as well as setting a Main Profile, which will automatically load on any new character.",
+        },
+        ResetDescription = {
+            type = "description",
+            order = 2,
+            name = "Reset your current active profile to the default settings. THIS CANNOT BE UNDONE",
+        },
+        Reset = {
+            type = "execute",
+            order = 3,
+            name = "Reset Current Profile",
+            func = function() MPT:ResetProfile() end,
+        },
+        MainProfile = MainProfile,
+        NewProfile = NewProfile,
+        ActiveProfile = ActiveProfile,
+        CopyDescription = {
+            type = "description",
+            order = 5,
+            name = "Copy the settings from another profile into your current profile.",
+        },
+        CopyProfile = CopyProfile,
+        DeleteDescription = {
+            type = "description",
+            order = 7,
+            name = "Delete a profile.",
+        },
+        DeleteProfile = DeleteProfile,
+        ExportProfile = {
+            type = "input",
+            order = 9,
+            name = "Export Profile",
+            desc = "Export your current profile to a string",
+            get = function() return MPTAPI:GetExportString() end,
+            set = function() end,
+            width = "full",
+        },
+        ImportProfile = {
+            type = "input",
+            order = 10,
+            multiline = 10,
+            name = "Import Profile",
+            desc = "Import a profile from a string",
+            set = function(_, value) MPTAPI:ImportProfile(value) end,
+            get = function() return "" end,
+        },
     }
 }
 
@@ -298,11 +486,14 @@ local options= {
     },    
 }
 
+
 function MPT.UI:OnInitialize()
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("MPTUI", options)
+    local AceConfig = LibStub("AceConfig-3.0")
+	AceConfig:RegisterOptionsTable("MPTUI", options)
+    AceConfig:RegisterOptionsTable("MPTProfiles", Profiles)
     local AceConfigdialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "Mythic Plus Timer")
-    --self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "Timer Bar", "Mythic Plus Timer", "TimerBar")
+    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "Mythic Plus Timer") -- needs to be after the optionsFrame is created
 	self:RegisterChatCommand("mpt", "SlashCommand")
 	self:RegisterChatCommand("mythicplus", "SlashCommand")
 	self:RegisterChatCommand("mythicplusTimer", "SlashCommand")

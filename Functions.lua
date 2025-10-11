@@ -144,6 +144,14 @@ function MPT:UpdateScale()
     end
 end
 
+function MPT:UpdateDisplay()
+    if self.IsPreview then
+        self:Init(true)
+    elseif C_ChallengeMode.IsChallengeModeActive() then
+        self:Init(false)
+    end
+end
+
 function MPT:Utf8Sub(str, startChar, endChar)
     local startIndex, endIndex = 1, #str
     local currentIndex, currentChar = 1, 0
