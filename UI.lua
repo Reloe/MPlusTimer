@@ -399,8 +399,8 @@ local CopyProfile = {
 local DeleteProfile = {
     type = "select",
     name = "Delete Profile",
-    desc = "Delete the selected profile",
-    order = 8,
+    desc = "Delete the selected profile - You cannot delete the default profile.",
+    order = 10,
     values = function()
         local profiles = {}
         for _, profile in pairs(MPTSV.Profiles) do
@@ -437,38 +437,36 @@ local Profiles = {
             func = function() MPT:ResetProfile() end,
         },
         MainProfile = MainProfile,
+        Seperate = {
+            type = "description",
+            order = 4.5,
+            name = "",
+            width = "full",
+        },
         NewProfile = NewProfile,
         ActiveProfile = ActiveProfile,
-        CopyDescription = {
-            type = "description",
-            order = 5,
-            name = "Copy the settings from another profile into your current profile.",
-        },
         CopyProfile = CopyProfile,
-        DeleteDescription = {
-            type = "description",
-            order = 7,
-            name = "Delete a profile.",
-        },
-        DeleteProfile = DeleteProfile,
         ExportProfile = {
             type = "input",
-            order = 9,
+            order = 8,
             name = "Export Profile",
             desc = "Export your current profile to a string",
             get = function() return MPTAPI:GetExportString() end,
             set = function() end,
             width = "full",
+            multiline = 5,
         },
         ImportProfile = {
             type = "input",
-            order = 10,
-            multiline = 10,
+            order = 9,
             name = "Import Profile",
             desc = "Import a profile from a string",
             set = function(_, value) MPTAPI:ImportProfile(value) end,
             get = function() return "" end,
+            width = "full",
+            multiline = 10,
         },
+        DeleteProfile = DeleteProfile,
     }
 }
 

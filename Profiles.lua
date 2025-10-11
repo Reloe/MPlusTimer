@@ -1,8 +1,8 @@
 local _, MPT = ...
 local Serialize = LibStub("AceSerializer-3.0")
-local Compress = LibStub("LibCompress")
+local Compress = LibStub("LibDeflate")
 
-function MPTAPI:ImportProfile(string, key)
+function MPTAPI:ImportProfile(string, key, mainProfile)
     if string then
         local decoded = Compress:DecodeForPrint(string)
         local decompressed = Compress:DecompressDeflate(decoded)
@@ -10,7 +10,7 @@ function MPTAPI:ImportProfile(string, key)
         local name = key or data.name
         if success and data and name then
             data.name = name -- ensure the profile key has the same name as stored in the profile table
-            MPT:CreateImportedProfile(data, name)
+            MPT:CreateImportedProfile(data, name, mainProfile)
             return true
         else
             print("Failed to import profile into Mythic Plus Timer")
@@ -19,7 +19,7 @@ function MPTAPI:ImportProfile(string, key)
     end
 end
 
-function MPT:CreateImportedProfile(data, name)
+function MPT:CreateImportedProfile(data, name, mainProfile)
     if data then
         name = name or data.name
         if not name then return end
@@ -27,8 +27,12 @@ function MPT:CreateImportedProfile(data, name)
             name = name.." 2"
             self:CreateImportedProfile(data, name)
         else
+            data.name = name -- ensure the profile key has the same name as stored in the profile table
             MPTSV.Profiles[name] = data
-            self:LoadProfile(name)
+            self:LoadProfile(name)            
+            if mainProfile then
+                MPT:SetMainProfile(name)
+            end
         end
     end
 end
@@ -172,4 +176,7 @@ function MPT:CreateProfile(name)
     data.name = name
     MPTSV.Profiles[name] = data
     self:LoadProfile(name)
+    if name ~= "default" and not MPTSV.MainProfile then
+        MPTSV.MainProfile = name -- if no main profile is set, we set the first created profile as main profile
+    end
 end

@@ -2,15 +2,14 @@
 
 ## Title: Mythic Plus Timer
 ## Version: @project-version@
-## Author: Reloe, Rav
+## Author: Reloe
 ## DefaultState: Enable
 ## SavedVariables: MPTSV
 
-MPlusTimer.lua
+MythicPlusTimer.lua
 Functions.lua
 SlashCommands.lua
 EventHandler.lua
-Comms.lua
 Data.lua
 Display.lua
 Profiles.lua
@@ -26,4 +25,4 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
-Libs\LibCompress\lib.xml
+Libs\LibDeflate\lib.xml

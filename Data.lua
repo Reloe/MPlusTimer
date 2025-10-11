@@ -1,8 +1,5 @@
 local _, MPT = ...
 
-local LSM = LibStub("LibSharedMedia-3.0")
-LSM:Register("font","Expressway", [[Interface\Addons\MythicPlusTimer\Expressway.TTF]])
-
 MPT.maptoID = { -- MapChallengeMode = JournalInstance
     -- Wrath of the Lich King
     [556] = {278, "Pit of Saron"},
