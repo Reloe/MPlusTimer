@@ -29,6 +29,22 @@ function MPT:MuteJournalSounds()
     end)
 end
 
+function MPT:HasAnchorLoop(key, value)
+    if key and value and self.AnchorTypes[value] and self.AnchorTypes[key] then
+        local current = value
+        while current and current ~= "MainFrame" do
+            if (self[current] and self[current].AnchoredTo == key) then
+                return true
+            elseif self[current] and self[current].AnchoredTo == "MainFrame" then
+                return false
+            else
+                current = self[current] and self[current].AnchoredTo
+            end
+        end
+    end
+    return false
+end
+
 function MPT:SetPoint(frame, Anchor, parent, relativeTo, xOffset, yOffset)
     frame:ClearAllPoints()
     frame:SetPoint(Anchor, parent, relativeTo, xOffset, yOffset)

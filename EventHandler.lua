@@ -73,15 +73,14 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         MPT:UpdateEnemyForces(false, false)
         MPT:SetSV(false, false, false, true) 
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
+        print("criteria update trigger")
         MPT:UpdateBosses(false, false)
-        MPT:UpdateEnemeyForces(false, false, false)
+        MPT:UpdateEnemyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         C_Timer.After(MPT.UpdateRate, function()
             MPT:EventHandler("FRAME_UPDATE")
         end)
-        MPT:UpdateTimerBar()
-
-        
+        MPT:UpdateTimerBar()       
 
     elseif e == "PLAYER_LOGIN" then        
         if not MPTSV then -- first load of the addon
@@ -100,7 +99,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         if seasonID > 0 then
             if MPT.BestTime and MPT.BestTime.seasonID then
-                if seasonID > MPT.BestTime.seasonID then
+                if seasonID > MPT.BestTime.seasonID and MPT.DeleteOnNewSeason then
                     MPT:SetSV("BestTime", {seasonID = seasonID})              
                 end
             else 

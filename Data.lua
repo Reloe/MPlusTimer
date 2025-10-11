@@ -122,9 +122,15 @@ MPT.DefaultProfile = {
     CloseBags = true,
     KeySlot = true,
     BestTime = {},
+    DeleteOnNewSeason = true,
+    FrameStrata = "HIGH",
     Background = {
         enabled = true,
         Color = {0, 0, 0, 0.5},
+        WidthOffset = 0,
+        HeightOffset = 0,
+        xOffset = 0,
+        yOffset = 0,
         BorderColor = {0, 0, 0, 1},
         BorderSize = 1,
     },
@@ -193,12 +199,18 @@ MPT.DefaultProfile = {
     },
     KeyInfo = {
         enabled = true,
+        AnchoredTo = "MainFrame",
+        Anchor = "TOPLEFT",
+        RelativeTo = "TOPLEFT",
         Width = 330,
         Height = 16,
         xOffset = 0,
         yOffset = 0,
     },
     TimerBar = {
+        Anchor = "TOPLEFT",
+        RelativeTo = "TOPLEFT",
+        AnchoredTo = "KeyInfo",
         Splits = true,        
         ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
         Width = 330,
@@ -295,6 +307,9 @@ MPT.DefaultProfile = {
         Color = {1, 1, 1, 1},
     },
     Bosses = {
+        Anchor = "TOPLEFT",
+        RelativeTo = "TOPLEFT",
+        AnchoredTo = "TimerBar",
         Width = 330,
         Height = 16,
         xOffset = 0,
@@ -404,12 +419,16 @@ MPT.DefaultProfile = {
         ShadowOffset = {0, 0},
     },
     ForcesBar = {
+        Anchor = "TOPLEFT",
+        RelativeTo = "TOPLEFT",
+        AnchoredTo = "Bosses",
         enabled = true,
         Width = 330,
         Height = 24,
         xOffset = 0,
         yOffset = 0,
         Texture = "Details Flat",
+        PullText = true,
         Color = {
             {1, 117/255, 128/255, 1},
             {1, 130/255, 72/255, 1},
@@ -422,4 +441,33 @@ MPT.DefaultProfile = {
         BackgroundColor = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},
     },
+    
+    PBInfo = {
+        enabled = false,
+        Anchor = "RIGHT",
+        RelativeTo = "RIGHT",
+        AnchoredTo = "ForcesBar",
+        xOffset = 0,
+        yOffset = -24,
+        Font = "Expressway",
+        Format = 1,  -- 1 == DD/MM/YY   2 == MM/DD/YY
+        FontSize = 16,
+        Outline = "OUTLINE",
+        Color = {1, 1, 1, 1},
+        ShadowColor = {0, 0, 0, 1},
+        ShadowOffset = {0, 0},
+    },
+
+    CurrentPullBar = {
+        enabled = true,
+        Texture = "Details Flat",
+        Color = {0, 1, 0, 1},
+    }
+}
+MPT.AnchorTypes = {
+    ["MainFrame"] = true,
+    ["KeyInfo"] = true,
+    ["TimerBar"] = true,
+    ["Bosses"] = true,
+    ["ForcesBar"] = true,
 }

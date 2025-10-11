@@ -139,13 +139,14 @@ function MPT:SetSV(key, value, update, BestTimes)
         if type(key) == "table" then
             local ref = MPTSV.Profiles[self.ActiveProfile]
             local MPTref = self
-            local keyname = ""
             for i=1, #key-1 do
                 ref = ref[key[i]]
                 MPTref = MPTref[key[i]]
-                keyname = keyname..key[i].."."
             end
-            keyname = keyname..key[#key]
+            if self:HasAnchorLoop(key[1], value) then
+                print("Cannot anchor to this element, it would create a loop. You need to first change the Anchor of", value, "before you can set it as anchor target.")
+                return
+            end
             ref[key[#key]] = value
             MPTref[key[#key]] = value
         else

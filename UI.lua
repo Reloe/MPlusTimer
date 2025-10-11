@@ -23,17 +23,18 @@ function MPT:CreateTextSetting(name, key, order, Color)
         args = {}
     }    
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
-    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {key, "Anchor"}, true)
-    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {key, "RelativeTo"}, true)
+    settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {key, "Anchor"}, true)
+    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {key, "RelativeTo"}, true)
     settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -1000, 1000, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -1000, 1000, 1, {key, "yOffset"}, true)
+    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -1000, 1000, 1, {key, "yOffset"}, true)    
     settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
     settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
-    settings.args.ShadowColor = self:CreateColor(9, "Shadow Color", "", {key, "ShadowColor"}, true)
-    settings.args.ShadowXOffset = self:CreateRange(10, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)
-    settings.args.ShadowYOffset = self:CreateRange(11, "Shadow Y Offset", "Shadow Y Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 2}, true)
-    if Color then settings.args.Color = self:CreateColor(12, "Color", "", {key, "Color"}, true) end
+    if Color then settings.args.Color = self:CreateColor(9, "Color", "", {key, "Color"}, true) end
+    settings.args.ShadowGap = self:CreateSpace(20)
+    settings.args.ShadowXOffset = self:CreateRange(21, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)
+    settings.args.ShadowYOffset = self:CreateRange(22, "Shadow Y Offset", "Shadow Y Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 2}, true)
+    settings.args.ShadowColor = self:CreateColor(23, "Shadow Color", "", {key, "ShadowColor"}, true)
     return settings
 end
 
@@ -44,14 +45,15 @@ function MPT:CreateStatusBarSettings(name, key, order)
         order = order,
         args = {}
     }    
-    settings.args.Width = self:CreateRange(1, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
-    settings.args.Height = self:CreateRange(2, "Height", "Height of the Status Bar", 6, 200, 1, {key, "Height"}, true)
-    settings.args.xOffset = self:CreateRange(3, "X Offset", "X Offset of the Status Bar", -1000, 1000, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(4, "Y Offset", "Y Offset of the Status Bar", -1000, 1000, 1, {key, "yOffset"}, true)
-    settings.args.Texture = self:CreateDropDown(5, textureTable, "Texture", "", {key, "Texture"}, true)
-    settings.args.BorderColor = self:CreateColor(7, "Border Color", "", {key, "BorderColor"}, true)
-    settings.args.BorderSize = self:CreateRange(8, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"}, true)
-    settings.args.BackgroundColor = self:CreateColor(9, "Background Color", "", {key, "BackgroundColor"}, true)
+    settings.args.Width = self:CreateRange(4, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
+    settings.args.Height = self:CreateRange(5, "Height", "Height of the Status Bar", 6, 200, 1, {key, "Height"}, true)
+    settings.args.Texture = self:CreateDropDown(6, textureTable, "Texture", "", {key, "Texture"}, true)
+    settings.args.xOffset = self:CreateRange(7, "X Offset", "X Offset of the Status Bar", -1000, 1000, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(8, "Y Offset", "Y Offset of the Status Bar", -1000, 1000, 1, {key, "yOffset"}, true)
+    settings.args.SizeGap = self:CreateSpace(9)
+    settings.args.BorderSize = self:CreateRange(10, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"}, true)
+    settings.args.BorderColor = self:CreateColor(11, "Border Color", "", {key, "BorderColor"}, true)
+    settings.args.BackgroundColor = self:CreateColor(12, "Background Color", "", {key, "BackgroundColor"}, true)
     return settings
 end
 
@@ -104,6 +106,15 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     return t
 end
 
+function MPT:CreateSpace(order)
+    local t = {}
+    t.order = order
+    t.type = "description"
+    t.name = " "
+    t.width = "full"
+    return t
+end
+
 local GeneralOptions = {
     type = "group",
     name = "General Options",
@@ -126,13 +137,14 @@ local GeneralOptions = {
                 end 
             end,         
         },        
-        HideTracker = MPT:CreateToggle(2, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-        LowerKey = MPT:CreateToggle(3, "Data from Lower KeyLevel", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
+        Gap = MPT:CreateSpace(2),
+        Scale = MPT:CreateRange(3, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
         Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
         UpdateRate = MPT:CreateRange(5, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
-        Scale = MPT:CreateRange(6, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
+        HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
         CloseBags = MPT:CreateToggle(7, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
         Keyslot = MPT:CreateToggle(8, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
+        FrameStrata = MPT:CreateDropDown(9, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
     }
 }
 local Position = {
@@ -142,8 +154,9 @@ local Position = {
     args = {
         Anchor = MPT:CreateDropDown(1, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
         relativeTo = MPT:CreateDropDown(2, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        xOffset = MPT:CreateRange(3, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(4, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),        
+        Gap = MPT:CreateSpace(3),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),        
     }
 }
 local Background = {
@@ -154,7 +167,34 @@ local Background = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
         Color = MPT:CreateColor(2, "Color", "Color of the Background", {"Background", "Color"}, true),
         BorderColor = MPT:CreateColor(3, "Border Color", "Color of the Border", {"Background", "BorderColor"}, true),
-        BorderSize = MPT:CreateRange(4, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Background", -500, 500, 1, {"Background", "xOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Background", -500, 500, 1, {"Background", "yOffset"}, true),
+        BorderSize = MPT:CreateRange(6, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}, true),
+        WidthOffset = MPT:CreateRange(7, "Width Offset", "Additional or less Width", -500, 500, 1, {"Background", "WidthOffset"}, true),
+        HeightOffset = MPT:CreateRange(8, "Height Offset", "Additional or less Height", -500, 500, 1, {"Background", "HeightOffset"}, true),
+    }
+}
+
+local BestTimes = {
+    type = "group",
+    name = "Best Times",
+    order = 4,
+    args = {        
+        LowerKey = MPT:CreateToggle(1, "Data from Lower Level", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
+        DeleteOnNewSeason = MPT:CreateToggle(2, "Delete on New Season", "Delete all Best Times when a new Season starts. This prevents data from old seasons to persist when a dungeon gets reused", "DeleteOnNewSeason"),
+        Gap = MPT:CreateSpace(3),
+        Reset = {
+            type = "execute",
+            order = 4,
+            name = "Reset Best Times",
+            desc = "Reset all stored Best Times",
+            func = function() 
+                C_MythicPlus.RequestMapInfo()
+                local seasonID = C_MythicPlus.GetCurrentSeason()
+                MPT:SetSV("BestTime", {seasonID = seasonID or 0}) 
+                print("All stored Best Times have been reset.")
+            end,
+        },
     }
 }
 
@@ -168,6 +208,7 @@ local General = {
         GeneralOptions = GeneralOptions,
         Position = Position,
         Background = Background,  
+        BestTimes = BestTimes,
     },
 }
 
@@ -177,11 +218,14 @@ local KeyInfoBar = {
     name = "Key Info Bar",
     order = 2,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Key Info Bar", {"KeyInfo", "enabled"}, true),
-        Width = MPT:CreateRange(2, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}, true),
-        Height = MPT:CreateRange(3, "Height", "Height of the Key Info Bar", 10, 200, 1, {"KeyInfo", "Height"}, true),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "xOffset"}, true),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "yOffset"}, true),
+        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Key Info Bar is anchored to", {"KeyInfo", "AnchoredTo"}, true),
+        Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"KeyInfo", "Anchor"}, true),
+        RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"KeyInfo", "RelativeTo"}, true),
+        Width = MPT:CreateRange(4, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}, true),
+        Height = MPT:CreateRange(5, "Height", "Height of the Key Info Bar", 10, 200, 1, {"KeyInfo", "Height"}, true),
+        Gap = MPT:CreateSpace(6),
+        xOffset = MPT:CreateRange(7, "X Offset", "X Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "xOffset"}, true),
+        yOffset = MPT:CreateRange(8, "Y Offset", "Y Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "yOffset"}, true),
     }
 }
 local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
@@ -216,21 +260,24 @@ local KeyInfo = {
 }
 
 local TimerStatusBar = MPT:CreateStatusBarSettings("Timer Bar", "TimerBar", 1)
-TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(10, {[1] = "Relevant Chest Timer", [2] = "All Chest Timers", [3] = "No Chest Timer"}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
-TimerStatusBar.args.DepleteColor = MPT:CreateColor(10, "Deplete Color", "Color of the Timer Bar when the timer is depleted", {"TimerBar", "Color", 1})
-TimerStatusBar.args.OneChestColor = MPT:CreateColor(11, "One Chest Color", "Color of the Timer Bar when you are in the one chest range", {"TimerBar", "Color", 2})
-TimerStatusBar.args.TwoChestColor = MPT:CreateColor(12, "Two Chest Color", "Color of the Timer Bar when you are in the two chest range", {"TimerBar", "Color", 3})
-TimerStatusBar.args.ThreeChestColor = MPT:CreateColor(13, "Three Chest Color", "Color of the Timer Bar when you are in the three chest range", {"TimerBar", "Color", 4})
+TimerStatusBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Timer Bar is anchored to", {"TimerBar", "AnchoredTo"}, true)
+TimerStatusBar.args.Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"TimerBar", "Anchor"}, true)
+TimerStatusBar.args.RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"TimerBar", "RelativeTo"}, true)
+TimerStatusBar.args.OneChestColor = MPT:CreateColor(13, "One Chest Color", "Color of the Timer Bar when you are in the one chest range", {"TimerBar", "Color", 2})
+TimerStatusBar.args.TwoChestColor = MPT:CreateColor(14, "Two Chest Color", "Color of the Timer Bar when you are in the two chest range", {"TimerBar", "Color", 3})
+TimerStatusBar.args.ThreeChestColor = MPT:CreateColor(15, "Three Chest Color", "Color of the Timer Bar when you are in the three chest range", {"TimerBar", "Color", 4})
+TimerStatusBar.args.DepleteColor = MPT:CreateColor(16, "Deplete Color", "Color of the Timer Bar when the timer is depleted", {"TimerBar", "Color", 1})
+TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(17, {[1] = "Relevant Chest Timer", [2] = "All Chest Timers", [3] = "No Chest Timer"}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
 local TimerText = MPT:CreateTextSetting("Main Timer", "TimerText", 2, true)
 local ChestTimer1 = MPT:CreateTextSetting("Chest Timer 1", "ChestTimer1", 1, true)
-ChestTimer1.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
-ChestTimer1.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
+ChestTimer1.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
+ChestTimer1.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
 local ChestTimer2 = MPT:CreateTextSetting("Chest Timer 2", "ChestTimer2", 2, true)
-ChestTimer2.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 2 Chest Timer when behind the timer", {"ChestTimer2", "BehindColor"}, true)
-ChestTimer2.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 2 Chest Timer when ahead of the timer", {"ChestTimer2", "AheadColor"}, true)
+ChestTimer2.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 2 Chest Timer when ahead of the timer", {"ChestTimer2", "AheadColor"}, true)
+ChestTimer2.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 2 Chest Timer when behind the timer", {"ChestTimer2", "BehindColor"}, true)
 local ChestTimer3 = MPT:CreateTextSetting("Chest Timer 3", "ChestTimer3", 3, true)
-ChestTimer3.args.BehindColor = MPT:CreateColor(11, "Behind Color", "Color of the 3 Chest Timer when behind the timer", {"ChestTimer3", "BehindColor"}, true)
-ChestTimer3.args.AheadColor = MPT:CreateColor(12, "Ahead Color", "Color of the 3 Chest Timer when ahead of the timer", {"ChestTimer3", "AheadColor"}, true)
+ChestTimer3.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 3 Chest Timer when ahead of the timer", {"ChestTimer3", "AheadColor"}, true)
+ChestTimer3.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 3 Chest Timer when behind the timer", {"ChestTimer3", "BehindColor"}, true)
 local ChestTimer = {
     type = "group",
     name = "Chest Timer",
@@ -243,9 +290,10 @@ local ChestTimer = {
     }
 }
 local ComparisonTimer = MPT:CreateTextSetting("Comparison Timer", "ComparisonTimer", 4)
-ComparisonTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Comparison Timer when a new PB was achieved", {"ComparisonTimer", "SuccessColor", 1}, true)
-ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color of the Comparison Timer on slower Runs", {"ComparisonTimer", "FailColor", 1}, true)
-ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor", 1}, true)
+ComparisonTimer.args.Gap = MPT:CreateSpace(11)
+ComparisonTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Comparison Timer when a new PB was achieved", {"ComparisonTimer", "SuccessColor"}, true)
+ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color of the Comparison Timer on slower Runs", {"ComparisonTimer", "FailColor"}, true)
+ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor"}, true)
 local Ticks = {
     type = "group",
     name = "Ticks",
@@ -271,29 +319,33 @@ local TimerBar = {
     },
 }
 
-
-local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 1, true)
-BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 0, 100, 1, {"BossName", "MaxLength"}, true)
-BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
-local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 2, true)
-BossSplit.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Split if the timer is faster than the previous best", {"BossSplit", "SuccessColor"}, true)
-BossSplit.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Split if the timer is slower than the previous best", {"BossSplit", "FailColor"}, true)
-BossSplit.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Split if the timer is equal to the previous best", {"BossSplit", "EqualColor"}, true)
-local BossTimer = MPT:CreateTextSetting("Boss Timer", "BossTimer", 3, true)
-BossTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Timer if the timer is faster than the previous best", {"BossTimer", "SuccessColor"}, true)
-BossTimer.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Timer if the timer is slower than the previous best", {"BossTimer", "FailColor"}, true)
-BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Timer if the timer is equal to the previous best", {"BossTimer", "EqualColor"}, true)
 local BossesBar = {
     type = "group",
     name = "Bosses Bar",
-    order = 4,
+    order = 1,
     args = {
-        Width = MPT:CreateRange(1, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}, true),
-        Height = MPT:CreateRange(2, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}, true),
-        XOffset = MPT:CreateRange(3, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}, true),
-        YOffset = MPT:CreateRange(4, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}, true),
+        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Bosses Bar is anchored to", {"Bosses", "AnchoredTo"}, true),
+        Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Bosses", "Anchor"}, true),
+        RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Bosses", "RelativeTo"}, true),
+        Width = MPT:CreateRange(4, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}, true),
+        Height = MPT:CreateRange(5, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}, true),
+        Gap = MPT:CreateSpace(6),
+        XOffset = MPT:CreateRange(7, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}, true),
+        YOffset = MPT:CreateRange(8, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}, true),
     }
 }   
+local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 2, true)
+BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 0, 100, 1, {"BossName", "MaxLength"}, true)
+BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
+local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 3, true)
+BossSplit.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Split if the timer is faster than the previous best", {"BossSplit", "SuccessColor"}, true)
+BossSplit.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Split if the timer is slower than the previous best", {"BossSplit", "FailColor"}, true)
+BossSplit.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Split if the timer is equal to the previous best", {"BossSplit", "EqualColor"}, true)
+local BossTimer = MPT:CreateTextSetting("Boss Timer", "BossTimer", 4, true)
+BossTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Timer if the timer is faster than the previous best", {"BossTimer", "SuccessColor"}, true)
+BossTimer.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Timer if the timer is slower than the previous best", {"BossTimer", "FailColor"}, true)
+BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Timer if the timer is equal to the previous best", {"BossTimer", "EqualColor"}, true)
+
 
 local Bosses = {
     type = "group",
@@ -302,33 +354,48 @@ local Bosses = {
     order = 4,
     childGroups = "tab",
     args = {
+        BossesBar = BossesBar,
         BossName = BossName,
         BossSplit = BossSplit,
         BossTimer = BossTimer,
-        BossesBar = BossesBar,
     }
 }
 
 local ForcesBar = MPT:CreateStatusBarSettings("Forces Bar", "ForcesBar", 1)
-ForcesBar.args.Zero = MPT:CreateColor(10, "0-20 Color", "Color of the Forces Bar from 0 to 20%", {"ForcesBar", "Color", 1}, true)
-ForcesBar.args.Twenty = MPT:CreateColor(11, "21-40 Color", "Color of the Forces Bar from 21 to 40%", {"ForcesBar", "Color", 2}, true)
-ForcesBar.args.Forty = MPT:CreateColor(12, "41-60 Color", "Color of the Forces Bar from 41 to 60%", {"ForcesBar", "Color", 3}, true)
-ForcesBar.args.Sixty = MPT:CreateColor(13, "61-80 Color", "Color of the Forces Bar from 61 to 80%", {"ForcesBar", "Color", 4}, true)
-ForcesBar.args.Eighty = MPT:CreateColor(14, "81-99 Color", "Color of the Forces Bar from 81 to 99%", {"ForcesBar", "Color", 5}, true)
-ForcesBar.args.Completion = MPT:CreateColor(15, "100% Color", "Color of the Forces Bar at 100%", {"ForcesBar", "CompletionColor"}, true)
+ForcesBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses"}, "Anchored To", "What the Forces Bar is anchored to", {"ForcesBar", "AnchoredTo"}, true)
+ForcesBar.args.Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"ForcesBar", "Anchor"}, true)
+ForcesBar.args.RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"ForcesBar", "RelativeTo"}, true)
+ForcesBar.args.Zero = MPT:CreateColor(13, "0-20 Color", "Color of the Forces Bar from 0 to 20%", {"ForcesBar", "Color", 1}, true)
+ForcesBar.args.Twenty = MPT:CreateColor(14, "21-40 Color", "Color of the Forces Bar from 21 to 40%", {"ForcesBar", "Color", 2}, true)
+ForcesBar.args.Forty = MPT:CreateColor(15, "41-60 Color", "Color of the Forces Bar from 41 to 60%", {"ForcesBar", "Color", 3}, true)
+ForcesBar.args.Sixty = MPT:CreateColor(16, "61-80 Color", "Color of the Forces Bar from 61 to 80%", {"ForcesBar", "Color", 4}, true)
+ForcesBar.args.Eighty = MPT:CreateColor(17, "81-99 Color", "Color of the Forces Bar from 81 to 99%", {"ForcesBar", "Color", 5}, true)
+ForcesBar.args.Completion = MPT:CreateColor(18, "100% Color", "Color of the Forces Bar at 100%", {"ForcesBar", "CompletionColor"}, true)
 local PercentText = MPT:CreateTextSetting("Percent Text", "PercentCount", 2, true)
 PercentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Percent instead of current Percent", {"PercentCount", "remaining"}, true)
-local CurrentText = MPT:CreateTextSetting("Current Text", "RealCount", 3, true)
+local CurrentText = MPT:CreateTextSetting("Count Text", "RealCount", 3, true)
 CurrentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Count instead of current Count", {"RealCount", "remaining"}, true)
 CurrentText.args.total = MPT:CreateToggle(12, "Show Total", "Show Total Count", {"RealCount", "total"}, true)
-local ForcesSplits = MPT:CreateTextSetting("Split Text", "ForcesSplits", 4, true)
+local ForcesSplits = MPT:CreateTextSetting("Split Text", "ForcesSplits", 4, false)
+ForcesSplits.args.Gap = MPT:CreateSpace(11)
 ForcesSplits.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Split if the timer is faster than the previous best", {"ForcesSplits", "SuccessColor"}, true)
 ForcesSplits.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Split if the timer is slower than the previous best", {"ForcesSplits", "FailColor"}, true)
 ForcesSplits.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Split if the timer is equal to the previous best", {"ForcesSplits", "EqualColor"}, true)
 local ForcesCompletion = MPT:CreateTextSetting("Completion Time", "ForcesCompletion", 5, true)
+local CurrentPullBar = {
+    type = "group",
+    name = "Current Pull",
+    order = 6,
+    args = {
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Current Pull Bar", {"CurrentPullBar", "enabled"}, true),
+        Color = MPT:CreateColor(8, "Color", "Color of the Current Pull Bar", {"CurrentPullBar", "Color"}, true),
+        texture = MPT:CreateDropDown(9, textureTable, "Texture", "", {"CurrentPullBar", "Texture"}, true),
+        text = MPT:CreateToggle(10, "Show Text", "Show Text of the Current Pull", {"ForcesBar", "PullText"}, true),
+    }
+}
 local EnemyForces = {
     type = "group",
-    name = "Forces",
+    name = "Enemy Forces",
     handler = MPTUI,
     order = 5,
     childGroups = "tab",
@@ -336,10 +403,15 @@ local EnemyForces = {
         ForcesBar = ForcesBar,
         PercentText = PercentText,
         CurrentText = CurrentText,
+        CurrentPullBar = CurrentPullBar,
         ForcesCompletion = ForcesCompletion,
         ForcesSplits = ForcesSplits,
     }
 }
+local PBInfo = MPT:CreateTextSetting("PB Info", "PBInfo", 6, true)
+PBInfo.args.Format = MPT:CreateDropDown(11, {[1] = "DD/MM/YY", [2] = "MM/DD/YY"}, "Date Format", "Format in which the date is displayed", {"PBInfo", "Format"}, true)
+PBInfo.args.AnchoredTo = MPT:CreateDropDown(12, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the PB Info is anchored to", {"PBInfo", "AnchoredTo"}, true)
+
 local MainProfile = {
     type = "select",
     name = "Main Profile",
@@ -481,6 +553,7 @@ local options= {
         TimerBar = TimerBar,
         Bosses = Bosses,
         EnemyForces = EnemyForces,
+        PBInfo = PBInfo,
     },    
 }
 
