@@ -127,6 +127,14 @@ function MPT:FormatTime(time, round)
     end
 end
 
+function MPT:GetDateFormat(date)
+    if self.PBInfo.Format == 1 then
+        return string.format("(%02d/%02d/%02d) (%02d:%02d)", date[1], date[2], date[3]%100, date[4], date[5])
+    else
+        return string.format("(%02d/%02d/%02d) (%02d:%02d)", date[2], date[1], date[3]%100, date[4], date[5])
+    end
+end
+
 function MPT:MoveFrame(Unlock)
     if Unlock then        
         if not self.Frame then self:Init(true) end

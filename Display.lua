@@ -318,6 +318,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
                 self.BestTime[cmap][level]["date"] = {date.monthDay, date.month, date.year, date.hour, date.minute}
                 for i, v in ipairs(self.BossTimes) do
                     self.BestTime[cmap][level][i] = v
+                    self.BestTime[cmap][level]["BossName"..i] = self.BossNames[i]
                 end
             end
         end
@@ -672,18 +673,7 @@ function MPT:UpdatePBInfo(preview)
         local level = preview and 29 or self.level
         local mapname = preview and "Halls of Valor" or (cmap and self.maptoID[cmap] and self.maptoID[cmap][2]) or ""
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
-        local date = ""
-        if preview then
-            if self.PBInfo.Format == 1 then
-                date = string.format("(%02d/%02d/%02d) (%02d:%02d)", 11, 10, 2025%100, 17, 30)
-            else
-                date = string.format("(%02d/%02d/%02d) (%02d:%02d)", 11, 10, 2025%100, 17, 30)
-            end
-        elseif self.PBInfo.Format == 1 then
-            date = string.format("(%02d/%02d/%02d) (%02d:%02d)", pb.date[1], pb.date[2], pb.date[3]%100, pb.date[4], pb.date[5])
-        else
-            date = string.format("(%02d/%02d/%02d) (%02d:%02d)", pb.date[2], pb.date[1], pb.date[3]%100, pb.date[4], pb.date[5])
-        end
+        local date = MPT:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
         text = string.format("PB: +%s %s %s", level, self:FormatTime(finishtime/1000), date)
         local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
