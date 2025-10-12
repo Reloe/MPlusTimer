@@ -65,22 +65,27 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         MPT:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
         MPT:Init()
-        C_Timer.After(MPT.UpdateRate, function()
-            MPT:EventHandler("FRAME_UPDATE")
-        end)
+        if not MPT.Timer then 
+            MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
+                MPT.Timer = nil
+                MPT:EventHandler("FRAME_UPDATE")
+            end)     
+        end
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         MPT:UpdateTimerBar(false, true)
         MPT:UpdateEnemyForces(false, false)
         MPT:SetSV(false, false, false, true) 
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
-        print("criteria update trigger")
         MPT:UpdateBosses(false, false)
         MPT:UpdateEnemyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
-        C_Timer.After(MPT.UpdateRate, function()
-            MPT:EventHandler("FRAME_UPDATE")
-        end)
-        MPT:UpdateTimerBar()       
+        if not MPT.Timer then 
+            MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
+                MPT.Timer = nil
+                MPT:EventHandler("FRAME_UPDATE")
+            end)
+            MPT:UpdateTimerBar()       
+        end
 
     elseif e == "PLAYER_LOGIN" then        
         if not MPTSV then -- first load of the addon
@@ -93,9 +98,12 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         local seasonID = C_MythicPlus.GetCurrentSeason()
         if C_ChallengeMode.IsChallengeModeActive() then
             MPT:Init(false)
-            C_Timer.After(MPT.UpdateRate, function()
-                MPT:EventHandler("FRAME_UPDATE")
-            end)
+            if not MPT.Timer then 
+                MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
+                    MPT.Timer = nil
+                    MPT:EventHandler("FRAME_UPDATE")
+                end)     
+            end
         end
         if seasonID > 0 then
             if MPT.BestTime and MPT.BestTime.seasonID then
