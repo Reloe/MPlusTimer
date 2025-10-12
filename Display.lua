@@ -265,7 +265,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         or (self.timer >= self.timelimit*0.6 and 2)
         or 3
     if Start or preview then
-        local time = select(3, C_ChallengeMode.GetCompletionInfo())
+        local time = C_ChallengeMode.GetChallengeCompletionInfo().time
         local now = GetTime()
         if time == 0 then
             self.finish = 0
@@ -299,7 +299,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
     if Completion or preview then
         self.started = false
         local now = GetTime()
-        local time = select(3, C_ChallengeMode.GetCompletionInfo())
+        local time = C_ChallengeMode.GetChallengeCompletionInfo().time
 
         -- add pb
         local cmap = self.cmap
@@ -329,7 +329,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         if not preview then F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest])) end
         self:DisplayTimerElements(chest, true, preview, diff)
     end
-    if (not Start) and (not Completion) and ((not self.Last) or self.Last < GetTime()-self.UpdateRate) and (C_ChallengeMode.GetChallengeCompletionInfo().time == 0) and self.started then
+    if (not Start) and (not Completion) and ((not self.Last) or self.Last < GetTime()-self.UpdateRate) and (time == 0) and self.started then
         self.last = GetTime()
         if (not self.lasttimer) or self.lasttimer ~= self.timer then
             if not self.cmap then

@@ -566,6 +566,5 @@ function MPT.UI:OnInitialize()
 	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "Mythic Plus Timer")
     self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "Mythic Plus Timer") -- needs to be after the optionsFrame is created
 	self:RegisterChatCommand("mpt", "SlashCommand")
-	self:RegisterChatCommand("mythicplus", "SlashCommand")
-	self:RegisterChatCommand("mythicplusTimer", "SlashCommand")
+	self:RegisterChatCommand("mplustimer", "SlashCommand")
 end

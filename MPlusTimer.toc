@@ -5,6 +5,8 @@
 ## Author: Reloe
 ## DefaultState: Enable
 ## SavedVariables: MPTSV
+## X-Curse-Project-ID: 1363447
+## X-Wago-ID: BKpqWZGE
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
