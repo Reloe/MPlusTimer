@@ -1,6 +1,6 @@
 ## Interface: 120000
 
-## Title: Mythic Plus Timer
+## Title: MPlusTimer
 ## Version: @project-version@
 ## Author: Reloe
 ## DefaultState: Enable
@@ -18,7 +18,7 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibDeflate\lib.xml
 
-MythicPlusTimer.lua
+MPlusTimer.lua
 Functions.lua
 SlashCommands.lua
 EventHandler.lua
