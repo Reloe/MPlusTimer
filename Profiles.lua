@@ -170,7 +170,7 @@ function MPT:CreateProfile(name)
         self:LoadProfile(name)
         return 
     end
-    local data = CopyTable(MPT.DefaultProfile)
+    local data = CopyTable(self.DefaultProfile)
     data.Version = self:GetVersion()
     data.name = name
     MPTSV.Profiles[name] = data
