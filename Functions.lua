@@ -190,8 +190,7 @@ function MPT:Utf8Sub(str, startChar, endChar)
             endIndex = currentIndex - 1
             break
         end
-
-        -- move by UTF-8 codepoint length
+        
         local c = string.byte(str, currentIndex)
         if c < 0x80 then
             currentIndex = currentIndex + 1
