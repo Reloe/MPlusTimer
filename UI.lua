@@ -121,7 +121,7 @@ local GeneralOptions = {
             type = "execute",
             order = 1,
             name = "Preview",
-            desc = "Show a preview of the Display",
+            desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
             func = function() 
                 if not MPT.IsPreview then -- not currently in preview
                     MPT:Init(true) -- Frame is set to movable in here as well

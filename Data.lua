@@ -1,14 +1,18 @@
 local _, MPT = ...
 
-MPT.SeasonName = {
-    [15] = "TWW S3",
-    [16] = "Midnight S1",
-    [17] = "Midnight S2",
-    [18] = "Midnight S3",
-    [19] = "TLT S1",
-    [20] = "TLT S2",
-    [21] = "TLT S3",
+MPT.SeasonData = {
+    [15] = {name ="TWW S3", Dungeons = {503, 505, 499, 525, 542, 378, 391, 392}},
+    [16] = {name = "Midnight S1", Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
+    [17] = {name = "Midnight S2", Dungeons = {}},
+    [18] = {name = "Midnight S3", Dungeons = {}},
+    [19] = {name = "TLT S1", Dungeons = {}},
+    [20] = {name = "TLT S2", Dungeons = {}},
+    [21] = {name = "TLT S3", Dungeons = {}},
 }
+
+function MPT:GetDungeonName(cmap)
+    return cmap and self.maptoID[cmap] and self.maptoID[cmap][2] or "Unknown"
+end
 
 MPT.maptoID = { -- MapChallengeMode = JournalInstance
     -- Wrath of the Lich King
@@ -72,7 +76,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [375] = {1184, "Mists"},
     [376] = {1182, "Necrotic Wake"},
     [377] = {1188, "Other Side"},
-    [378] = {1185, "Halls"},
+    [378] = {1185, "Halls of Atonement"},
     [379] = {1183, "Plaguefall"},
     [380] = {1189, "Sanguine"},
     [381] = {1186, "Spires"},
@@ -205,7 +209,6 @@ MPT.DefaultProfile = {
         ShadowOffset = {0, 0},
     },
     KeyInfo = {
-        enabled = true,
         AnchoredTo = "MainFrame",
         Anchor = "TOPLEFT",
         RelativeTo = "TOPLEFT",
