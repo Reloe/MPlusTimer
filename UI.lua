@@ -179,19 +179,39 @@ local BestTimes = {
     type = "group",
     name = "Best Times",
     order = 4,
-    args = {        
-        LowerKey = MPT:CreateToggle(1, "Data from Lower Level", "Get Split Timers from one key level lower if no data for current level exists", "LowerKey"),
-        DeleteOnNewSeason = MPT:CreateToggle(2, "Delete on New Season", "Delete all Best Times when a new Season starts. This prevents data from old seasons to persist when a dungeon gets reused", "DeleteOnNewSeason"),
-        Gap = MPT:CreateSpace(3),
+    args = {      
+        ViewBestTimes = {
+            type = "execute",
+            order = 1,
+            name = "View Best Times",
+            desc = "View your stored Best Times",
+            func = function() 
+                MPT:ShowPBFrame()
+            end,         
+        },
+        Gap1 = MPT:CreateSpace(2),
+        LowerKey = {
+            type = "toggle",
+            order = 3,
+            name = "Data from Lower Level",
+            width = "full",
+            desc = "Get Split Timers from one key level lower if no data for current level exists",
+            set = function(_, value) MPTSV.LowerKey = value end,
+            get = function() return MPTSV.LowerKey end,
+        },
+        Gap2 = MPT:CreateSpace(4),
+        Gap3 = MPT:CreateSpace(5),
+        Gap4 = MPT:CreateSpace(6),
+        Gap5 = MPT:CreateSpace(7),        
         Reset = {
             type = "execute",
-            order = 4,
+            order = 8,
             name = "Reset Best Times",
             desc = "Reset all stored Best Times",
             func = function() 
                 C_MythicPlus.RequestMapInfo()
                 local seasonID = C_MythicPlus.GetCurrentSeason()
-                MPT:SetSV("BestTime", {seasonID = seasonID or 0}) 
+                MPTSV.BestTime = {seasonID = seasonID}
                 print("All stored Best Times have been reset.")
             end,
         },
@@ -563,8 +583,8 @@ function MPT.UI:OnInitialize()
 	AceConfig:RegisterOptionsTable("MPTUI", options)
     AceConfig:RegisterOptionsTable("MPTProfiles", Profiles)
     local AceConfigdialog = LibStub("AceConfigDialog-3.0")
-	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "Mythic Plus Timer")
-    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "Mythic Plus Timer") -- needs to be after the optionsFrame is created
+	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "MPlusTimer")
+    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer") -- needs to be after the optionsFrame is created
 	self:RegisterChatCommand("mpt", "SlashCommand")
 	self:RegisterChatCommand("mplustimer", "SlashCommand")
 end

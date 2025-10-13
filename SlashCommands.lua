@@ -6,11 +6,11 @@ function MPT.UI:SlashCommand(msg)
         if MPTSV.debug then
             MPTSV.debug = false
             MPTAPI = {}
-            print("Disabled debug mode for Mythic Plus Timer")
+            print("Disabled debug mode for MPlusTimer")
         else
             MPTSV.debug = true
             MPTAPI = MPT
-            print("Enabled debug mode for Mythic Plus Timer, which allows accessing all local functions")
+            print("Enabled debug mode for MPlusTimer, which allows accessing all local functions")
         end
     elseif msg == "preview" then
         if not MPT.IsPreview then -- not currently in preview
@@ -21,6 +21,8 @@ function MPT.UI:SlashCommand(msg)
         elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
             MPT:ShowFrame(false)
         end 
+    elseif msg == "best" then
+        MPT:ShowPBFrame()
     else
         Settings.OpenToCategory(self.optionsFrame.name)
     end

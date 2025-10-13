@@ -1,5 +1,15 @@
 local _, MPT = ...
 
+MPT.SeasonName = {
+    [15] = "TWW S3",
+    [16] = "Midnight S1",
+    [17] = "Midnight S2",
+    [18] = "Midnight S3",
+    [19] = "TLT S1",
+    [20] = "TLT S2",
+    [21] = "TLT S3",
+}
+
 MPT.maptoID = { -- MapChallengeMode = JournalInstance
     -- Wrath of the Lich King
     [556] = {278, "Pit of Saron"},
@@ -118,11 +128,8 @@ MPT.DefaultProfile = {
     UpdateRate = 0.2,
     Scale = 1,
     HideTracker = true,
-    LowerKey = true,
     CloseBags = true,
     KeySlot = true,
-    BestTime = {},
-    DeleteOnNewSeason = true,
     FrameStrata = "HIGH",
     Background = {
         enabled = true,
@@ -209,7 +216,7 @@ MPT.DefaultProfile = {
     },
     TimerBar = {
         Anchor = "TOPLEFT",
-        RelativeTo = "TOPLEFT",
+        RelativeTo = "BOTTOMLEFT",
         AnchoredTo = "KeyInfo",
         Splits = true,        
         ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
@@ -308,7 +315,7 @@ MPT.DefaultProfile = {
     },
     Bosses = {
         Anchor = "TOPLEFT",
-        RelativeTo = "TOPLEFT",
+        RelativeTo = "BOTTOMLEFT",
         AnchoredTo = "TimerBar",
         Width = 330,
         Height = 16,
@@ -420,7 +427,7 @@ MPT.DefaultProfile = {
     },
     ForcesBar = {
         Anchor = "TOPLEFT",
-        RelativeTo = "TOPLEFT",
+        RelativeTo = "BOTTOMLEFT",
         AnchoredTo = "Bosses",
         enabled = true,
         Width = 330,
