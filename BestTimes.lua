@@ -447,7 +447,7 @@ function MPT:ShowPBFrame() -- Showing Frame & Season Buttons
         end
     end
     F:Show()
-    self:ShowDungeonFrames(MPT.seasonID)
+    self:ShowDungeonFrames(self.seasonID)
 end
 
 function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
@@ -522,7 +522,7 @@ function MPT:ShowPBDataFrame(cmap, level, seasonID) -- Showing PB Data
             F.PBDataText:SetText(text)
             F.PBDataText:Show()
             F.PBDataText:SetJustifyH("LEFT")
-            F.PBDataText:SetFont(MPT.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+            F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
             F.PBDataText:SetTextColor(1, 1, 1, 1)
         end
     end

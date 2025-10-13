@@ -18,9 +18,9 @@ f:SetScript("OnEvent", function(self, e, ...)
 end)
 
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
-    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPT.CloseBags then
+    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and self.CloseBags then
         CloseAllBags()
-    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPT.KeySlot then
+    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and self.KeySlot then
         local index = select(3, GetInstanceInfo())
         if index == 8 or index == 23 then
             local IDs = {138019, 158923, 180653, 186159, 187786, 151086}
@@ -46,48 +46,48 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "PLAYER_ENTERING_WORLD" then
-        if MPT.HideTracker and not MPT.Hooked then
-            MPT.Hooked = true
-            local frame = MPT.Kaliels and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
+        if self.HideTracker and not self.Hooked then
+            self.Hooked = true
+            local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
             hooksecurefunc(frame, "Show", function() 
                 if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
             end)
         end
         if C_ChallengeMode.IsChallengeModeActive() then
-            MPT:Init(false)
-        else  
-            MPT:ShowFrame(false)
+            self:Init(false)
+        else
+            self:ShowFrame(false)
         end
     elseif e == "ZONE_CHANGED_NEW_AREA" then
         if C_ChallengeMode.IsChallengeModeActive() then
-            MPT:Init(false)
+            self:Init(false)
         end
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
-        MPT:UpdateKeyInfo(false, true)
+        self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
-        MPT:Init()
-        if not MPT.Timer then 
-            MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
-                MPT.Timer = nil
-                MPT:EventHandler("FRAME_UPDATE")
-            end)     
+        self:Init()
+        if not self.Timer then
+            self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                self.Timer = nil
+                self:EventHandler("FRAME_UPDATE")
+            end)
         end
     elseif e == "CHALLENGE_MODE_COMPLETED" then
-        MPT:UpdateTimerBar(false, true)
-        MPT:UpdateEnemyForces(false, false)
-        MPT:SetSV(false, false, false, true) 
+        self:UpdateTimerBar(false, true)
+        self:UpdateEnemyForces(false, false)
+        self:SetSV(false, false, false, true)
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
-        MPT:UpdateBosses(false, false)
-        MPT:UpdateEnemyForces(false, false, false)
+        self:UpdateBosses(false, false)
+        self:UpdateEnemyForces(false, false, false)
     elseif e == "SCENARIO_POI_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
-        MPT:UpdateEnemyForces(false, false, false)
+        self:UpdateEnemyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
-        if not MPT.Timer then 
-            MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
-                MPT.Timer = nil
-                MPT:EventHandler("FRAME_UPDATE")
+        if not self.Timer then
+            self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                self.Timer = nil
+                self:EventHandler("FRAME_UPDATE")
             end)
-            MPT:UpdateTimerBar()       
+            self:UpdateTimerBar()
         end
 
     elseif e == "PLAYER_LOGIN" then        
@@ -95,25 +95,25 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             MPTSV = {}            
             MPTSV.LowerKey = true
             MPTSV.BestTime = {}
-            MPT:CreateProfile("default") 
-        else       
-            MPT:LoadProfile()
+            self:CreateProfile("default") 
+        else
+            self:LoadProfile()
         end
         C_MythicPlus.RequestMapInfo()
         local seasonID = C_MythicPlus.GetCurrentSeason()
         if C_ChallengeMode.IsChallengeModeActive() then
-            MPT:Init(false)
-            if not MPT.Timer then 
-                MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
-                    MPT.Timer = nil
-                    MPT:EventHandler("FRAME_UPDATE")
-                end)     
+            self:Init(false)
+            if not self.Timer then
+                self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                    self.Timer = nil
+                    self:EventHandler("FRAME_UPDATE")
+                end)
             end
         end
         if seasonID > 0 then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
             if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
-            MPT.seasonID = seasonID
+            self.seasonID = seasonID
         end
         if MPTSV.debug then
             MPTAPI = MPT
@@ -123,12 +123,6 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         
         --[[
     elseif e == "GOSSIP_SHOW" then
-        if MPT.Kaliels and MPT.HideTracker then
-            local frame = aura_env.frame
-            C_Timer.After(0.2, function()
-                    if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
-            end)
-        end
         if UnitExists("npc") and (not aura_env.config.gossipctrl or not IsControlKeyDown()) then
             local GUID = UnitGUID("npc")
             local id = select(6, strsplit("-", GUID))
@@ -151,10 +145,6 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
                 end
             end
         end
-    elseif e == "PLAYER_LOGIN" then
-        MPT.Kaliels = C_AddOns.IsAddOnLoaded("!KalielsTracker")
-
-        aura_env.popup = function()
     for index = 1, STATICPOPUP_NUMDIALOGS do
         local frame = _G["StaticPopup"..index]
         if frame and frame:IsShown() then

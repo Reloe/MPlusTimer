@@ -1,8 +1,5 @@
 local _, MPT = ...
 
-MPT.LSM = LibStub("LibSharedMedia-3.0")
-MPT.LSM:Register("font", "Expressway", [[Interface\Addons\MPlusTimer\Expressway.TTF]])
-
 local fontlist = MPT.LSM:List("font")
 local fontTable = {}
 for _, font in ipairs(fontlist) do
