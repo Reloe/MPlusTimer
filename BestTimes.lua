@@ -490,9 +490,6 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
                 btn.BG = btn:CreateTexture(nil, "BACKGROUND")
                 btn.BG:SetAllPoints()
                 btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
-                btn:SetNormalTexture("")
-                btn:SetHighlightTexture("")
-                btn:SetPushedTexture("")
                 btn.Border = btn:CreateTexture(nil, "OVERLAY")
                 btn.Border:SetAllPoints()
                 btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
@@ -508,7 +505,6 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
             btn.Text:SetText(self.SeasonName[i])
             btn:Show()
             btn:SetScript("OnClick", function()
-                self:ShowDungeonFrames(i)
                 if self.SelectedSeasonButton then
                     self.SelectedSeasonButton.Border:Hide()
                 end                
@@ -520,7 +516,6 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
                 end       
                 if F.PBDataText then F.PBDataText:Hide() end
                 if F.DeleteButton then F.DeleteButton:Hide() end
-                btn.Border:Show()
                 for k, v in pairs(F.LevelButtons or {}) do
                     v:Hide()
                 end
@@ -528,6 +523,8 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
                 self.SelectedSeason = i       
                 self.SelectedDungeon = nil
                 self.SelectedLevel = nil
+                self:ShowDungeonFrames(i)
+                btn.Border:Show()
             end)
             if self.SelectedSeasonButton ~= btn then
                 btn.Border:Hide()
@@ -568,9 +565,6 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
                 btn.BG = btn:CreateTexture(nil, "BACKGROUND")
                 btn.BG:SetAllPoints()
                 btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
-                btn:SetNormalTexture("")
-                btn:SetHighlightTexture("")
-                btn:SetPushedTexture("")
                 btn.Border = btn:CreateTexture(nil, "OVERLAY")
                 btn.Border:SetAllPoints()
                 btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
@@ -583,7 +577,6 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
             end
             btn:SetPoint("TOP", parent, "TOP", 0, num == 1 and -10 or -50)
             btn:SetScript("OnClick", function()
-                self:ShowLevelFrames(cmap, seasonID)
                 if self.SelectedDungeonButton then
                     self.SelectedDungeonButton.Border:Hide()
                 end
@@ -592,10 +585,11 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
                 end
                 if F.PBDataText then F.PBDataText:Hide() end
                 if F.DeleteButton then F.DeleteButton:Hide() end
-                btn.Border:Show()
                 self.SelectedDungeonButton = btn
                 self.SelectedDungeon = cmap
                 self.SelectedLevel = nil
+                self:ShowLevelFrames(cmap, seasonID)
+                btn.Border:Show()
             end)
             if self.SelectedDungeonButton ~= btn then
                 btn.Border:Hide()
@@ -620,6 +614,7 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     if self.SelectedLevelButton then
         self.SelectedLevelButton.Border:Hide()
     end
+    local first = true
     for level = 100, 1, -1 do
         if MPTSV.BestTime[seasonID][cmap][level] then
             if not F.LevelButtons[num] then
@@ -628,9 +623,6 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
                 btn.BG = btn:CreateTexture(nil, "BACKGROUND")
                 btn.BG:SetAllPoints()
                 btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
-                btn:SetNormalTexture("")
-                btn:SetHighlightTexture("")
-                btn:SetPushedTexture("")
                 btn.Border = btn:CreateTexture(nil, "OVERLAY")
                 btn.Border:SetAllPoints()
                 btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
@@ -645,14 +637,24 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
             --btn:SetPoint("TOPLEFT", F.LevelContent, "TOPLEFT", 10, num == 1 and -5 or ((num-1)*-45)-5)
             btn:SetPoint("TOP", F.LevelContent, "TOP", 0, num == 1 and -5 or ((num-1)*-45)-5)
             btn:SetScript("OnClick", function()
-                self:ShowPBDataFrame(cmap, level, seasonID)
                 if self.SelectedLevelButton then
                     self.SelectedLevelButton.Border:Hide()
                 end
-                btn.Border:Show()
                 self.SelectedLevelButton = btn
                 self.SelectedLevel = level
+                self:ShowPBDataFrame(seasonID, cmap, level)
+                btn.Border:Show()
             end)
+            if first then
+                first = false
+                if self.SelectedLevelButton then
+                    self.SelectedLevelButton.Border:Hide()
+                end
+                self.SelectedLevelButton = btn
+                self.SelectedLevel = level
+                self:ShowPBDataFrame(seasonID, cmap, level)
+                btn.Border:Show()
+            end 
             btn.Text:SetText(level)
             btn:Show()
             num = num+1
@@ -661,7 +663,7 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     F.LevelContent:SetHeight(num*50)
 end
 
-function MPT:ShowPBDataFrame(cmap, level, seasonID) -- Showing PB Data
+function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
     local F = self.BestTimeFrame
     if not F then return end
     if F.PBDataFrame then
