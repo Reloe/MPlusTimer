@@ -11,6 +11,7 @@ f:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
+f:RegisterEvent("SCENARIO_POI_UPDATE")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
@@ -78,6 +79,8 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         MPT:UpdateBosses(false, false)
         MPT:UpdateEnemyForces(false, false, false)
+    elseif e == "SCENARIO_POI_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
+        MPT:UpdateEnemyForces(false, false, false)
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         if not MPT.Timer then 
             MPT.Timer = C_Timer.NewTimer(MPT.UpdateRate, function()
@@ -89,7 +92,9 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
 
     elseif e == "PLAYER_LOGIN" then        
         if not MPTSV then -- first load of the addon
-            MPTSV = {}
+            MPTSV = {}            
+            MPTSV.LowerKey = true
+            MPTSV.BestTime = {}
             MPT:CreateProfile("default") 
         else       
             MPT:LoadProfile()
@@ -106,17 +111,13 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
         if seasonID > 0 then
-            if MPT.BestTime and MPT.BestTime.seasonID then
-                if seasonID > MPT.BestTime.seasonID and MPT.DeleteOnNewSeason then
-                    MPT:SetSV("BestTime", {seasonID = seasonID})              
-                end
-            else 
-                MPT:SetSV("BestTime", {seasonID = seasonID})
-            end
+            if not MPTSV.BestTime then MPTSV.BestTime = {} end
+            if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
+            MPT.seasonID = seasonID
         end
         if MPTSV.debug then
             MPTAPI = MPT
-            print("Debug mode for Mythic Plus Timer is currently enabled. You can disable it with '/mpt debug'")
+            print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
     
         
