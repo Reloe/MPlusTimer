@@ -98,6 +98,45 @@ function MPT:CreateStatusBar(parent, name, Backdrop, border)
     end
 end
 
+function MPT:CreateButton(width, height, parent, Background, Border, BGColor, BorderColor, font, fontSize, fontColor, text)
+    local btn = CreateFrame("Button", nil, parent)
+    btn:SetSize(width, height)
+    if Background then
+        btn.BG = btn:CreateTexture(nil, "BACKGROUND")
+        btn.BG:SetAllPoints()
+        btn.BG:SetColorTexture(unpack(BGColor or {0, 0, 0, 0.5}))
+    end
+    if Border then
+        btn.Border = btn:CreateTexture(nil, "OVERLAY")
+        btn.Border:SetAllPoints()
+        btn.Border:SetColorTexture(unpack(BorderColor or {0.2, 0.6, 1, 0.5}))
+        btn.Border:Hide()
+    end
+    btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    btn.Text:SetPoint("CENTER", btn, "CENTER", 0, 0)
+    btn.Text:SetFont(self.LSM:Fetch("font", font or "Expressway"), fontSize or 13, "OUTLINE")
+    btn.Text:SetTextColor(unpack(fontColor or {1, 1, 1, 1}))
+    btn.Text:SetText(text or "")
+    return btn
+end
+
+function MPT:CreateLabel(parent, Anchor, RelativeFrame, RelativeTo, xOffset, yOffset, text)
+    local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    label:SetPoint(Anchor, RelativeFrame, RelativeTo, xOffset, yOffset)
+    label:SetText(text)
+    label:SetFont(self.LSM:Fetch("font", "Expressway"), 13, "OUTLINE")
+    label:SetTextColor(1, 1, 1, 1)
+    return label
+end
+
+function MPT:CreateEditBox(parent, Anchor, RelativeFrame, RelativeTo, xOffset, yOffset, width, height)
+    local editBox = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
+    editBox:SetSize(width, height)
+    editBox:SetPoint(Anchor, RelativeFrame, RelativeTo, xOffset, yOffset)
+    editBox:SetAutoFocus(false)
+    return editBox
+end
+
 function MPT:FormatTime(time, round)
     if time then
         local timeMin = math.floor(time / 60)
@@ -127,7 +166,24 @@ function MPT:FormatTime(time, round)
     end
 end
 
+function MPT:StrToTime(str)
+    if type(str) ~= "string" then return str end
+    local hour, min, sec = str:match("^(%d+):(%d+):(%d+)$")
+    if hour and min and sec then
+        return tonumber(hour) * 3600 + tonumber(min) * 60 + tonumber(sec)
+    end
+    min, sec = str:match("^(%d+):(%d+)$")
+    if min and sec then
+        return tonumber(min) * 60 + tonumber(sec)
+    end
+    return false
+
+end
+
 function MPT:GetDateFormat(date)
+    if not date or #date == 0 then -- manually added runs do not have a date
+        return ""
+    end
     if self.PBInfo.Format == 1 then
         return string.format("(%02d/%02d/%02d) (%02d:%02d)", date[1], date[2], date[3]%100, date[4], date[5])
     else
