@@ -281,8 +281,7 @@ end
 function MPT:CreatePBFrame()
     if not self.PBInfoFrame then
         -- Main Frame
-        self.BestTimeFrame = CreateFrame("Frame", "MPTBestTimeFrame", UIParent, "BackdropTemplate")
-        table.insert(UISpecialFrames, "MPTBestTimeFrame")
+        self.BestTimeFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
         local F = self.BestTimeFrame
         local width = 1000
         local height = 600
@@ -298,6 +297,9 @@ function MPT:CreatePBFrame()
         F:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
         end)
+        self.SelectedSeasonButton = nil
+        self.SelectedDungeonButton = nil
+        self.SelectedLevelButton = nil
        
         -- Close Button
         F.CloseButton = CreateFrame("Button", nil, F, "UIPanelCloseButton")
@@ -310,7 +312,7 @@ function MPT:CreatePBFrame()
         -- Background
         F.BG = F:CreateTexture(nil, "BACKGROUND")
         F.BG:SetAllPoints(F)
-        F.BG:SetColorTexture(0, 0, 0, 0.5)
+        F.BG:SetColorTexture(0, 0, 0, 0.7)
 
         -- Background Border
         F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")
@@ -328,11 +330,10 @@ function MPT:CreatePBFrame()
         F.SeasonButtonFrame:SetPoint("TOPLEFT", F, "TOPLEFT", 0, 0)
         F.SeasonButtons = {}
         F.SeasonButtonFrame:SetBackdrop({
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true, tileSize = 32, edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 }
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 1,
         })
+        F.SeasonButtonFrame:SetBackdropBorderColor(0, 0, 0, 1)
 
         -- Dungeon Buttons
         local dungeonwidth = 160
@@ -341,11 +342,11 @@ function MPT:CreatePBFrame()
         F.DungeonButtonFrame:SetPoint("TOPLEFT", F.SeasonButtonFrame, "BOTTOMLEFT", 0, 0)
         F.DungeonButtons = {}
         F.DungeonButtonFrame:SetBackdrop({
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true, tileSize = 32, edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 }
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 1,
         })
+        F.DungeonButtonFrame:SetBackdropBorderColor(0, 0, 0, 1)
+
 
         -- Level Buttons
         local levelwidth = 135
@@ -354,11 +355,10 @@ function MPT:CreatePBFrame()
         F.LevelButtonFrame:SetPoint("TOPLEFT", F.DungeonButtonFrame, "TOPRIGHT", 0, 0)
         F.LevelButtons = {}
         F.LevelButtonFrame:SetBackdrop({
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true, tileSize = 32, edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 }
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 1,
         })
+        F.LevelButtonFrame:SetBackdropBorderColor(0, 0, 0, 1)
 
         -- Level Scroll Frame
         F.LevelScrollFrame = CreateFrame("ScrollFrame", nil, F.LevelButtonFrame, "UIPanelScrollFrameTemplate")
@@ -369,16 +369,47 @@ function MPT:CreatePBFrame()
         F.LevelContent:SetSize(levelwidth, 1)
         F.LevelScrollFrame:SetScrollChild(F.LevelContent)
 
+
         -- PB Frame
         F.PBDataFrame = CreateFrame("Frame", nil, F, "BackdropTemplate")
         F.PBDataFrame:SetSize(width-dungeonwidth-levelwidth, height-seasonheight)
         F.PBDataFrame:SetPoint("TOPLEFT", F.LevelButtonFrame, "TOPRIGHT", 0, 0)
         F.PBDataFrame:SetBackdrop({
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true, tileSize = 32, edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 }
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 1,
         })
+        F.PBDataFrame:SetBackdropBorderColor(0, 0, 0, 1)
+
+        -- Delete Button
+        F.DeleteButton = CreateFrame("Button", nil, F.PBDataFrame)
+        F.DeleteButton:SetSize(100, 32)
+        F.DeleteButton:SetPoint("TOPRIGHT", F.PBDataFrame, "TOPRIGHT", -20, -20)
+        F.DeleteButton.BG = F.DeleteButton:CreateTexture(nil, "BACKGROUND")
+        F.DeleteButton.BG:SetAllPoints()
+        F.DeleteButton.BG:SetColorTexture(0.45, 0.10, 0.10, 0.9)
+        F.DeleteButton.Text = F.DeleteButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        F.DeleteButton.Text:SetPoint("CENTER", F.DeleteButton, "CENTER", 0, 0)
+        F.DeleteButton.Text:SetFont(self.LSM:Fetch("font", "Expressway"), 14, "OUTLINE")
+        F.DeleteButton.Text:SetTextColor(1, 1, 1, 1)
+        F.DeleteButton.Text:SetText("Delete Run")
+        F.DeleteButton:Hide()
+        F.DeleteButton:SetScript("OnClick", function()
+            if not self.SelectedSeason or not self.SelectedDungeon or not self.SelectedLevel then return end
+            if MPTSV.BestTime and MPTSV.BestTime[self.SelectedSeason] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] then
+                MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] = nil
+                if next(MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon]) == nil then
+                    MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon] = nil
+                    if next(MPTSV.BestTime[self.SelectedSeason]) == nil then
+                        MPTSV.BestTime[self.SelectedSeason] = nil
+                        self:ShowSeasonFrames()
+                    else
+                        self:ShowDungeonFrames(self.SelectedSeason)
+                    end
+                else
+                    self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
+                end
+            end
+        end)
         
         -- Scale Slider
         F.ScaleSlider = CreateFrame("Slider", nil, F, "OptionsSliderTemplate")
@@ -399,21 +430,24 @@ end
 function MPT:HidePBButtons()
     local F = self.BestTimeFrame
     if not F then return end
-    for i = 1, #(F.SeasonButtons or {}) do
-        F.SeasonButtons[i]:Hide()
+    for k, v in pairs(F.SeasonButtons or {}) do
+        v:Hide()
     end
-    for i = 1, #(F.DungeonButtons or {}) do
-        F.DungeonButtons[i]:Hide()
+    for k, v in pairs(F.DungeonButtons or {}) do
+        v:Hide()
     end
-    for i = 1, #(F.LevelButtons or {}) do
-        F.LevelButtons[i]:Hide()
+    for k, v in pairs(F.LevelButtons or {}) do
+        v:Hide()
     end
     if F.PBDataText then
         F.PBDataText:Hide()
     end
+    if F.DeleteButton then
+        F.DeleteButton:Hide()
+    end
 end
 
-function MPT:ShowPBFrame() -- Showing Frame & Season Buttons
+function MPT:ShowPBFrame()
     if self.BestTimeFrame then
         if self.BestTimeFrame:IsShown() then
             self.BestTimeFrame:Hide()
@@ -421,33 +455,93 @@ function MPT:ShowPBFrame() -- Showing Frame & Season Buttons
         end
     else
         self:CreatePBFrame()
-    end
+    end    
+    self:HidePBButtons()
+    self.BestTimeFrame:Show()
+    self:ShowSeasonFrames()
+end
+
+function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
     local F = self.BestTimeFrame
     if not F then return end
-    self:HidePBButtons()
     local first = true
     local last = 0
-    local num = 1
+    self.SelectedSeason = self.seasonID
+    self.SelectedDungeon = nil
+    self.SelectedLevel = nil
+    for k, v in pairs(F.SeasonButtons or {}) do
+        v.Border:Hide()
+        v:Hide()
+    end
+    for k, v in pairs(F.DungeonButtons or {}) do
+        v.Border:Hide()
+        v:Hide()
+    end
+    for k, v in pairs(F.LevelButtons or {}) do
+        v.Border:Hide()
+        v:Hide()
+    end
     for i = 50, 1, -1 do
         if MPTSV.BestTime and MPTSV.BestTime[i] then
             local parent = first and F.SeasonButtonFrame or F.SeasonButtons[last]
-            if not F.SeasonButtons[num] then
-                F.SeasonButtons[num] = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-                F.SeasonButtons[num]:SetSize(130, 25)
+            if not F.SeasonButtons[i] then
+                local btn = CreateFrame("Button", nil, parent)
+                btn:SetSize(130, 25)
+                btn.BG = btn:CreateTexture(nil, "BACKGROUND")
+                btn.BG:SetAllPoints()
+                btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+                btn:SetNormalTexture("")
+                btn:SetHighlightTexture("")
+                btn:SetPushedTexture("")
+                btn.Border = btn:CreateTexture(nil, "OVERLAY")
+                btn.Border:SetAllPoints()
+                btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
+                btn.Border:Hide()
+                btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                btn.Text:SetPoint("CENTER", btn, "CENTER", 0, 0)
+                btn.Text:SetFont(self.LSM:Fetch("font", "Expressway"), 13, "OUTLINE")
+                btn.Text:SetTextColor(1, 1, 1, 1)
+                F.SeasonButtons[i] = btn
             end
-            F.SeasonButtons[num]:SetPoint("TOPLEFT", parent, "TOPLEFT", first and 10 or 140, first and -5 or 0)
-            F.SeasonButtons[num]:SetText(self.SeasonName[i])
-            F.SeasonButtons[num]:Show()
-            F.SeasonButtons[num]:SetScript("OnClick", function()
+            local btn = F.SeasonButtons[i]
+            btn:SetPoint("LEFT", parent, "LEFT", first and 10 or 140, 0)
+            btn.Text:SetText(self.SeasonName[i])
+            btn:Show()
+            btn:SetScript("OnClick", function()
                 self:ShowDungeonFrames(i)
+                if self.SelectedSeasonButton then
+                    self.SelectedSeasonButton.Border:Hide()
+                end                
+                if self.SelectedDungeonButton then
+                    self.SelectedDungeonButton.Border:Hide()
+                end
+                if self.SelectedLevelButton then
+                    self.SelectedLevelButton.Border:Hide()
+                end       
+                if F.PBDataText then F.PBDataText:Hide() end
+                if F.DeleteButton then F.DeleteButton:Hide() end
+                btn.Border:Show()
+                for k, v in pairs(F.LevelButtons or {}) do
+                    v:Hide()
+                end
+                self.SelectedSeasonButton = btn  
+                self.SelectedSeason = i       
+                self.SelectedDungeon = nil
+                self.SelectedLevel = nil
             end)
+            if self.SelectedSeasonButton ~= btn then
+                btn.Border:Hide()
+            end
             first = false
-            last = num
-            num = num + 1
+            last = i
         end
     end
     F:Show()
-    self:ShowDungeonFrames(self.seasonID)
+    if F.SeasonButtons[self.seasonID] then
+        self.SelectedSeasonButton = F.SeasonButtons[self.seasonID]
+        F.SeasonButtons[self.seasonID].Border:Show()
+    end
+    self:ShowDungeonFrames(self.seasonID) -- Show Border of Current Season when initially loaded
 end
 
 function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
@@ -455,23 +549,59 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
     if not F then return end
     if F and seasonID then
         local num = 1
-        for i = 1, #(F.DungeonButtons or {}) do
-            F.DungeonButtons[i]:Hide()
+        for k, v in pairs(F.DungeonButtons or {}) do
+            v.Border:Hide()
+            v:Hide()
         end
+        for k, v in pairs(F.LevelButtons or {}) do
+            v.Border:Hide()
+            v:Hide()
+        end        
         if not MPTSV.BestTime then MPTSV.BestTime = {} end
         for cmap, leveltable in pairs(MPTSV.BestTime[seasonID]) do
             local parent = num == 1 and F.DungeonButtonFrame or F.DungeonButtons[num-1]
             local name = self.maptoID[cmap] and self.maptoID[cmap][2] or "Unknown"
-            if not F.DungeonButtons[num] then
-                F.DungeonButtons[num] = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-                F.DungeonButtons[num]:SetSize(140, 40)
+            local btn = F.DungeonButtons[num]
+            if not btn then
+                btn = CreateFrame("Button", nil, parent)
+                btn:SetSize(140, 40)
+                btn.BG = btn:CreateTexture(nil, "BACKGROUND")
+                btn.BG:SetAllPoints()
+                btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+                btn:SetNormalTexture("")
+                btn:SetHighlightTexture("")
+                btn:SetPushedTexture("")
+                btn.Border = btn:CreateTexture(nil, "OVERLAY")
+                btn.Border:SetAllPoints()
+                btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
+                btn.Border:Hide()
+                btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                btn.Text:SetPoint("CENTER", btn, "CENTER", 0, 0)
+                btn.Text:SetFont(self.LSM:Fetch("font", "Expressway"), 15, "OUTLINE")
+                btn.Text:SetTextColor(1, 1, 1, 1)
+                F.DungeonButtons[num] = btn
             end
-            F.DungeonButtons[num]:SetPoint("TOPLEFT", parent, "TOPLEFT", num == 1 and 10 or 0, num == 1 and -10 or -50)
-            F.DungeonButtons[num]:SetScript("OnClick", function()
+            btn:SetPoint("TOP", parent, "TOP", 0, num == 1 and -10 or -50)
+            btn:SetScript("OnClick", function()
                 self:ShowLevelFrames(cmap, seasonID)
+                if self.SelectedDungeonButton then
+                    self.SelectedDungeonButton.Border:Hide()
+                end
+                if self.SelectedLevelButton then
+                    self.SelectedLevelButton.Border:Hide()
+                end
+                if F.PBDataText then F.PBDataText:Hide() end
+                if F.DeleteButton then F.DeleteButton:Hide() end
+                btn.Border:Show()
+                self.SelectedDungeonButton = btn
+                self.SelectedDungeon = cmap
+                self.SelectedLevel = nil
             end)
-            F.DungeonButtons[num]:SetText(name)
-            F.DungeonButtons[num]:Show()
+            if self.SelectedDungeonButton ~= btn then
+                btn.Border:Hide()
+            end
+            btn.Text:SetText(name)
+            btn:Show()
             num = num+1
         end        
     end
@@ -481,21 +611,50 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     local F = self.BestTimeFrame
     if not F then return end
     local num = 1
-    for i = 1, #(F.LevelButtons or {}) do
-        F.LevelButtons[i]:Hide()
+    for k, v in pairs(F.LevelButtons or {}) do
+        v.Border:Hide()
+        v:Hide()
+    end
+    if F.PBDataText then F.PBDataText:Hide() end
+    if F.DeleteButton then F.DeleteButton:Hide() end
+    if self.SelectedLevelButton then
+        self.SelectedLevelButton.Border:Hide()
     end
     for level = 100, 1, -1 do
         if MPTSV.BestTime[seasonID][cmap][level] then
             if not F.LevelButtons[num] then
-                F.LevelButtons[num] = CreateFrame("Button", nil, F.LevelContent, "UIPanelButtonTemplate")
-                F.LevelButtons[num]:SetSize(90, 40)
+                local btn = CreateFrame("Button", nil, F.LevelContent)
+                btn:SetSize(90, 40)
+                btn.BG = btn:CreateTexture(nil, "BACKGROUND")
+                btn.BG:SetAllPoints()
+                btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+                btn:SetNormalTexture("")
+                btn:SetHighlightTexture("")
+                btn:SetPushedTexture("")
+                btn.Border = btn:CreateTexture(nil, "OVERLAY")
+                btn.Border:SetAllPoints()
+                btn.Border:SetColorTexture(0.2, 0.6, 1, 0.5)
+                btn.Border:Hide()
+                btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+                btn.Text:SetPoint("CENTER", btn, "CENTER", 0, 0)
+                btn.Text:SetFont(self.LSM:Fetch("font", "Expressway"), 16, "OUTLINE")
+                btn.Text:SetTextColor(1, 1, 1, 1)
+                F.LevelButtons[num] = btn
             end
-            F.LevelButtons[num]:SetPoint("TOPLEFT", F.LevelContent, "TOPLEFT", 10, num == 1 and -5 or ((num-1)*-40)-5)
-            F.LevelButtons[num]:SetScript("OnClick", function()
+            local btn = F.LevelButtons[num]
+            --btn:SetPoint("TOPLEFT", F.LevelContent, "TOPLEFT", 10, num == 1 and -5 or ((num-1)*-45)-5)
+            btn:SetPoint("TOP", F.LevelContent, "TOP", 0, num == 1 and -5 or ((num-1)*-45)-5)
+            btn:SetScript("OnClick", function()
                 self:ShowPBDataFrame(cmap, level, seasonID)
+                if self.SelectedLevelButton then
+                    self.SelectedLevelButton.Border:Hide()
+                end
+                btn.Border:Show()
+                self.SelectedLevelButton = btn
+                self.SelectedLevel = level
             end)
-            F.LevelButtons[num]:SetText(level)
-            F.LevelButtons[num]:Show()
+            btn.Text:SetText(level)
+            btn:Show()
             num = num+1
         end
     end
@@ -517,13 +676,14 @@ function MPT:ShowPBDataFrame(cmap, level, seasonID) -- Showing PB Data
             local text = text..string.format("Enemy Forces: %s\nDate: %s", self:FormatTime(pbdata.forces/1000), self:GetDateFormat(pbdata.date))
             if not F.PBDataText then
                 F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -15)
+                F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -10)
             end
             F.PBDataText:SetText(text)
             F.PBDataText:Show()
             F.PBDataText:SetJustifyH("LEFT")
             F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
             F.PBDataText:SetTextColor(1, 1, 1, 1)
+            F.DeleteButton:Show()
         end
     end
 end

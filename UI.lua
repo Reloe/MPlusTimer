@@ -134,14 +134,32 @@ local GeneralOptions = {
                 end 
             end,         
         },        
-        Gap = MPT:CreateSpace(2),
-        Scale = MPT:CreateRange(3, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
-        Spacing = MPT:CreateRange(4, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
-        UpdateRate = MPT:CreateRange(5, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
-        HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-        CloseBags = MPT:CreateToggle(7, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
-        Keyslot = MPT:CreateToggle(8, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
-        FrameStrata = MPT:CreateDropDown(9, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        ViewBestTimes = {
+            type = "execute",
+            order = 2,
+            name = "View Best Times",
+            desc = "View your stored Best Times",
+            func = function() 
+                MPT:ShowPBFrame()
+            end,         
+        },
+        FrameStrata = MPT:CreateDropDown(3, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
+        Spacing = MPT:CreateRange(5, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        UpdateRate = MPT:CreateRange(6, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
+        HideTracker = MPT:CreateToggle(7, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
+        CloseBags = MPT:CreateToggle(8, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
+        Keyslot = MPT:CreateToggle(9, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
+        LowerKey = {
+            type = "toggle",
+            order = 9,
+            name = "Data from Lower Level",
+            width = "full",
+            desc = "Get Split Timers from one key level lower if no data for current level exists",
+            set = function(_, value) MPTSV.LowerKey = value end,
+            get = function() return MPTSV.LowerKey end,
+        },
+        
     }
 }
 local Position = {
@@ -172,48 +190,6 @@ local Background = {
     }
 }
 
-local BestTimes = {
-    type = "group",
-    name = "Best Times",
-    order = 4,
-    args = {      
-        ViewBestTimes = {
-            type = "execute",
-            order = 1,
-            name = "View Best Times",
-            desc = "View your stored Best Times",
-            func = function() 
-                MPT:ShowPBFrame()
-            end,         
-        },
-        Gap1 = MPT:CreateSpace(2),
-        LowerKey = {
-            type = "toggle",
-            order = 3,
-            name = "Data from Lower Level",
-            width = "full",
-            desc = "Get Split Timers from one key level lower if no data for current level exists",
-            set = function(_, value) MPTSV.LowerKey = value end,
-            get = function() return MPTSV.LowerKey end,
-        },
-        Gap2 = MPT:CreateSpace(4),
-        Gap3 = MPT:CreateSpace(5),
-        Gap4 = MPT:CreateSpace(6),
-        Gap5 = MPT:CreateSpace(7),        
-        Reset = {
-            type = "execute",
-            order = 8,
-            name = "Reset Best Times",
-            desc = "Reset all stored Best Times",
-            func = function() 
-                C_MythicPlus.RequestMapInfo()
-                local seasonID = C_MythicPlus.GetCurrentSeason()
-                MPTSV.BestTime = {seasonID = seasonID}
-                print("All stored Best Times have been reset.")
-            end,
-        },
-    }
-}
 
 local General = {
     type = "group",
