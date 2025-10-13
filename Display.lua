@@ -140,8 +140,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
     -- Main Frame    
     if BackgroundOnly then    
         local bosscount = #self.BossNames
-        local size = self.TimerBar.Height+self.ForcesBar.Height+(self.Bosses.Height*bosscount)+(self.Spacing*(bosscount))+1
-        if self.KeyInfo.enabled then size = size+self.KeyInfo.Height+self.Spacing end
+        local size = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*bosscount)+(self.Spacing*(bosscount+1))+1
         F:SetSize(self.TimerBar.Width, size)
         F:SetFrameStrata(self.FrameStrata)
         if self.Background.enabled then
@@ -164,8 +163,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
             F.BGBorder:Hide()
         end
     else        
-        local maxSize = self.TimerBar.Height+self.ForcesBar.Height+(self.Bosses.Height*5)+(self.Spacing*5)+1
-        if self.KeyInfo.enabled then maxSize = maxSize+self.KeyInfo.Height+self.Spacing end
+        local maxSize = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*5)+(self.Spacing*6)+1
         F:SetSize(self.TimerBar.Width, maxSize)
         F:SetScale(self.Scale)
         F:SetFrameStrata(self.FrameStrata)
@@ -196,7 +194,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
     if Full then
         local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
         local keyLevel = (preview and "+30") or "+"..level
-        local DungeonName = (preview and "Halls of Valor") or (self.cmap and self.maptoID[self.cmap] and self.maptoID[self.cmap][2]) or ""
+        local DungeonName = (preview and "Halls of Valor") or self:GetDungeonName(self.cmap)
         local AffixDisplay = ""
         local deathcount = (preview and "20") or C_ChallengeMode.GetDeathCount()
         if preview then            
@@ -397,7 +395,6 @@ function MPT:UpdateBosses(Start, count, preview)
     elseif Start and not self.IsPreview then
         self.BossTimes = {}
         self.BossNames = {}
-
         local max = select(3, C_Scenario.GetStepInfo())
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end -- if last criteria is enemy forces
         self:MuteJournalSounds()
@@ -652,7 +649,7 @@ function MPT:UpdatePBInfo(preview)
     F.ForcesBar.PBInfo:Hide()
     if preview or (pb and pb.finish) then
         local level = preview and 29 or self.level
-        local mapname = preview and "Halls of Valor" or (self.cmap and self.maptoID[self.cmap] and self.maptoID[self.cmap][2]) or ""
+        local mapname = preview and "Halls of Valor" or self:GetDungeonName(self.cmap)
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
         local date = self:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
         text = string.format("PB: +%s %s %s", level, self:FormatTime(finishtime/1000), date)
