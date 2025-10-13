@@ -13,7 +13,7 @@ function MPTAPI:ImportProfile(string, key, mainProfile)
             MPT:CreateImportedProfile(data, name, mainProfile)
             return true
         else
-            print("Failed to import profile into Mythic Plus Timer")
+            print("Failed to import profile into MPlusTimer")
             return false
         end
     end
@@ -134,7 +134,7 @@ function MPT:GetSV(key)
     return ref
 end
 
-function MPT:SetSV(key, value, update, BestTimes)
+function MPT:SetSV(key, value, update)
     if key and MPTSV.Profiles[self.ActiveProfile] then
         if type(key) == "table" then
             local ref = MPTSV.Profiles[self.ActiveProfile]
@@ -153,8 +153,6 @@ function MPT:SetSV(key, value, update, BestTimes)
             MPTSV.Profiles[self.ActiveProfile][key] = value
             self[key] = value
         end
-    elseif BestTimes and MPTSV.Profiles[self.ActiveProfile] then -- Save Best Times to SV at end of run
-        MPTSV.Profiles[self.ActiveProfile].BestTime = self.BestTime
     elseif MPTSV.Profiles[self.ActiveProfile] then -- full SV update
         for k, v in pairs(MPTSV.Profiles[self.ActiveProfile]) do
             v = self[k]
