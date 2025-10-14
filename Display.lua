@@ -137,10 +137,15 @@ end
 
 function MPT:UpdateMainFrame(BackgroundOnly)
     local F = self.Frame
-    -- Main Frame    
+    -- Main Frame     
     if BackgroundOnly then    
-        local bosscount = #self.BossNames
-        local size = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*bosscount)+(self.Spacing*(bosscount+1))+1
+        local bosscount = #self.BossNames    
+        local spacing = self.Spacing*(bosscount-1)
+        if self.KeyInfo.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
+        if self.TimerBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
+        if self.ForcesBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
+        if self.Bosses.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
+        local size = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*bosscount)+spacing
         F:SetSize(self.TimerBar.Width, size)
         F:SetFrameStrata(self.FrameStrata)
         if self.Background.enabled then
@@ -163,7 +168,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
             F.BGBorder:Hide()
         end
     else        
-        local maxSize = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*5)+(self.Spacing*6)+1
+        local maxSize = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*5)+(self.Spacing*7)
         F:SetSize(self.TimerBar.Width, maxSize)
         F:SetScale(self.Scale)
         F:SetFrameStrata(self.FrameStrata)
@@ -213,7 +218,8 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             end
         end        
         local parent = (self.KeyInfo.AnchoredTo == "MainFrame" and F) or (self.KeyInfo.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.KeyInfo.AnchoredTo]
-        self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, self.KeyInfo.yOffset)
+        local spacing = parent == F and 0 or self.Spacing
+        self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, -spacing+self.KeyInfo.yOffset)
         F.KeyInfo:SetSize(self.KeyInfo.Width, self.KeyInfo.Height)
         self:ApplyTextSettings(F.KeyInfo.KeyLevel, self.KeyLevel, keyLevel)
         self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, DungeonName, false, F.KeyInfo)
@@ -266,7 +272,8 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
                 self.timelimit = preview and 2280 or select(3, C_ChallengeMode.GetMapUIInfo(self.cmap))
                 local timeremain = self.timelimit-self.timer
                 local parent = (self.TimerBar.AnchoredTo == "MainFrame" and F) or (self.TimerBar.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.TimerBar.AnchoredTo]
-                self:SetPoint(F.TimerBar, self.TimerBar.Anchor, parent, self.TimerBar.RelativeTo, self.TimerBar.xOffset, self.TimerBar.yOffset-1)
+                local spacing = parent == F and 0 or self.Spacing
+                self:SetPoint(F.TimerBar, self.TimerBar.Anchor, parent, self.TimerBar.RelativeTo, self.TimerBar.xOffset, -spacing+self.TimerBar.yOffset)
                 F.TimerBar:SetSize(self.TimerBar.Width, self.TimerBar.Height)
                 F.TimerBar:SetStatusBarTexture(self.LSM:Fetch("statusbar", self.TimerBar.Texture))
                 F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest+1]))
@@ -376,8 +383,9 @@ function MPT:UpdateBosses(Start, count, preview)
             local time = self:FormatTime(killtime, true)
             local frame = F["Bosses"..i]
             self.BossNames[i] = name
-            local parent = self.Bosses.AnchoredTo == "MainFrame" and F or F[self.Bosses.AnchoredTo]       
-            self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*self.Spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
+            local parent = self.Bosses.AnchoredTo == "MainFrame" and F or F[self.Bosses.AnchoredTo]
+            local spacing = parent == F and i == 1 and 0 or self.Spacing -- only use spacing if not anchored to main frame or not first boss
+            self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
             frame:SetSize(self.Bosses.Width, self.Bosses.Height)
             local BossColor = i <= 3 and self.BossName.CompletionColor or self.BossName.Color
             self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor)
@@ -447,14 +455,14 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                 end
                 if self.cmap == 227 and num == 3 then name = "Opera Hall" end
-                name = self:Utf8Sub(name, 1, self.BossName.MaxLength)
+                name = self:Utf8Sub(name, 1, self.BossName.MaxLength)                
                 if name and name ~= "" then      
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
                     local frame = F["Bosses"..i]
                     local parent = self.Bosses.AnchoredTo == "MainFrame" and F or F[self.Bosses.AnchoredTo]
-                    local yOffset = parent == F and 0 or parent:GetHeight()
-                    self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -yOffset-(i*self.Spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
+                    local spacing = parent == F and 0 or self.Spacing
+                    self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
                     frame:SetSize(self.Bosses.Width, self.Bosses.Height)
                     local BossColor = completed and self.BossName.CompletionColor or self.BossName.Color
                     self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor)
@@ -538,7 +546,8 @@ function MPT:UpdateEnemyForces(Start, preview)
     if Start or preview then
         local bosscount = preview and 5 or #self.BossNames
         local parent = (self.ForcesBar.AnchoredTo == "MainFrame" and F) or (self.ForcesBar.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.ForcesBar.AnchoredTo]
-        self:SetPoint(F.ForcesBar, self.ForcesBar.Anchor, parent, self.ForcesBar.RelativeTo, self.ForcesBar.xOffset, -self.Spacing+self.ForcesBar.yOffset)
+        local spacing = parent == F and 0 or self.Spacing
+        self:SetPoint(F.ForcesBar, self.ForcesBar.Anchor, parent, self.ForcesBar.RelativeTo, self.ForcesBar.xOffset, -spacing+self.ForcesBar.yOffset)
         F.ForcesBar:SetSize(self.ForcesBar.Width, self.ForcesBar.Height)
         F.ForcesBar:SetStatusBarTexture(self.LSM:Fetch("statusbar", self.ForcesBar.Texture))
         F.ForcesBar:SetBackdropColor(unpack(self.ForcesBar.BackgroundColor))
