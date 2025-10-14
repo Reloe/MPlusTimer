@@ -22,8 +22,8 @@ function MPT:CreateTextSetting(name, key, order, Color)
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
     settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {key, "Anchor"}, true)
     settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {key, "RelativeTo"}, true)
-    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -1000, 1000, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -1000, 1000, 1, {key, "yOffset"}, true)    
+    settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -200, 200, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)    
     settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
     settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
@@ -43,10 +43,10 @@ function MPT:CreateStatusBarSettings(name, key, order)
         args = {}
     }    
     settings.args.Width = self:CreateRange(4, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
-    settings.args.Height = self:CreateRange(5, "Height", "Height of the Status Bar", 6, 200, 1, {key, "Height"}, true)
+    settings.args.Height = self:CreateRange(5, "Height", "Height of the Status Bar", 6, 100, 1, {key, "Height"}, true)
     settings.args.Texture = self:CreateDropDown(6, textureTable, "Texture", "", {key, "Texture"}, true)
-    settings.args.xOffset = self:CreateRange(7, "X Offset", "X Offset of the Status Bar", -1000, 1000, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(8, "Y Offset", "Y Offset of the Status Bar", -1000, 1000, 1, {key, "yOffset"}, true)
+    settings.args.xOffset = self:CreateRange(7, "X Offset", "X Offset of the Status Bar", -300, 300, 1, {key, "xOffset"}, true)
+    settings.args.yOffset = self:CreateRange(8, "Y Offset", "Y Offset of the Status Bar", -300, 300, 1, {key, "yOffset"}, true)
     settings.args.SizeGap = self:CreateSpace(9)
     settings.args.BorderSize = self:CreateRange(10, "Border Size", "Size of the Border", 1, 10, 1, {key, "BorderSize"}, true)
     settings.args.BorderColor = self:CreateColor(11, "Border Color", "", {key, "BorderColor"}, true)
@@ -182,11 +182,11 @@ local Background = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
         Color = MPT:CreateColor(2, "Color", "Color of the Background", {"Background", "Color"}, true),
         BorderColor = MPT:CreateColor(3, "Border Color", "Color of the Border", {"Background", "BorderColor"}, true),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Background", -500, 500, 1, {"Background", "xOffset"}, true),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Background", -500, 500, 1, {"Background", "yOffset"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Background", -300, 300, 1, {"Background", "xOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Background", -300, 300, 1, {"Background", "yOffset"}, true),
         BorderSize = MPT:CreateRange(6, "Border Size", "Size of the Border", 1, 10, 1, {"Background", "BorderSize"}, true),
-        WidthOffset = MPT:CreateRange(7, "Width Offset", "Additional or less Width", -500, 500, 1, {"Background", "WidthOffset"}, true),
-        HeightOffset = MPT:CreateRange(8, "Height Offset", "Additional or less Height", -500, 500, 1, {"Background", "HeightOffset"}, true),
+        WidthOffset = MPT:CreateRange(7, "Width Offset", "Additional or less Width", -300, 300, 1, {"Background", "WidthOffset"}, true),
+        HeightOffset = MPT:CreateRange(8, "Height Offset", "Additional or less Height", -300, 300, 1, {"Background", "HeightOffset"}, true),
     }
 }
 
@@ -215,10 +215,10 @@ local KeyInfoBar = {
         Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"KeyInfo", "Anchor"}, true),
         RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"KeyInfo", "RelativeTo"}, true),
         Width = MPT:CreateRange(4, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}, true),
-        Height = MPT:CreateRange(5, "Height", "Height of the Key Info Bar", 10, 200, 1, {"KeyInfo", "Height"}, true),
+        Height = MPT:CreateRange(5, "Height", "Height of the Key Info Bar", 6, 100, 1, {"KeyInfo", "Height"}, true),
         Gap = MPT:CreateSpace(6),
-        xOffset = MPT:CreateRange(7, "X Offset", "X Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "xOffset"}, true),
-        yOffset = MPT:CreateRange(8, "Y Offset", "Y Offset of the Key Info Bar", -500, 500, 1, {"KeyInfo", "yOffset"}, true),
+        xOffset = MPT:CreateRange(7, "X Offset", "X Offset of the Key Info Bar", -300, 300, 1, {"KeyInfo", "xOffset"}, true),
+        yOffset = MPT:CreateRange(8, "Y Offset", "Y Offset of the Key Info Bar", -300, 300, 1, {"KeyInfo", "yOffset"}, true),
     }
 }
 local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
@@ -233,8 +233,8 @@ local DeathIcon = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"enabled", "Iconenabled"}, true),
         iconAnchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {"DeathCounter", "IconAnchor"}, true),
         iconRelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {"DeathCounter", "IconRelativeTo"}, true),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Death Icon", -500, 500, 1, {"Icon XOffset", "IconxOffset"}, true),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Death Icon", -500, 500, 1, {"Icon YOffset", "IconyOffset"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Death Icon", -300, 300, 1, {"Icon XOffset", "IconxOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Death Icon", -300, 300, 1, {"Icon YOffset", "IconyOffset"}, true),
     }
 }
 local KeyInfo = {
@@ -321,15 +321,15 @@ local BossesBar = {
         AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Bosses Bar is anchored to", {"Bosses", "AnchoredTo"}, true),
         Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Bosses", "Anchor"}, true),
         RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Bosses", "RelativeTo"}, true),
-        Width = MPT:CreateRange(4, "Bosses Bar Width", "Width of the Bosses Bar", 10, 200, 1, {"Bosses", "Width"}, true),
-        Height = MPT:CreateRange(5, "Bosses Bar Height", "Height of the Bosses Bar", 10, 200, 1, {"Bosses", "Height"}, true),
+        Width = MPT:CreateRange(4, "Bosses Bar Width", "Width of the Bosses Bar", 50, 1000, 1, {"Bosses", "Width"}, true),
+        Height = MPT:CreateRange(5, "Bosses Bar Height", "Height of the Bosses Bar", 6, 100, 1, {"Bosses", "Height"}, true),
         Gap = MPT:CreateSpace(6),
-        XOffset = MPT:CreateRange(7, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "xOffset"}, true),
-        YOffset = MPT:CreateRange(8, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -500, 500, 1, {"Bosses", "yOffset"}, true),
+        XOffset = MPT:CreateRange(7, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -300, 300, 1, {"Bosses", "xOffset"}, true),
+        YOffset = MPT:CreateRange(8, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -300, 300, 1, {"Bosses", "yOffset"}, true),
     }
 }   
 local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 2, true)
-BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 0, 100, 1, {"BossName", "MaxLength"}, true)
+BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 5, 40, 1, {"BossName", "MaxLength"}, true)
 BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
 local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 3, true)
 BossSplit.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Split if the timer is faster than the previous best", {"BossSplit", "SuccessColor"}, true)
