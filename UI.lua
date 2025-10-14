@@ -249,6 +249,7 @@ local KeyInfo = {
         DungeonName = DungeonName,
         Affixes = Affixes,
         Deaths = Deaths,
+        DeathIcon = DeathIcon,
     },
 }
 
