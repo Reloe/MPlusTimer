@@ -223,6 +223,7 @@ local KeyInfoBar = {
 }
 local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
 local DungeonName = MPT:CreateTextSetting("Dungeon Name", "DungeonName", 3, true)
+DungeonName.args.Shorten = MPT:CreateRange(11, "Shorten", "Shorten Dungeon Name after X Characters", 5, 30, 1, {"DungeonName", "Shorten"}, true)
 local Affixes = MPT:CreateTextSetting("Affixes", "AffixIcons", 4, true)
 local Deaths = MPT:CreateTextSetting("Deaths", "DeathCounter", 5, true)
 local DeathIcon = {
@@ -230,11 +231,11 @@ local DeathIcon = {
     name = "Death Icon",
     order = 6,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"enabled", "Iconenabled"}, true),
+        enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"DeathCounter", "Iconenabled"}, true),
         iconAnchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Anchor", "", {"DeathCounter", "IconAnchor"}, true),
         iconRelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER"}, "Relative To", "", {"DeathCounter", "IconRelativeTo"}, true),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Death Icon", -300, 300, 1, {"Icon XOffset", "IconxOffset"}, true),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Death Icon", -300, 300, 1, {"Icon YOffset", "IconyOffset"}, true),
+        xOffset = MPT:CreateRange(4, "X Offset", "X Offset of the Death Icon", -300, 300, 1, {"DeathCounter", "IconxOffset"}, true),
+        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset of the Death Icon", -300, 300, 1, {"DeathCounter", "IconyOffset"}, true),
     }
 }
 local KeyInfo = {
@@ -382,9 +383,18 @@ local CurrentPullBar = {
     order = 6,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Current Pull Bar", {"CurrentPullBar", "enabled"}, true),
-        Color = MPT:CreateColor(8, "Color", "Color of the Current Pull Bar", {"CurrentPullBar", "Color"}, true),
-        texture = MPT:CreateDropDown(9, textureTable, "Texture", "", {"CurrentPullBar", "Texture"}, true),
-        text = MPT:CreateToggle(10, "Show Text", "Show Text of the Current Pull", {"ForcesBar", "PullText"}, true),
+        Color = MPT:CreateColor(2, "Color", "Color of the Current Pull Bar", {"CurrentPullBar", "Color"}, true),
+        texture = MPT:CreateDropDown(3, textureTable, "Texture", "", {"CurrentPullBar", "Texture"}, true),
+        Realenabled = MPT:CreateToggle(4, "RealCount Pull", "Show Current Pull Real Count", {"RealCount", "pullcount"}, true),
+        Percentenabled = MPT:CreateToggle(5, "Percent Pull", "Show Current Pull Percent", {"PercentCount", "pullcount"}, true),
+        Gap1 = MPT:CreateSpace(6),
+        RealRemaining = MPT:CreateToggle(7, "RealCount Remaining", "Show Remaining Count instead of current Count for Current Pull", {"RealCount", "remaining"}, true),
+        PercentRemaining = MPT:CreateToggle(8, "Percent Remaining", "Show Remaining Percent instead of current Percent for Current Pull", {"PercentCount", "remaining"}, true),
+        Gap2 = MPT:CreateSpace(9),
+        RealAfterPull = MPT:CreateToggle(10, "RealCount After Pull", "Show Count after Pull instead of how much you are gaining", {"RealCount", "afterPull"}, true),
+        PercentAfterPull = MPT:CreateToggle(11, "Percent After Pull", "Show Percent after Pull instead of how much you are gaining", {"PercentCount", "afterPull"}, true),
+        Gap3 = MPT:CreateSpace(12),
+        RealTotalCount = MPT:CreateToggle(13, "Show Total", "Show Total Count needed", {"RealCount", "total"}, true),
     }
 }
 local EnemyForces = {
