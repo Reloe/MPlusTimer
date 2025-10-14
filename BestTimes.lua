@@ -10,12 +10,19 @@ function MPT:CreateFakeSV()
         local level = math.random(10, 20)
         local intime = math.random(1, 5) <= 4
         self:UpdatePB(time, forces, cmap, level, {monthDay = math.random(1,28), month = math.random(1, 12), year = 2025, hour = math.random(0,23), minute = math.random(0,59)}, BossTimes, BossNames, intime)
+        if math.random(1, 5) == 1 then
+            self:AddHistory(false, cmap, level, false, true)
+        end
     end
+    self:AddHistory(false, 499, 5, false, true)
 end
 
 function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames, intime) -- called on completion of a run
-    C_MythicPlus.RequestMapInfo()
-    self.seasonID = self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason()
+    if (not self.seasonID) or self.seasonID == 0 then
+        C_MythicPlus.RequestMapInfo()
+        self.seasonID = C_MythicPlus.GetCurrentSeason()
+        if not self.seasonID or self.seasonID == 0 then return end
+    end
     if not MPTSV.BestTime then MPTSV.BestTime = {} end
     if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
     if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
@@ -38,15 +45,30 @@ function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames, int
     return before
 end
 
-function MPT:AddHistory(time, cmap, level, intime) -- also called on completion of a run
+function MPT:AddHistory(time, cmap, level, intime, abandoned) -- also called on completion of a run
+    if (not self.seasonID) or self.seasonID == 0 then
+        C_MythicPlus.RequestMapInfo()
+        self.seasonID = C_MythicPlus.GetCurrentSeason()
+        if not self.seasonID or self.seasonID == 0 then return end
+    end
     if not MPTSV.History then MPTSV.History = {} end
     if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
-    if not MPTSV.History[self.seasonID][cmap] then MPTSV.History[self.seasonID][cmap] = {intime = 0, depleted = 0, highestrun = 0} end
-    if not MPTSV.History[self.seasonID][cmap].fastestrun then
+    if not MPTSV.History[self.seasonID][cmap] then MPTSV.History[self.seasonID][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
+    if not MPTSV.History[self.seasonID][cmap][level] then MPTSV.History[self.seasonID][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
+
+    if abandoned then
+        if level and cmap then
+            MPTSV.History[self.seasonID][cmap].abandoned = MPTSV.History[self.seasonID][cmap].abandoned + 1
+            MPTSV.History[self.seasonID][cmap][level].abandoned = MPTSV.History[self.seasonID][cmap][level].abandoned + 1
+        end
+        return
+    end
+    if time and not MPTSV.History[self.seasonID][cmap].fastestrun then
         MPTSV.History[self.seasonID][cmap].fastestrun = time
     end
     if intime then
         MPTSV.History[self.seasonID][cmap].intime = MPTSV.History[self.seasonID][cmap].intime + 1
+        MPTSV.History[self.seasonID][cmap][level].intime = MPTSV.History[self.seasonID][cmap][level].intime + 1
         if level > MPTSV.History[self.seasonID][cmap].highestrun then -- save highest run, which is then also "fastest" run
             MPTSV.History[self.seasonID][cmap].highestrun = level
             MPTSV.History[self.seasonID][cmap].fastestrun = time
@@ -54,14 +76,21 @@ function MPT:AddHistory(time, cmap, level, intime) -- also called on completion 
             MPTSV.History[self.seasonID][cmap].fastestrun = time -- save faster run if same level
         end
     else
+        MPTSV.History[self.seasonID][cmap][level].depleted = MPTSV.History[self.seasonID][cmap][level].depleted + 1
         MPTSV.History[self.seasonID][cmap].depleted = MPTSV.History[self.seasonID][cmap].depleted + 1
     end
 end
 
-function MPT:GetPB(cmap, level, seasonID)
+function MPT:GetPB(cmap, level, seasonID, lowerkey)
     C_MythicPlus.RequestMapInfo()
     local seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
-    return MPTSV.BestTime and MPTSV.BestTime[seasonID] and MPTSV.BestTime[seasonID][cmap] and (MPTSV.BestTime[seasonID][cmap][level] or (self.LowerKey and MPTSV.BestTime[seasonID][cmap][level-1]))
+    return MPTSV.BestTime and MPTSV.BestTime[seasonID] and MPTSV.BestTime[seasonID][cmap] and (MPTSV.BestTime[seasonID][cmap][level] or (lowerkey and MPTSV.BestTime[seasonID][cmap][level-1]))
+end
+
+function MPT:GetHistory(cmap, level, seasonID)
+    C_MythicPlus.RequestMapInfo()
+    local seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
+    return MPTSV.History and MPTSV.History[seasonID] and MPTSV.History[seasonID][cmap] and MPTSV.History[seasonID][cmap][level]
 end
 
 function MPT:AddRun(cmap, level, seasonID, time, forces, date, BossNames, BossTimes) -- called when manually adding a run
@@ -248,7 +277,7 @@ function MPT:CreatePBFrame()
         -- Main Frame
         self.BestTimeFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
         local F = self.BestTimeFrame
-        local width = 1000
+        local width = 1200
         local height = 700
         F:SetSize(width, height)
         local screenWidth = UIParent:GetWidth()
@@ -633,7 +662,9 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     self.SelectedLevel = nil
     local first = true
     for level = 100, 1, -1 do
-        if (MPTSV.BestTime[seasonID][cmap] and MPTSV.BestTime[seasonID][cmap][level]) or level == 100 then
+        local pb = self:GetPB(cmap, level, seasonID)
+        local history = self:GetHistory(cmap, level, seasonID)
+        if pb or history or level == 100 then
             local btn = F.LevelButtons[num]
             if not btn then
                 local color = level == 100 and {0, 0.7, 0, 0.9} or {0.3, 0.3, 0.3, 0.9}
@@ -680,9 +711,11 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
     local F = self.BestTimeFrame
     if not F then return end
     if F.PBDataFrame then
-        local pbdata = MPTSV.BestTime[seasonID][cmap][level]
+        local pbdata = self:GetPB(cmap, level, seasonID)
+        local text = ""
+        F.DeleteButton:Hide()
         if pbdata and pbdata.finish then
-            local text = string.format("Dungeon: %s\nTime: %s\n", self:GetDungeonName(cmap), self:FormatTime(pbdata.finish/1000))
+            text = string.format("Dungeon: %s\nTime: %s\n", self:GetDungeonName(cmap), self:FormatTime(pbdata.finish/1000))
             for i=1, #(pbdata["BossNames"] or {}) do
                 if pbdata["BossNames"] and pbdata["BossNames"][i] and pbdata[i] then
                     text = text..string.format("%s: %s\n", pbdata["BossNames"][i] or "Unknown", self:FormatTime(pbdata[i]))
@@ -690,7 +723,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             end
             local date = self:GetDateFormat(pbdata.date)
             if date == "" then date = "No Date/Manually Added Run" else date = "Date: "..date end
-            local text = text..string.format("Enemy Forces: %s\n%s", self:FormatTime(pbdata.forces), date)
+            text = text..string.format("Enemy Forces: %s\n%s\n", self:FormatTime(pbdata.forces), date)
             if not F.PBDataText then
                 F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
                 F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -10)
@@ -698,12 +731,22 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             if F.PBDataText2 then
                 F.PBDataText2:Hide()
             end
+        end        
+        local history = self:GetHistory(cmap, level, seasonID)
+        if history then
+            local completed = history.intime
+            local depleted = history.depleted   
+            local total = completed + depleted
+            local abandoned = history.abandoned
+            text = text..string.format("|cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)", completed + depleted, completed, depleted, abandoned)
+        end       
+        if pbdata or history then 
             F.PBDataText:SetText(text)
-            F.PBDataText:Show()
             F.PBDataText:SetJustifyH("LEFT")
             F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
             F.PBDataText:SetTextColor(1, 1, 1, 1)
-            F.DeleteButton:Show()
+            F.PBDataText:Show()
+            if pbdata then F.DeleteButton:Show() end
         end
     end
 end
@@ -712,21 +755,24 @@ function MPT:ShowTotalStatsFrame(seasonID)
     local F = self.BestTimeFrame
     if not F then return end
     if F.PBDataFrame then
-        local data = MPTSV.History and MPTSV.History[seasonID]
+        local history = MPTSV.History and MPTSV.History[seasonID]
         local completedruns = {}
         local depletedruns = {}
         local highestkey = {}
         local fastestrun = {}
         local totalcompletedkeys = 0
         local totaldepletedkeys = 0
+        local totalabandoned = 0
         local text = ""
         local text2 = ""
-        for cmap, data in pairs(data or {}) do
-            if data.intime > 0 or data.depleted > 0 then
+        if not history then return end
+        for i, cmap in pairs(self.SeasonData[seasonID].Dungeons) do
+            local data = history[cmap]
+            if data and (data.intime > 0 or data.depleted > 0) then
                 local name = self:Utf8Sub(self:GetDungeonName(cmap), 1, 15)
                 text = text..string.format("|cFF3399FF%s|r:\n", name)
-                text2 = text2..string.format("|cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted)", 
-                data.intime + data.depleted, data.intime, data.depleted)
+                text2 = text2..string.format("|cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)",
+                data.intime + data.depleted, data.intime, data.depleted, data.abandoned)
                 local bestkey = data.fastestrun and self:FormatTime(data.fastestrun/1000)
                 if bestkey then
                     text2 = text2..string.format(", Best Key: |cFF00FF00+%s|r in |cFFFFFF4D%s|r\n", data.highestrun, bestkey)
@@ -735,9 +781,10 @@ function MPT:ShowTotalStatsFrame(seasonID)
                 end
                 totalcompletedkeys = totalcompletedkeys + data.intime
                 totaldepletedkeys = totaldepletedkeys + data.depleted
+                totalabandoned = totalabandoned + data.abandoned
             end
         end
-        text = string.format("Total Run Stats: |cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted)\n", totalcompletedkeys+totaldepletedkeys, totalcompletedkeys, totaldepletedkeys)..text
+        text = string.format("Total Run Stats: |cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)\n", totalcompletedkeys+totaldepletedkeys, totalcompletedkeys, totaldepletedkeys, totalabandoned)..text
         if not F.PBDataText then
             F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -10)
