@@ -187,10 +187,6 @@ end
 
 function MPT:UpdateKeyInfo(Full, Deaths, preview)
     local F = self.Frame
-    if not self.KeyInfo.enabled then
-        F.KeyInfo:Hide()
-        return
-    end
     if Full then
         local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
         local keyLevel = (preview and "+30") or "+"..level
@@ -297,7 +293,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         local before = false
         local date = C_DateAndTime.GetCurrentCalendarTime()
         if self.cmap and self.level and not preview then
-            before = self:UpdatePB(time, self.cmap, level, date)
+            before = self:UpdatePB(time, self.forcesTime, self.cmap, level, date, self.BossTimes, self.BossNames)
         end
         self.timer = preview and self.timer or time/1000
         local timeremain = self.timelimit-self.timer
@@ -618,6 +614,7 @@ function MPT:UpdateEnemyForces(Start, preview)
                 local defeat = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
                 if defeated and defeated ~= 0 then
                     local cur = select(2, GetWorldElapsedTime(1)) - defeat
+                    self.forcesTime = cur
                     local pb = self:GetPB(self.cmap, self.level)
                     if pb and pb["forces"] then
                         local diff = cur - pb["forces"]
