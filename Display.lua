@@ -200,7 +200,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         local deathcount = (preview and "20") or C_ChallengeMode.GetDeathCount()
         if preview then            
             for i=1, 4 do
-                AffixDisplay = AffixDisplay.."\124T"..select(i, strsplit(" ", "236401 1035055 451169 1385910"))..":13:13:"..1-i..":0:64:64:6:60:6:60\124t"
+                AffixDisplay = AffixDisplay.."\124T"..select(i, strsplit(" ", "236401 1035055 451169 1385910"))..":"..self.AffixIcons.FontSize..":"..self.AffixIcons.FontSize..":"..1-i..":0:64:64:6:60:6:60\124t"
             end 
         else
             local icon = ""
@@ -225,9 +225,14 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, DungeonName, false, F.KeyInfo)
         self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo)
         if self.DeathCounter.enabled then
+            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathcount, false, F.KeyInfo) 
+        else
+            F.KeyInfo.DeathCounter:Hide() 
+        end
+        if self.DeathCounter.Iconenabled then
             local icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
-            F.KeyInfo.Icon:SetSize(self.KeyInfo.Height, self.KeyInfo.Height)
             self:SetPoint(F.KeyInfo.Icon, self.DeathCounter.IconAnchor, F.KeyInfo, self.DeathCounter.IconRelativeTo, self.DeathCounter.IconxOffset, self.DeathCounter.IconyOffset)
+            F.KeyInfo.Icon:SetSize(self.KeyInfo.Height, self.KeyInfo.Height)
             F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)     
             F.KeyInfo.Icon.Texture:SetTexture(icon)
             F.KeyInfo.Icon:EnableMouse(true)
@@ -242,10 +247,8 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                 GameTooltip:Hide()
             end)
             F.KeyInfo.Icon:Show()
-            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter , deathcount, false, F.KeyInfo.Icon) 
         else
             F.KeyInfo.Icon:Hide()
-            F.KeyInfo.DeathCounter:Hide() 
         end
     end
     if Deaths then
@@ -443,7 +446,7 @@ function MPT:UpdateBosses(Start, count, preview)
         end
         if max > 0 then
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
-            local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level)
+            local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             for i=1, max do
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
                 local name = self.BossNames[num]
@@ -494,7 +497,7 @@ function MPT:UpdateBosses(Start, count, preview)
         self.BossTimes = self.BossTimes or {}
         local max = select(3, C_Scenario.GetStepInfo())
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
-        local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level)
+        local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
         for i=1, max do
             local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
             if criteria.completed then
@@ -536,6 +539,7 @@ function MPT:UpdateEnemyForces(Start, preview)
     end
     local criteria = preview and {} or C_ScenarioInfo.GetCriteriaInfo(steps)
     local total = preview and 550 or criteria.totalQuantity
+    self.totalcount = total
     local current = preview and math.random(100, 450) or criteria.quantityString:gsub("%%", "")
     current = tonumber(current)
     local percent = 0
@@ -576,9 +580,9 @@ function MPT:UpdateEnemyForces(Start, preview)
         local currentPullPercent = preview and (currentPull/total)*100 or 0 -- edit this to whatever new API blizzard hopefully comes up with
         if not completed then -- protection because I anticipate blizzard's current pull API might still return data if we're already at 100%
             local prefix = self.RealCount.remaining and "-" or "+"
-            remainingText = self.ForcesBar.PullText and currentPull and currentPull > 0 and string.format("%s (%s%s)", remainingText, prefix, currentPull) or remainingText
+            remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s%s)", remainingText, prefix, currentPull) or remainingText
             local percentprefix = self.PercentCount.remaining and "-" or "+"
-            percentText = self.ForcesBar.PullText and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%s%.2f%%)", percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
+            percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%s%.2f%%)", percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
         end
         self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, percentText)
         self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, remainingText)
@@ -624,7 +628,7 @@ function MPT:UpdateEnemyForces(Start, preview)
                 if defeated and defeated ~= 0 then
                     local cur = select(2, GetWorldElapsedTime(1)) - defeat
                     self.forcesTime = cur
-                    local pb = self:GetPB(self.cmap, self.level)
+                    local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
                     if pb and pb["forces"] then
                         local diff = cur - pb["forces"]
                         local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
@@ -650,7 +654,7 @@ function MPT:UpdateEnemyForces(Start, preview)
 end
 
 function MPT:UpdatePBInfo(preview)
-    local pb = self:GetPB(self.cmap, self.level)
+    local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
     local F = self.Frame
     F.ForcesBar.PBInfo:Hide()
     if preview or (pb and pb.finish) then
@@ -661,5 +665,76 @@ function MPT:UpdatePBInfo(preview)
         text = string.format("PB: +%s %s %s", level, self:FormatTime(finishtime/1000), date)
         local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
+    end
+end
+
+function MPT:UpdateCurrentPull()
+    local rawValue, percentValue = 0, 0
+    for _, value in pairs(self.CurrentPull or {}) do
+        if value ~= "DEAD" then
+            rawValue = rawValue + value[1]
+            percentValue = percentValue + value[2]
+        end
+    end
+    local steps = preview and 5 or select(3, C_Scenario.GetStepInfo())
+    if not steps or steps <= 0 then
+        return
+    end
+    local criteria = C_ScenarioInfo.GetCriteriaInfo(steps)
+    local total = criteria.totalQuantity
+    local current = criteria.quantityString:gsub("%%", "")
+    current = tonumber(current)
+    local percent = 0
+    if current then
+        percent = current / total * 100
+        percent = math.floor(percent*100)/100
+    end
+    local currentPercent = (current/total)*100
+    local F = self.Frame
+    local currentText = ""
+    local percentText = ""
+    if self.RealCount.enabled and self.RealCount.pullcount and current < total then
+        local color = current + rawValue >= total and self.RealCount.CurrentPullColor or self.RealCount.Color
+        if self.RealCount.total then
+            currentText = self.RealCount.remaining and string.format("%s/%s", total-current, total) or string.format("%s/%s", current, total)
+        else
+            currentText = self.RealCount.remaining and total-current or current
+        end
+        if self.RealCount.AfterPull then
+            if self.RealCount.remaining then
+                rawValue = rawValue * -1
+            end
+            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, current+rawValue) or currentText
+        else
+            currentText = rawValue ~= 0 and string.format("%s(%s%s)", currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
+        end
+        self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, currentText, color)
+    end
+    if self.PercentCount.enabled and self.PercentCount.pullcount and current < total then
+        local color = current + rawValue >= total and self.PercentCount.CurrentPullColor or self.PercentCount.Color
+        percentText = string.format("%.2f%%", self.PercentCount.remaining and 100-percent or percent)
+        if self.PercentCount.AfterPull then
+            if self.PercentCount.remaining then
+                percentValue = percentValue * -1
+            end
+            percentText = percentValue ~= 0 and string.format("%s(%.2f%%)", percentText, percent+percentValue) or percentText
+        else
+            percentText = percentValue ~= 0 and string.format("%s(%s%.2f%%)", percentText, self.PercentCount.remaining and "-" or "+", percentValue) or percentText
+        end
+        self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, percentText, color)
+    end
+    if self.CurrentPullBar.enabled and rawValue and rawValue > 0 and percentValue and percentValue > 0 and current < total then
+            local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()        
+            F.ForcesBar.CurrentPullBar:SetSize(self.ForcesBar.Width-xOffset, self.ForcesBar.Height)
+            F.ForcesBar.CurrentPullBar:ClearAllPoints()    
+            self:SetPoint(F.ForcesBar.CurrentPullBar, "LEFT", F.ForcesBar, "LEFT", xOffset, 0)
+            F.ForcesBar.CurrentPullBar:SetStatusBarTexture(self.LSM:Fetch("statusbar", self.CurrentPullBar.Texture))
+            F.ForcesBar.CurrentPullBar:SetMinMaxValues(0, total-current) -- set max to remaining forces
+            F.ForcesBar.CurrentPullBar:SetValue(rawValue)
+            F.ForcesBar.CurrentPullBar:SetStatusBarColor(unpack(self.CurrentPullBar.Color))
+            F.ForcesBar.CurrentPullBar:SetFrameLevel(F.ForcesBar:GetFrameLevel())
+            F.ForcesBar.CurrentPullBar:Show()
+    else
+        F.ForcesBar.CurrentPullBar:Hide()
     end
 end
