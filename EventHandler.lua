@@ -8,7 +8,6 @@ f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("CHALLENGE_MODE_START")
 f:RegisterEvent("CHALLENGE_MODE_DEATH_COUNT_UPDATED")
 f:RegisterEvent("CHALLENGE_MODE_COMPLETED")
-f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
 f:RegisterEvent("SCENARIO_POI_UPDATE")
@@ -53,14 +52,25 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
                 if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
             end)
         end
+        C_MythicPlus.RequestMapInfo()
+        local seasonID = C_MythicPlus.GetCurrentSeason()
         if C_ChallengeMode.IsChallengeModeActive() then
             self:Init(false)
+            if not self.Timer then
+                self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                    self.Timer = nil
+                    self:EventHandler("FRAME_UPDATE")
+                end)
+            end
         else
             self:ShowFrame(false)
         end
-    elseif e == "ZONE_CHANGED_NEW_AREA" then
-        if C_ChallengeMode.IsChallengeModeActive() then
-            self:Init(false)
+        if seasonID > 0 then
+            if not MPTSV.BestTime then MPTSV.BestTime = {} end
+            if not MPTSV.History then MPTSV.History = {} end
+            if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
+            if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
+            self.seasonID = seasonID
         end
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         self:UpdateKeyInfo(false, true)
@@ -98,25 +108,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:CreateProfile("default") 
         else
             self:LoadProfile()
-        end
-        C_MythicPlus.RequestMapInfo()
-        local seasonID = C_MythicPlus.GetCurrentSeason()
-        if C_ChallengeMode.IsChallengeModeActive() then
-            self:Init(false)
-            if not self.Timer then
-                self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
-                    self.Timer = nil
-                    self:EventHandler("FRAME_UPDATE")
-                end)
-            end
-        end
-        if seasonID > 0 then
-            if not MPTSV.BestTime then MPTSV.BestTime = {} end
-            if not MPTSV.History then MPTSV.History = {} end
-            if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
-            if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
-            self.seasonID = seasonID
-        end
+        end        
         if MPTSV.debug then
             MPTAPI = MPT
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
