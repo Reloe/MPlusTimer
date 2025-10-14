@@ -11,12 +11,37 @@ f:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
 f:RegisterEvent("SCENARIO_POI_UPDATE")
+f:RegisterEvent("INSTANCE_ABANDON_VOTE_FINISHED")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
 end)
 
+function MPT:ToggleEventRegister(On)
+    if On then
+        f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+        f:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+        f:RegisterEvent("PLAYER_REGEN_ENABLED")
+        f:RegisterEvent("PLAYER_DEAD")
+        if not self.Timer then
+            self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                self.Timer = nil
+                self:EventHandler("FRAME_UPDATE")
+            end)
+        end
+    else
+        f:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+        f:UnregisterEvent("UNIT_THREAT_LIST_UPDATE")
+        f:UnregisterEvent("PLAYER_REGEN_ENABLED")
+        f:UnregisterEvent("PLAYER_DEAD")
+    end
+end
+
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
+    if e == "INSTANCE_ABANDON_VOTE_FINISHED" then
+        local success = ...
+        print(success, "abandon vote finished", C_ChallengeMode.IsChallengeModeActive())
+    end
     if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and self.CloseBags then
         CloseAllBags()
     elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and self.KeySlot then
@@ -56,14 +81,10 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         local seasonID = C_MythicPlus.GetCurrentSeason()
         if C_ChallengeMode.IsChallengeModeActive() then
             self:Init(false)
-            if not self.Timer then
-                self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
-                    self.Timer = nil
-                    self:EventHandler("FRAME_UPDATE")
-                end)
-            end
+            self:ToggleEventRegister(true)
         else
             self:ShowFrame(false)
+            self:ToggleEventRegister(false)
         end
         if seasonID > 0 then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
@@ -76,16 +97,18 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
         self:Init()
-        if not self.Timer then
-            self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
-                self.Timer = nil
-                self:EventHandler("FRAME_UPDATE")
-            end)
+        self:ToggleEventRegister(true)
+    elseif e == "INSTANCE_ABANDON_VOTE_FINISHED" and C_ChallengeMode.IsChallengeModeActive() then
+        local success = ...
+        if success then
+            self:AddHistory(false, self.cmap, self.level, false, true) -- add as abandoned run
         end
+        self:ToggleEventRegister(false)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         self:UpdateTimerBar(false, true)
         self:UpdateEnemyForces(false, false)
         self:SetSV(false, false, false, true)
+        self:ToggleEventRegister(false)
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         self:UpdateBosses(false, false)
         self:UpdateEnemyForces(false, false, false)
@@ -113,6 +136,39 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             MPTAPI = MPT
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
+    elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
+        local _, se, _, _, _, _, _, destGUID = ...
+        if se == "UNIT_DIED" and destGUID then
+            local npcID = select(6, strsplit("-", destGUID))
+            if MDT and MDT:GetEnemyForces(tonumber(npcID)) then
+                self.CurrentPull = self.CurrentPull or {}
+                self.CurrentPull[destGUID] = "DEAD"
+                self:UpdateCurrentPull()         
+            end
+        end
+    elseif e == "UNIT_THREAT_LIST_UPDATE" and C_ChallengeMode.IsChallengeModeActive() and InCombatLockdown() then
+        local unit = ...
+        if unit and UnitExists(unit) then
+            local guid = UnitGUID(unit)
+            self.CurrentPull = self.CurrentPull or {}
+            if guid and not self.CurrentPull[guid] then
+                local npcid = select(6, strsplit("-", guid))
+                if npcid then                        
+                    local value = MDT and MDT:GetEnemyForces(tonumber(npcid))
+                    if value and value ~= 0 then
+                        self.CurrentPull[guid] = {value, (value / (self.totalcount)) * 100}
+                        self:UpdateCurrentPull()         
+                    end
+                end
+            end            
+        end
+    elseif (e == "PLAYER_REGEN_ENABLED" or e == "PLAYER_DEAD") and C_ChallengeMode.IsChallengeModeActive() then
+        for k, _ in pairs(self.CurrentPull or {}) do
+            self.CurrentPull[k] = nil
+        end
+        self:UpdateCurrentPull()
+    end
+end
     
         
         --[[
@@ -148,5 +204,3 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     return false
 end
         ]]
-    end
-end
