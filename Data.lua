@@ -11,7 +11,8 @@ MPT.SeasonData = {
 }
 
 function MPT:GetDungeonName(cmap)
-    return cmap and self.maptoID[cmap] and self.maptoID[cmap][2] or "Unknown"
+    local name = cmap and self.maptoID[cmap] and self.maptoID[cmap][2] or "Unknown"
+    return self:Utf8Sub(name, 1, self.DungeonName.Shorten)
 end
 
 MPT.maptoID = { -- MapChallengeMode = JournalInstance
@@ -172,6 +173,7 @@ MPT.DefaultProfile = {
         yOffset = -2,
         Font = "Expressway",
         FontSize = 16,
+        Shorten = 15,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
         ShadowColor = {0, 0, 0, 1},
@@ -182,9 +184,9 @@ MPT.DefaultProfile = {
         Anchor = "CENTER",
         RelativeTo = "CENTER",
         xOffset = 0,
-        yOffset = -3,
+        yOffset = -2,
         Font = "Expressway",
-        FontSize = 15,
+        FontSize = 14,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
         ShadowColor = {0, 0, 0, 1},
@@ -198,8 +200,8 @@ MPT.DefaultProfile = {
         IconxOffset = 0,
         IconyOffset = 0,
         Anchor = "RIGHT",
-        RelativeTo = "LEFT",
-        xOffset = 0,
+        RelativeTo = "RIGHT",
+        xOffset = -16,
         yOffset = -1,
         Font = "Expressway",
         FontSize = 16,
@@ -378,6 +380,9 @@ MPT.DefaultProfile = {
         RelativeTo = "LEFT",
         xOffset = 2,
         yOffset = 0,
+        remaining = false,
+        pullcount = true,
+        afterPull = true,
         Font = "Expressway",
         FontSize = 16,
         Outline = "OUTLINE",
@@ -393,6 +398,8 @@ MPT.DefaultProfile = {
         yOffset = 0,
         Font = "Expressway",
         remaining = true,
+        pullcount = true,
+        afterPull = true,
         total = false,
         FontSize = 16,
         Outline = "OUTLINE",
