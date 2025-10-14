@@ -112,7 +112,9 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         if seasonID > 0 then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
+            if not MPTSV.History then MPTSV.History = {} end
             if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
+            if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
             self.seasonID = seasonID
         end
         if MPTSV.debug then
