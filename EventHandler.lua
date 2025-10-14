@@ -30,6 +30,7 @@ function MPT:ToggleEventRegister(On)
             end)
         end
     else
+        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
         f:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
         f:UnregisterEvent("UNIT_THREAT_LIST_UPDATE")
         f:UnregisterEvent("PLAYER_REGEN_ENABLED")
@@ -137,6 +138,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
     elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
+        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
         local _, se, _, _, _, _, _, destGUID = ...
         if se == "UNIT_DIED" and destGUID then
             local npcID = select(6, strsplit("-", destGUID))
@@ -147,6 +149,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "UNIT_THREAT_LIST_UPDATE" and C_ChallengeMode.IsChallengeModeActive() and InCombatLockdown() then
+        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
         local unit = ...
         if unit and UnitExists(unit) then
             local guid = UnitGUID(unit)
@@ -163,6 +166,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end            
         end
     elseif (e == "PLAYER_REGEN_ENABLED" or e == "PLAYER_DEAD") and C_ChallengeMode.IsChallengeModeActive() then
+        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
         for k, _ in pairs(self.CurrentPull or {}) do
             self.CurrentPull[k] = nil
         end
