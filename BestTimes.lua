@@ -1,204 +1,19 @@
 local _, MPT = ...
 
-function MPT:CreateFakeSV()
-    MPTSV.BestTime[15] = {
-        [499] = {
-            [16] = {
-                finish = 1150000,
-                forces = 1150,
-                level = 16,
-                date = {20, 5, 2024, 12, 15},
-                [1] = 250,
-                [2] = 500,
-                [3] = 750,
-                [4] = 1000,
-                BossNames = {"Alpha", "Beta", "Gamma", "Delta"},
-            },
-            [17] = {
-                finish = 1100000,
-                forces = 1100,
-                level = 17,
-                date = {25, 5, 2024, 10, 30},
-                [1] = 200,
-                [2] = 400,
-                [3] = 600,
-                [4] = 800,
-                BossNames = {"Epsilon", "Zeta", "Eta", "Theta"},
-            },
-            [5] = {
-                finish = 300000,
-                forces = 300,
-                level = 5,
-                date = {1, 5, 2024, 9, 0},
-                [1] = 300,
-                BossNames = {"Solo Boss"},
-            },
-            [10] = {
-                finish = 700000,
-                forces = 700,
-                level = 10,
-                date = {3, 5, 2024, 11, 0},
-                [1] = 200,
-                [2] = 400,
-                [3] = 700,
-                BossNames = {"First", "Second", "Third"},
-            },
-            [15] = {
-                finish = 1250000,
-                forces = 1250,
-                level = 15,
-                date = {5, 5, 2024, 14, 0},
-                [1] = 310,
-                [2] = 620,
-                [3] = 930,
-                [4] = 1240,
-                BossNames = {"Boss One", "Boss Two", "Boss Three", "Boss Four"},
-            },
-            [14] = {
-                finish = 1350000,
-                forces = 1350,
-                level = 14,
-                date = {8, 5, 2024, 16, 20},
-                [1] = 410,
-                [2] = 820,
-                [3] = 1230,
-                BossNames = {"Boss A", "Boss B", "Boss C"},
-            },
-            [13] = {
-                finish = 1450000,
-                forces = 1450,
-                level = 13,
-                date = {12, 5, 2024, 18, 10},
-                [1] = 500,
-                [2] = 1000,
-                [3] = 1450,
-                BossNames = {"Boss X", "Boss Y", "Boss Z"},
-            },
-            [12] = {
-                finish = 1550000,
-                forces = 1550,
-                level = 12,
-                date = {15, 5, 2024, 20, 5},
-                [1] = 600,
-                [2] = 1200,
-                [3] = 1550,
-                BossNames = {"Boss L", "Boss M", "Boss N"},
-            },
-            [11] = {
-                finish = 1650000,
-                forces = 1650,
-                level = 11,
-                date = {18, 5, 2024, 13, 55},
-                [1] = 700,
-                [2] = 1400,
-                [3] = 1650,
-                BossNames = {"Boss D", "Boss E", "Boss F"},
-            },
-            [10] = {
-                finish = 1750000,
-                forces = 1750,
-                level = 10,
-                date = {20, 5, 2024, 15, 45},
-                [1] = 800,
-                [2] = 1600,
-                [3] = 1750,
-                BossNames = {"Boss G", "Boss H", "Boss I"},
-            },
-            [9] = {
-                finish = 1850000,
-                forces = 1850,
-                level = 9,
-                date = {22, 5, 2024, 17, 35},
-                [1] = 900,
-                [2] = 1800,
-                [3] = 1850,
-                BossNames = {"Boss J", "Boss K", "Boss L"},
-            },
-            [8] = {
-                finish = 1950000,
-                forces = 1950,
-                level = 8,
-                date = {24, 5, 2024, 19, 25},
-                [1] = 1000,
-                [2] = 2000,
-                [3] = 1950,
-                BossNames = {"Boss M", "Boss N", "Boss O"},
-            },
-            [7] = {
-                finish = 2050000,
-                forces = 2050,
-                level = 7,
-                date = {26, 5, 2024, 21, 15},
-                [1] = 1100,
-                [2] = 2200,
-                [3] = 2050,
-                BossNames = {"Boss P", "Boss Q", "Boss R"},
-            },
-            [6] = {
-                finish = 2150000,
-                forces = 2150,
-                level = 6,
-                date = {28, 5, 2024, 23, 5},
-                [1] = 1200,
-                [2] = 2400,
-                [3] = 2150,
-                BossNames = {"Boss S", "Boss T", "Boss U"},
-            },
-            [5] = {
-                finish = 2250000,
-                forces = 2250,
-                level = 5,
-                date = {30, 5, 2024, 10, 0},
-                [1] = 1300,
-                [2] = 2600,
-                [3] = 2250,
-                BossNames = {"Boss V", "Boss W", "Boss X"},
-            },
-            [4] = {
-                finish = 2350000,
-                forces = 2350,
-                level = 4,
-                date = {1, 6, 2024, 12, 50},
-                [1] = 1400,
-                [2] = 2800,
-                [3] = 2350,
-                BossNames = {"Boss Y", "Boss Z", "Boss AA"},
-            },
-            [3] = {
-                finish = 2450000,
-                forces = 2450,
-                level = 3,
-                date = {3, 6, 2024, 14, 40},
-                [1] = 1500,
-                [2] = 3000,
-                [3] = 2450,
-                BossNames = {"Boss AB", "Boss AC", "Boss AD"},
-            },
-            [2] = {
-                finish = 2550000,
-                forces = 2550,
-                level = 2,
-                date = {5, 6, 2024, 16, 30},
-                [1] = 1600,
-                [2] = 3200,
-                [3] = 2550,
-                BossNames = {"Boss AE", "Boss AF", "Boss AG"},
-            },
-            [1] = {
-                finish = 2650000,
-                forces = 2650,
-                level = 1,
-                date = {7, 6, 2024, 18, 20},
-                [1] = 1700,
-                [2] = 3400,
-                [3] = 2650,
-                BossNames = {"Boss AH", "Boss AI", "Boss AJ"},
-            },
-        }
-    }
+function MPT:CreateFakeSV()    
+    for i=1, 50 do
+        local cmap = self.SeasonData[15].Dungeons[math.random(1, 8)]
+        local BossNames = {"Big Dragon", "Evil Mage", "Ugly Troll", "Addon Apocalypse", "Kungen"}
+        local BossTimes = {math.random(100, 200), math.random(250, 350), math.random(400, 500), math.random(550, 650), math.random(700, 800)}
+        local time = math.random(900000, 1300000)
+        local forces = math.random(600, 700)
+        local level = math.random(10, 20)
+        local intime = math.random(1, 5) <= 4
+        self:UpdatePB(time, forces, cmap, level, {monthDay = math.random(1,28), month = math.random(1, 12), year = 2025, hour = math.random(0,23), minute = math.random(0,59)}, BossTimes, BossNames, intime)
+    end
 end
 
-function MPT:UpdatePB(time, cmap, level, date)
+function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames, intime) -- called on completion of a run
     C_MythicPlus.RequestMapInfo()
     self.seasonID = self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason()
     if not MPTSV.BestTime then MPTSV.BestTime = {} end
@@ -208,16 +23,39 @@ function MPT:UpdatePB(time, cmap, level, date)
     local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"]
     if not MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or time < MPTSV.BestTime[self.seasonID][cmap][level]["finish"] then
         MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time
-        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = time
+        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
         MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
         MPTSV.BestTime[self.seasonID][cmap][level]["date"] = {date.monthDay, date.month, date.year, date.hour, date.minute}
         if not MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] then MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = {} end
-        for i, v in ipairs(self.BossTimes) do
+        for i, v in ipairs(BossTimes or {}) do
             MPTSV.BestTime[self.seasonID][cmap][level][i] = v
-            MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"][i] = self.BossNames[i]
+            if BossNames[i] then
+                MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"][i] = BossNames[i]
+            end
         end
     end
+    self:AddHistory(time, cmap, level, intime)
     return before
+end
+
+function MPT:AddHistory(time, cmap, level, intime) -- also called on completion of a run
+    if not MPTSV.History then MPTSV.History = {} end
+    if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
+    if not MPTSV.History[self.seasonID][cmap] then MPTSV.History[self.seasonID][cmap] = {intime = 0, depleted = 0, highestrun = 0} end
+    if not MPTSV.History[self.seasonID][cmap].fastestrun then
+        MPTSV.History[self.seasonID][cmap].fastestrun = time
+    end
+    if intime then
+        MPTSV.History[self.seasonID][cmap].intime = MPTSV.History[self.seasonID][cmap].intime + 1
+        if level > MPTSV.History[self.seasonID][cmap].highestrun then -- save highest run, which is then also "fastest" run
+            MPTSV.History[self.seasonID][cmap].highestrun = level
+            MPTSV.History[self.seasonID][cmap].fastestrun = time
+        elseif level == MPTSV.History[self.seasonID][cmap].highestrun and time < MPTSV.History[self.seasonID][cmap].fastestrun then
+            MPTSV.History[self.seasonID][cmap].fastestrun = time -- save faster run if same level
+        end
+    else
+        MPTSV.History[self.seasonID][cmap].depleted = MPTSV.History[self.seasonID][cmap].depleted + 1
+    end
 end
 
 function MPT:GetPB(cmap, level, seasonID)
@@ -226,7 +64,7 @@ function MPT:GetPB(cmap, level, seasonID)
     return MPTSV.BestTime and MPTSV.BestTime[seasonID] and MPTSV.BestTime[seasonID][cmap] and (MPTSV.BestTime[seasonID][cmap][level] or (self.LowerKey and MPTSV.BestTime[seasonID][cmap][level-1]))
 end
 
-function MPT:AddPB(cmap, level, seasonID, time, forces, date, BossNames, BossTimes)
+function MPT:AddRun(cmap, level, seasonID, time, forces, date, BossNames, BossTimes) -- called when manually adding a run
     C_MythicPlus.RequestMapInfo()
     for i, v in ipairs(BossTimes) do
         if type(v) == "string" then
@@ -321,7 +159,7 @@ function MPT:CreateEditPanel()
                 return 
             end
             time = time
-            self:AddPB(UIDropDownMenu_GetSelectedValue(F.RunEditPanel.DungeonDropdown), level,
+            self:AddRun(UIDropDownMenu_GetSelectedValue(F.RunEditPanel.DungeonDropdown), level,
                 nil, time, forces, {},
                 BossNames, BossTimes)
             F.RunEditPanel:Hide()
@@ -404,7 +242,7 @@ function MPT:EnableEditBoxKeyboard(editbox)
     end)
 end
 
-function MPT:CreatePBFrame()        
+function MPT:CreatePBFrame()       
         
     if not self.PBInfoFrame then
         -- Main Frame
@@ -413,21 +251,74 @@ function MPT:CreatePBFrame()
         local width = 1000
         local height = 700
         F:SetSize(width, height)
-        F:SetPoint("CENTER")
+        local screenWidth = UIParent:GetWidth()
+        local screenHeight = UIParent:GetHeight()
+        local x = (screenWidth - width) / 2
+        local y = (screenHeight - height) / 2
+        F:SetPoint("TOPLEFT", UIParent, "TOPLEFT", x, -y)
         F:SetFrameStrata("HIGH")
         F:EnableMouse(true)
         F:SetMovable(true)
+        F:SetClampedToScreen(true)
         F:RegisterForDrag("LeftButton")
         F:SetScript("OnDragStart", function(self)
             self:StartMoving()
         end)
         F:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
+            local scale = self:GetScale() or 1
+            local x = self:GetLeft()
+            local y = (UIParent:GetTop() - (self:GetTop() * scale)) / scale
+            self:ClearAllPoints()
+            self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", x, -y)
         end)
         self.SelectedSeasonButton = nil
         self.SelectedDungeonButton = nil
         self.SelectedLevelButton = nil
-       
+
+        F:SetResizable(true)
+        F.Handle = CreateFrame("Button", nil, F)
+        F.Handle:SetSize(20, 20)
+        F.Handle:SetPoint("BOTTOMRIGHT", F, "BOTTOMRIGHT", -2, 2)
+        F.Handle:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+        F.Handle:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+        F.Handle:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+        F.Handle:SetFrameStrata("TOOLTIP")
+        F.Handle:EnableMouse(true)
+        F.Handle:RegisterForDrag("LeftButton")
+        local minWidth, minHeight = 800, 550
+        local maxWidth, maxHeight = 1600, 1200
+        local initialWidth, initialHeight, initialX, initialY
+        local dragging = false
+        F.Handle:SetScript("OnDragStart", function(self)
+            initialWidth, initialHeight = F:GetWidth(), F:GetHeight()
+            local cursorX, cursorY = GetCursorPosition()
+            initialX, initialY = cursorX / UIParent:GetScale(), cursorY / UIParent:GetScale()
+            dragging = true
+            self:SetScript("OnUpdate", function()
+                if dragging then
+                    local cursorX, cursorY = GetCursorPosition()
+                    cursorX, cursorY = cursorX / UIParent:GetScale(), cursorY / UIParent:GetScale()
+                    local dx = cursorX - initialX
+                    local dy = cursorY - initialY
+                    local newWidth = math.max(minWidth, math.min(maxWidth, initialWidth + dx))
+                    local newHeight = math.max(minHeight, math.min(maxHeight, initialHeight - dy))
+                    F:SetSize(newWidth, newHeight)
+                    MPTSV.PBFrameWidth = newWidth
+                    MPTSV.PBFrameHeight = newHeight
+                    if F.SeasonButtonFrame then F.SeasonButtonFrame:SetWidth(newWidth) end
+                    if F.DungeonButtonFrame then F.DungeonButtonFrame:SetHeight(newHeight - (F.SeasonButtonFrame and F.SeasonButtonFrame:GetHeight() or 40)) end
+                    if F.LevelButtonFrame then F.LevelButtonFrame:SetHeight(newHeight - (F.SeasonButtonFrame and F.SeasonButtonFrame:GetHeight() or 40)) end
+                    if F.PBDataFrame then F.PBDataFrame:SetSize(newWidth - (F.DungeonButtonFrame and F.DungeonButtonFrame:GetWidth() or 160) - (F.LevelButtonFrame and F.LevelButtonFrame:GetWidth() or 135), newHeight - (F.SeasonButtonFrame and F.SeasonButtonFrame:GetHeight() or 40)) end
+                    if F.LevelContent then F.LevelContent:SetHeight(newHeight - (F.SeasonButtonFrame and F.SeasonButtonFrame:GetHeight() or 40)) end
+                end
+            end)
+        end)
+        F.Handle:SetScript("OnDragStop", function(self)
+            dragging = false
+            self:SetScript("OnUpdate", nil)
+        end)
+
         -- Close Button
         F.CloseButton = CreateFrame("Button", nil, F, "UIPanelCloseButton")
         F.CloseButton:SetSize(24, 24)
@@ -536,7 +427,17 @@ function MPT:CreatePBFrame()
                 end
             end
         end)
-        
+
+        F.TotalStatsButton = self:CreateButton(140, 40, F, true, false, {1, 1, 0.3, 0.7}, {}, "Expressway", 13, {1, 1, 1, 1}, "Show Total Stats")
+        F.TotalStatsButton:SetPoint("BOTTOM", F.DungeonButtonFrame, "BOTTOM", 0, 10)
+        F.TotalStatsButton:SetScript("OnClick", function()
+            self:ShowTotalStatsFrame(self.SelectedSeason)
+            if self.SelectedLevelButton then
+                self.SelectedLevelButton.Border:Hide()
+                self.SelectedLevel = nil
+            end
+        end)
+                
         -- Scale Slider
         F.ScaleSlider = CreateFrame("Slider", nil, F, "OptionsSliderTemplate")
         F.ScaleSlider:SetMinMaxValues(0.5, 2)
@@ -569,6 +470,9 @@ function MPT:HidePBButtons()
     end
     if F.PBDataText then
         F.PBDataText:Hide()
+    end
+    if F.PBDataText2 then
+        F.PBDataText2:Hide()
     end
     if F.DeleteButton then
         F.DeleteButton:Hide()
@@ -635,6 +539,7 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
                     self.SelectedLevelButton.Border:Hide()
                 end       
                 if F.PBDataText then F.PBDataText:Hide() end
+                if F.PBDataText2 then F.PBDataText2:Hide() end
                 if F.DeleteButton then F.DeleteButton:Hide() end
                 for k, v in pairs(F.LevelButtons or {}) do
                     v:Hide()
@@ -658,7 +563,7 @@ function MPT:ShowSeasonFrames() -- Showing Frame & Season Buttons
         self.SelectedSeasonButton = F.SeasonButtons[self.seasonID]
         F.SeasonButtons[self.seasonID].Border:Show()
     end
-    self:ShowDungeonFrames(self.seasonID) -- Show Border of Current Season when initially loaded
+    self:ShowDungeonFrames(self.seasonID) -- Select Current Season when initially loaded
 end
 
 function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
@@ -692,6 +597,7 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
                     self.SelectedLevelButton.Border:Hide()
                 end
                 if F.PBDataText then F.PBDataText:Hide() end
+                if F.PBDataText2 then F.PBDataText2:Hide() end
                 if F.DeleteButton then F.DeleteButton:Hide() end
                 self.SelectedDungeonButton = btn
                 self.SelectedDungeon = cmap
@@ -719,6 +625,7 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
         v:Hide()
     end
     if F.PBDataText then F.PBDataText:Hide() end
+    if F.PBDataText2 then F.PBDataText2:Hide() end
     if F.DeleteButton then F.DeleteButton:Hide() end
     if self.SelectedLevelButton then
         self.SelectedLevelButton.Border:Hide()
@@ -788,6 +695,9 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
                 F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
                 F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -10)
             end
+            if F.PBDataText2 then
+                F.PBDataText2:Hide()
+            end
             F.PBDataText:SetText(text)
             F.PBDataText:Show()
             F.PBDataText:SetJustifyH("LEFT")
@@ -795,5 +705,58 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             F.PBDataText:SetTextColor(1, 1, 1, 1)
             F.DeleteButton:Show()
         end
+    end
+end
+
+function MPT:ShowTotalStatsFrame(seasonID)
+    local F = self.BestTimeFrame
+    if not F then return end
+    if F.PBDataFrame then
+        local data = MPTSV.History and MPTSV.History[seasonID]
+        local completedruns = {}
+        local depletedruns = {}
+        local highestkey = {}
+        local fastestrun = {}
+        local totalcompletedkeys = 0
+        local totaldepletedkeys = 0
+        local text = ""
+        local text2 = ""
+        for cmap, data in pairs(data or {}) do
+            if data.intime > 0 or data.depleted > 0 then
+                local name = self:Utf8Sub(self:GetDungeonName(cmap), 1, 15)
+                text = text..string.format("|cFF3399FF%s|r:\n", name)
+                text2 = text2..string.format("|cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted)", 
+                data.intime + data.depleted, data.intime, data.depleted)
+                local bestkey = data.fastestrun and self:FormatTime(data.fastestrun/1000)
+                if bestkey then
+                    text2 = text2..string.format(", Best Key: |cFF00FF00+%s|r in |cFFFFFF4D%s|r\n", data.highestrun, bestkey)
+                else
+                    text2 = text2.."\n"
+                end
+                totalcompletedkeys = totalcompletedkeys + data.intime
+                totaldepletedkeys = totaldepletedkeys + data.depleted
+            end
+        end
+        text = string.format("Total Run Stats: |cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted)\n", totalcompletedkeys+totaldepletedkeys, totalcompletedkeys, totaldepletedkeys)..text
+        if not F.PBDataText then
+            F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            F.PBDataText:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 5, -10)
+        end
+        if not F.PBDataText2 then
+            F.PBDataText2 = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            F.PBDataText2:SetPoint("TOPLEFT", F.PBDataFrame, "TOPLEFT", 155, -30)
+        end
+        F.PBDataText:SetText(text)
+        F.PBDataText:Show()
+        F.PBDataText:SetJustifyH("LEFT")
+        F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+        F.PBDataText:SetTextColor(1, 1, 1, 1)
+        F.PBDataText2:SetText(text2)
+        F.PBDataText2:Show()
+        F.PBDataText2:SetJustifyH("LEFT")
+        F.PBDataText2:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+        F.PBDataText2:SetTextColor(1, 1, 1, 1)
+        F.DeleteButton:Hide()
+        F.RunEditPanel:Hide()
     end
 end
