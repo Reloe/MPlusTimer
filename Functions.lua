@@ -50,6 +50,16 @@ function MPT:SetPoint(frame, Anchor, parent, relativeTo, xOffset, yOffset)
     frame:SetPoint(Anchor, parent, relativeTo, xOffset, yOffset)
 end
 
+function MPT:AddMouseoverTooltip(frame, text)
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(text)
+        GameTooltip:Show()
+    end)
+    frame:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+end
 function MPT:ApplyTextSettings(frame, settings, text, Color, parent, num)
     parent = parent or frame:GetParent()
     if settings.enabled and parent then
@@ -177,7 +187,11 @@ function MPT:StrToTime(str)
         return tonumber(min) * 60 + tonumber(sec)
     end
     return false
+end
 
+function MPT:GetClassColor(class)
+    local color = RAID_CLASS_COLORS[class] or {r=1, g=1, b=1, a=1}
+    return color
 end
 
 function MPT:GetDateFormat(date)
