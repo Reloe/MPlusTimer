@@ -64,7 +64,6 @@ function MPT:AddCharacterHistory(tryagain)
     if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
     if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(2, UnitClass("player"))} end
     for i, v in ipairs(data) do
-        print(i)
         if (not MPTSV.History[self.seasonID][G].keys) or (not MPTSV.History[self.seasonID][G].keys[i]) then -- only add this run if it hasn't been added before
             local cmap = v.mapChallengeModeID
             local level = v.level
@@ -74,7 +73,6 @@ function MPT:AddCharacterHistory(tryagain)
             if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
             if not MPTSV.History[self.seasonID][G].keys then MPTSV.History[self.seasonID][G].keys = {} end
             MPTSV.History[self.seasonID][G].keys[i] = true
-            print("adding history for run:", i, cmap, level, time, intime)
             self:AddHistory(time, cmap, level, intime, false)
         end
     end
@@ -462,24 +460,7 @@ function MPT:CreatePBFrame()
         F.DeleteButton.Text:SetPoint("CENTER", F.DeleteButton, "CENTER", 0, 0)
         F.DeleteButton.Text:SetFont(self.LSM:Fetch("font", "Expressway"), 14, "OUTLINE")
         F.DeleteButton.Text:SetTextColor(1, 1, 1, 1)
-        F.DeleteButton.Text:SetText("Delete Run")
         F.DeleteButton:Hide()
-        F.DeleteButton:SetScript("OnClick", function()
-            if not self.SelectedSeason or not self.SelectedDungeon or not self.SelectedLevel then return end
-            if MPTSV.BestTime and MPTSV.BestTime[self.SelectedSeason] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] then
-                MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] = nil
-                if next(MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon]) == nil then
-                    if next(MPTSV.BestTime[self.SelectedSeason]) == nil then
-                        MPTSV.BestTime[self.SelectedSeason] = nil
-                        self:ShowSeasonFrames()
-                    else
-                        self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
-                    end
-                else
-                    self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
-                end
-            end
-        end)
         self:AddMouseoverTooltip(F.DeleteButton, "Delete the selected run from your saved best times. This does not delete it from the Total Stats. It is simply for comparison purposes.")
 
         F.TotalStatsButton = self:CreateButton(140, 40, F, true, false, {1, 1, 0.3, 0.7}, {}, "Expressway", 13, {1, 1, 1, 1}, "Show Stats")
@@ -691,13 +672,13 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
         local pb = self:GetPB(cmap, level, seasonID)
         if pb or level == 100 then
             local btn = F.LevelButtons[num]
+            local color = level == 100 and {0, 0.7, 0, 0.9} or {0.3, 0.3, 0.3, 0.9}
             if not btn then
-                local color = level == 100 and {0, 0.7, 0, 0.9} or {0.3, 0.3, 0.3, 0.9}
                 btn = self:CreateButton(90, 40, F.LevelContent, true, true, color, {0.2, 0.6, 1, 0.5}, "Expressway", 16, {1, 1, 1, 1})
                 F.LevelButtons[num] = btn
             end
             btn:SetPoint("TOP", F.LevelContent, "TOP", 0, num == 1 and -5 or ((num-1)*-45)-5)
-            btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+            btn.BG:SetColorTexture(unpack(color))
             if level ~= 100 then
                 btn:SetScript("OnClick", function()
                     if self.SelectedLevelButton then
@@ -747,7 +728,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
                 end
             end
             local date = self:GetDateFormat(pbdata.date)
-            if date == "" then date = "No Date/Manually Added Run" else date = "Date: "..date end
+            if date == "" then date = "No Date - Imported or manually Added Run" else date = "Date: "..date end
             text = text..string.format("Enemy Forces: %s\n%s\n", self:FormatTime(pbdata.forces), date)
             if not F.PBDataText then
                 F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -762,6 +743,24 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             F.PBDataText:SetTextColor(1, 1, 1, 1)
             F.PBDataText:Show()
             F.DeleteButton:Show()
+            self:AddMouseoverTooltip(F.DeleteButton, "Delete the currently selected run from your saved best times.\nIt does not remove it from your total run history.")
+            F.DeleteButton.Text:SetText("Delete Run")
+            F.DeleteButton:SetScript("OnClick", function()
+            if not self.SelectedSeason or not self.SelectedDungeon or not self.SelectedLevel then return end
+            if MPTSV.BestTime and MPTSV.BestTime[self.SelectedSeason] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] then
+                MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] = nil
+                if next(MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon]) == nil then
+                    if next(MPTSV.BestTime[self.SelectedSeason]) == nil then
+                        MPTSV.BestTime[self.SelectedSeason] = nil
+                        self:ShowSeasonFrames()
+                    else
+                        self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
+                    end
+                else
+                    self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
+                end
+            end
+        end)
         end       
     end
 end
@@ -782,6 +781,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
         local totalabandoned = 0
         local text = ""
         local text2 = ""
+        F.DeleteButton:Hide()
         if not history then return end
         if characteronly then
             history = history[G]
@@ -791,7 +791,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                 if data and (data.intime > 0 or data.depleted > 0) then
                     local name = self:Utf8Sub(self:GetDungeonName(cmap), 1, 15)
                     text = text..string.format("|cFF3399FF%s|r:\n", name)
-                    local runtext = data.intime + data.depleted and "Run" or "Runs"
+                    local runtext = data.intime + data.depleted == 1 and "Run" or "Runs"
                     text2 = text2..string.format("|cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)",
                     data.intime + data.depleted, runtext, data.intime, data.depleted, data.abandoned)
                     local bestkey = data.fastestrun and self:FormatTime(data.fastestrun/1000)
@@ -804,7 +804,24 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                     totaldepletedkeys = totaldepletedkeys + data.depleted
                     totalabandoned = totalabandoned + data.abandoned
                 end
-            end            
+            end    
+            
+            F.DeleteButton.Text:SetText("Delete Character")
+            F.DeleteButton:SetScript("OnClick", function()
+                if not self.SelectedSeason or not self.SelectedCharacter then return end
+                if MPTSV.History and MPTSV.History[self.SelectedSeason] and MPTSV.History[self.SelectedSeason][self.SelectedCharacter] then
+                    MPTSV.History[self.SelectedSeason][self.SelectedCharacter] = nil
+                        if next(MPTSV.History[self.SelectedSeason]) == nil then
+                            MPTSV.History[self.SelectedSeason] = nil
+                            F.PBDataFrame:Hide()
+                            self:ShowSeasonFrames()
+                        else
+                            self:ShowCharacterFrames(self.SelectedSeason)
+                        end
+                    end
+                end)
+            F.DeleteButton:Show()
+            self:AddMouseoverTooltip(F.DeleteButton, "Delete the selected character from your saved history.\nThis does not delete their runs from your saved best times.\nKeep in mind that these will be added again when you log into that character\nDeletion is meant for characters that no longer exist or have been transferred")
         else
             for i, cmap in pairs(self.SeasonData[seasonID].Dungeons) do
                 for G, charHistory in pairs(history or {}) do
@@ -829,8 +846,9 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                 local depleted = depletedruns[cmap] or 0
                 local abandoned = abandonedruns[cmap] or 0
                 text = text..string.format("|cFF3399FF%s|r:\n", name)
-                text2 = text2..string.format("|cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)",
-                completed + depleted, completed, depleted, abandoned)
+                local runtext = completed + depleted == 1 and "Run" or "Runs"
+                text2 = text2..string.format("|cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)",
+                completed + depleted, runtext, completed, depleted, abandoned)
                 local bestkey = fastestrun[cmap] and self:FormatTime(fastestrun[cmap]/1000)
                 if bestkey then
                     text2 = text2..string.format(", Best Key: |cFF00FF00+%s|r in |cFFFFFF4D%s|r\n", highestkey[cmap], bestkey)
@@ -861,7 +879,6 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
         F.PBDataText2:SetWordWrap(true)
         F.PBDataText2:SetNonSpaceWrap(true)
         F.PBDataText2:SetWidth(F.PBDataFrame:GetWidth()-155)
-        F.DeleteButton:Hide()
         F.RunEditPanel:Hide()
     end
 end
@@ -883,12 +900,15 @@ function MPT:ShowCharacterFrames(seasonID)
     self.SelectedLevel = nil
     local first = true
     local history = MPTSV.History and MPTSV.History[seasonID]
-    num = self:AddCharacterButton({name = "Total"}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
-    local GUID = UnitGUID("player")
-    num = self:AddCharacterButton(history[GUID], num, seasonID, GUID)
-    for G, data in pairs(history or {}) do
-        if not (G == GUID) then
-            num = self:AddCharacterButton(data, num, seasonID, G)
+    if history then
+        num = self:AddCharacterButton({name = "Total"}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
+        local GUID = UnitGUID("player")
+        num = self:AddCharacterButton(history[GUID], num, seasonID, GUID)
+        self.SelectedCharacter = GUID
+        for G, data in pairs(history or {}) do
+            if not (G == GUID) then
+                num = self:AddCharacterButton(data, num, seasonID, G)
+            end
         end
     end
     F.LevelContent:SetHeight(num*50)
@@ -913,6 +933,7 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
             self.SelectedLevelButton.BG:SetColorTexture(color.r, color.g, color.b, color.a)
         end
         self.SelectedLevelButton = btn
+        self.SelectedCharacter = G
         self:ShowTotalStatsFrame(seasonID, G, G)
         btn.Border:Show()
         btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
