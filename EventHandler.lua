@@ -41,7 +41,7 @@ end
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
     if e == "INSTANCE_ABANDON_VOTE_FINISHED" then
         local success = ...
-        print(success, "abandon vote finished", C_ChallengeMode.IsChallengeModeActive())
+        print(success, "abandon vote finished", C_ChallengeMode.IsChallengeModeActive(), self.seasonID, self.cmap, self.level)
     end
     if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and self.CloseBags then
         CloseAllBags()
@@ -94,6 +94,15 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
             self.seasonID = seasonID
         end
+        local G = UnitGUID("player")
+        if MPTSV.History and MPTSV.History[seasonID] and not MPTSV.History[seasonID][G] then
+            local login, reload = ...
+            if login then
+                C_Timer.After(10, function() self:AddCharacterHistory() end) -- wait 10 seconds because data is weird on initial login
+            elseif reload then
+                self:AddCharacterHistory()
+            end
+        end
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
@@ -110,6 +119,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:UpdateEnemyForces(false, false)
         self:SetSV(false, false, false, true)
         self:ToggleEventRegister(false)
+        C_Timer.After(5, function() self:AddCharacterHistory() end) -- add to history 5s delayed to make sure blizzard API has the data
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         self:UpdateBosses(false, false)
         self:UpdateEnemyForces(false, false, false)
