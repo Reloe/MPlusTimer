@@ -545,7 +545,6 @@ function MPT:UpdateEnemyForces(Start, preview)
     local percent = 0
     if current then
         percent = current / total * 100
-        percent = math.floor(percent*100)/100
     end
     if Start or preview then
         local bosscount = preview and 5 or #self.BossNames
@@ -643,12 +642,16 @@ function MPT:UpdateEnemyForces(Start, preview)
             end             
             F.ForcesBar.PercentCount:Hide()
             F.ForcesBar.RealCount:Hide()
+            F.ForcesBar.CurrentPullBar:Hide()
+            self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, "")
+            self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, "")
         elseif not self.done then
             local remaining = self.RealCount.remaining and total-current or current
             local remainingText = self.RealCount.total and string.format("%s/%s", remaining, total) or remaining
             percent = self.PercentCount.remaining and 100-percent or percent
             self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, string.format("%.2f%%", percent))
             self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, remainingText)
+            self:UpdateCurrentPull()
         end
     end
 end
@@ -687,7 +690,6 @@ function MPT:UpdateCurrentPull()
     local percent = 0
     if current then
         percent = current / total * 100
-        percent = math.floor(percent*100)/100
     end
     local currentPercent = (current/total)*100
     local F = self.Frame
