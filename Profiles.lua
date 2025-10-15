@@ -179,3 +179,46 @@ function MPT:CreateProfile(name)
         MPTSV.MainProfile = name -- if no main profile is set, we set the first created profile as main profile
     end
 end
+
+function MPT:ImportWAData(data)
+    local data = {}
+    if not MPTAPI.GetBossesData or not MPTAPI.GetForcesData then
+        print("Could not import WA data, please click on the WA in the options window to enable the necessary function.")
+        return
+    end
+    data.Bosses = MPTAPI:GetBossesData()
+    data.Forces = MPTAPI:GetForcesData()
+    if not data or not data.Bosses or not data.Forces or next(data.Bosses) == nil or next(data.Forces) == nil then
+        print("Could not import WA data, there appears to be no data available.")
+        return 
+    end
+    if not MPTSV.BestTime then MPTSV.BestTime = {} end
+    if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
+    local importcount = 0
+    for cmap, leveldata in pairs(data.Bosses) do
+        if data.Forces[cmap] then
+            if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
+            for level, timedata in pairs(leveldata) do
+                if data.Forces[cmap][level] then
+                    if not MPTSV.BestTime[self.seasonID][cmap][level] then MPTSV.BestTime[self.seasonID][cmap][level] = {} end
+                    if not MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] then MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = {} end
+                    local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"]
+                    if (not before) or (timedata["finish"] < before) then
+                        MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = timedata["finish"]
+                        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = data.Forces[cmap][level][0]
+                        MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
+                        MPTSV.BestTime[self.seasonID][cmap][level]["date"] = {}
+                        for i=1, 5 do
+                            if timedata[i] then
+                                MPTSV.BestTime[self.seasonID][cmap][level][i] = timedata[i]
+                                MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"][i] = "Boss "..i
+                            end
+                        end
+                        importcount = importcount + 1
+                    end
+                end
+            end
+        end
+    end
+    print("Successfully imported", importcount, "best times from WA into MPlusTimer.")
+end
