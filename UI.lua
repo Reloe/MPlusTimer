@@ -159,6 +159,16 @@ local GeneralOptions = {
             set = function(_, value) MPTSV.LowerKey = value end,
             get = function() return MPTSV.LowerKey end,
         },
+        Gap = MPT:CreateSpace(10),
+        ImportFromWA = {
+            type = "execute",
+            order = 11,
+            name = "Import WA Times",
+            desc = "Import Best Times from the M+ WA. This is only possible until Pre-Patch hits.",
+            func = function() 
+                MPT:ImportWAData()
+            end,         
+        },
         
     }
 }
