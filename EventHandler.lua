@@ -149,11 +149,10 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
     elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
         if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
-        local _, se, _, _, _, _, _, destGUID = ...
+        local _, se, _, _, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
         if se == "UNIT_DIED" and destGUID then
             local npcID = select(6, strsplit("-", destGUID))
-            if MDT and MDT:GetEnemyForces(tonumber(npcID)) then
-                self.CurrentPull = self.CurrentPull or {}
+            if self.CurrentPull and self.CurrentPull[destGUID] then
                 self.CurrentPull[destGUID] = "DEAD"
                 self:UpdateCurrentPull()         
             end
