@@ -269,7 +269,6 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         or 3
     if Start or preview then
         if time == 0 then
-            self.finish = 0
             self.started = true
             if (self.cmap and self.cmap ~= 0) or preview then
                 self.timelimit = preview and 2280 or select(3, C_ChallengeMode.GetMapUIInfo(self.cmap))
@@ -307,7 +306,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         end
         self.timer = preview and self.timer or time/1000
         local timeremain = self.timelimit-self.timer
-        local diff = before and (self.finish-before)/1000        
+        local diff = before and (time-before)/1000        
         if not preview then F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest+1])) end
         self:DisplayTimerElements(chest, true, preview, diff)
     end
@@ -490,7 +489,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     end
-                    if completed and defeated and defeated ~= 0 and pb and pb[i] then
+                    if completed and defeated and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -523,7 +522,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
                     end
                     self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
-                    if completed and defeated and defeated ~= 0 and pb and pb[i] then
+                    if completed and defeated and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -632,7 +631,7 @@ function MPT:UpdateEnemyForces(Start, preview)
         if percent >= 100 then
             if not self.done then
                 local defeat = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
-                if defeated and defeated ~= 0 then
+                if defeated then
                     local cur = select(2, GetWorldElapsedTime(1)) - defeat
                     self.forcesTime = cur
                     local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
