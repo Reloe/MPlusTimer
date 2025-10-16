@@ -247,6 +247,7 @@ function MPT:UpdateDisplay()
 end
 
 function MPT:Utf8Sub(str, startChar, endChar)
+    if not str then return str end
     local startIndex, endIndex = 1, #str
     local currentIndex, currentChar = 1, 0
 

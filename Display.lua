@@ -410,6 +410,7 @@ function MPT:UpdateBosses(Start, count, preview)
             if splittext then self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, splittext, splitcolor) end
         end
     elseif Start and not self.IsPreview then
+        self.cmap = self.cmap or C_ChallengeMode.GetActiveChallengeMapID()
         self.BossTimes = {}
         self.BossNames = {}
         local max = select(3, C_Scenario.GetStepInfo())
@@ -468,9 +469,9 @@ function MPT:UpdateBosses(Start, count, preview)
                         break
                     end
                 end
-                if self.cmap == 227 and num == 3 then name = "Opera Hall" end
-                name = self:Utf8Sub(name, 1, self.BossName.MaxLength)                
-                if name and name ~= "" then      
+                if self.cmap == 227 and num == 3 then name = "Opera Hall" end       
+                if name and name ~= "" then   
+                    name = self:Utf8Sub(name, 1, self.BossName.MaxLength)            
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
                     local frame = F["Bosses"..i]
