@@ -302,11 +302,10 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         -- add pb
         local before = false
         local date = C_DateAndTime.GetCurrentCalendarTime()
-        if self.cmap and self.level and not preview then
-            before = self:UpdatePB(time, self.forcesTime, self.cmap, level, date, self.BossTimes, self.BossNames)
+        if (self.cmap and self.level) and not preview then
+            before = self:UpdatePB(time, self.forcesTime, self.cmap, self.level, date, self.BossTimes, self.BossNames)
         end
         self.timer = preview and self.timer or time/1000
-        local timeremain = self.timelimit-self.timer
         local diff = before and (time-before)/1000        
         if not preview then F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest+1])) end
         self:DisplayTimerElements(chest, true, preview, diff)
@@ -339,7 +338,7 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         timertext = timeMS and ("%s%s"):format(timertext, timeMS) or timertext
     end
     local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
-    local timercolor = completion and (upgrades > 0 and self.TimerText.SuccessColor or self.TimerText.FailColor) or self.TimerText.Color
+    local timercolor = (completion and (upgrades > 0 and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
     self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)))
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
