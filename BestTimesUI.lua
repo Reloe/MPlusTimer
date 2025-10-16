@@ -1,124 +1,46 @@
 local _, MPT = ...
 
-function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames) -- called on completion of a run
-    if (not self.seasonID) or self.seasonID == 0 then
-        C_MythicPlus.RequestMapInfo()
-        self.seasonID = C_MythicPlus.GetCurrentSeason()
-        if (not self.seasonID) or self.seasonID == 0 then return end
-    end
-    if not MPTSV.BestTime then MPTSV.BestTime = {} end
-    if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
-    if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
-    if not MPTSV.BestTime[self.seasonID][cmap][level] then MPTSV.BestTime[self.seasonID][cmap][level] = {} end
-    local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or (self.LowerKey and MPTSV.BestTime[self.seasonID][cmap][level-1] and MPTSV.BestTime[self.seasonID][cmap][level-1]["finish"])
-    if (not MPTSV.BestTime[self.seasonID][cmap][level]["finish"]) or time < MPTSV.BestTime[self.seasonID][cmap][level]["finish"] then
-        MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time
-        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
-        MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
-        MPTSV.BestTime[self.seasonID][cmap][level]["date"] = {date.monthDay, date.month, date.year, date.hour, date.minute}
-        if not MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] then MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = {} end
-        for i, v in ipairs(BossTimes or {}) do
-            MPTSV.BestTime[self.seasonID][cmap][level][i] = v
-            if BossNames[i] then
-                MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"][i] = BossNames[i]
+StaticPopupDialogs["MPT_DELETE_RUN"] = {
+    text = "Are you sure you want to delete this run?",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function()
+        if not MPT.SelectedSeason or not MPT.SelectedDungeon or not MPT.SelectedLevel then return end
+        if MPTSV.BestTime and MPTSV.BestTime[MPT.SelectedSeason] and MPTSV.BestTime[MPT.SelectedSeason][MPT.SelectedDungeon] and MPTSV.BestTime[MPT.SelectedSeason][MPT.SelectedDungeon][MPT.SelectedLevel] then
+            MPTSV.BestTime[MPT.SelectedSeason][MPT.SelectedDungeon][MPT.SelectedLevel] = nil
+            if next(MPTSV.BestTime[MPT.SelectedSeason][MPT.SelectedDungeon]) == nil then
+                if next(MPTSV.BestTime[MPT.SelectedSeason]) == nil then
+                    MPTSV.BestTime[MPT.SelectedSeason] = nil
+                    MPT:ShowSeasonFrames()
+                else
+                    MPT:ShowLevelFrames(MPT.SelectedDungeon, MPT.SelectedSeason)
+                end
+            else
+                MPT:ShowLevelFrames(MPT.SelectedDungeon, MPT.SelectedSeason)
             end
         end
-    end
-    return before
-end
-
-function MPT:AddCharacterHistory(tryagain)
-    local data = (C_MythicPlus.GetRunHistory(true, true))
-    if MPTSV.LastHistoryData == data or data == {} then 
-        if tryagain then
-            C_Timer.After(10, function() self:AddCharacterHistory(false) end) -- try again in 10 seconds. Data is weird on initial login
-        end
-        return     
-    end
-    MPTSV.LastHistoryData = data
-    if not data or #data == 0 then return end
-    local G = UnitGUID("player")    
-    if (not self.seasonID) or self.seasonID == 0 then
-        C_MythicPlus.RequestMapInfo()
-        self.seasonID = C_MythicPlus.GetCurrentSeason()
-        if not self.seasonID or self.seasonID == 0 then return end
-    end
-    if not MPTSV.History then MPTSV.History = {} end
-    if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
-    if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(2, UnitClass("player"))} end
-    for i, v in ipairs(data) do
-        if (not MPTSV.History[self.seasonID][G].keys) or (not MPTSV.History[self.seasonID][G].keys[i]) then -- only add this run if it hasn't been added before
-            local cmap = v.mapChallengeModeID
-            local level = v.level
-            local time = v.durationSec
-            local intime = v.completed
-            if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
-            if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
-            if not MPTSV.History[self.seasonID][G].keys then MPTSV.History[self.seasonID][G].keys = {} end
-            MPTSV.History[self.seasonID][G].keys[i] = true
-            self:AddHistory(time, cmap, level, intime, false)
-        end
-    end
-end
-
-function MPT:AddHistory(time, cmap, level, intime, abandoned) -- abandoned runs get added manually. Everything else is through API    
-    local G = UnitGUID("player")
-    if abandoned and level and cmap then
-        if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
-        if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(3, UnitClass("player"))} end
-        if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
-        if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
-        MPTSV.History[self.seasonID][G][cmap].abandoned = MPTSV.History[self.seasonID][G][cmap].abandoned + 1
-        MPTSV.History[self.seasonID][G][cmap][level].abandoned = MPTSV.History[self.seasonID][G][cmap][level].abandoned + 1
-        print('adding abandoned run for', cmap, level)
-        return
-    end
-    if time and not MPTSV.History[self.seasonID][G][cmap].fastestrun then
-        MPTSV.History[self.seasonID][G][cmap].fastestrun = time*1000
-    end
-    if intime then
-        MPTSV.History[self.seasonID][G][cmap].intime = MPTSV.History[self.seasonID][G][cmap].intime + 1
-        MPTSV.History[self.seasonID][G][cmap][level].intime = MPTSV.History[self.seasonID][G][cmap][level].intime + 1
-        if level > MPTSV.History[self.seasonID][G][cmap].highestrun then -- save highest run, which is then also "fastest" run
-            MPTSV.History[self.seasonID][G][cmap].highestrun = level
-            MPTSV.History[self.seasonID][G][cmap].fastestrun = time*1000
-        elseif level == MPTSV.History[self.seasonID][G][cmap].highestrun and time*1000 < MPTSV.History[self.seasonID][G][cmap].fastestrun then
-            MPTSV.History[self.seasonID][G][cmap].fastestrun = time*1000 -- save faster run if same level
-        end
-    else
-        MPTSV.History[self.seasonID][G][cmap][level].depleted = MPTSV.History[self.seasonID][G][cmap][level].depleted + 1
-        MPTSV.History[self.seasonID][G][cmap].depleted = MPTSV.History[self.seasonID][G][cmap].depleted + 1
-    end
-end
-
-function MPT:GetPB(cmap, level, seasonID, lowerkey)
-    C_MythicPlus.RequestMapInfo()
-    self.seasonID = seasonID or ((self.seasonID and self.seasonID ~= 0 and self.seasonID) or C_MythicPlus.GetCurrentSeason())
-    return MPTSV.BestTime and MPTSV.BestTime[self.seasonID] and MPTSV.BestTime[self.seasonID][cmap] and (MPTSV.BestTime[self.seasonID][cmap][level] or (lowerkey and MPTSV.BestTime[self.seasonID][cmap][level-1]))
-end
-
-function MPT:AddRun(cmap, level, seasonID, time, forces, date, BossNames, BossTimes) -- called when manually adding a run
-    C_MythicPlus.RequestMapInfo()
-    for i, v in ipairs(BossTimes) do
-        if type(v) == "string" then
-            BossTimes[i] = self:StrToTime(v)
-        end
-    end
-    self.seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
-    if not MPTSV.BestTime then MPTSV.BestTime = {} end
-    if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
-    if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
-    if time and forces and BossNames and cmap and level and BossTimes and type(BossTimes) == "table" then
-        MPTSV.BestTime[self.seasonID][cmap][level] = MPTSV.BestTime[self.seasonID][cmap][level] or {}
-        MPTSV.BestTime[self.seasonID][cmap][level] = BossTimes
-        MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = BossNames
-        MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time*1000
-        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
-        MPTSV.BestTime[self.seasonID][cmap][level]["date"] = date
-        MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
-    end
-end
-
+    end,
+    hideOnEscape = true,
+}
+StaticPopupDialogs["MPT_DELETE_CHARACTER"] = {
+    text = "Are you sure you want to delete this character's history?",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function()
+       if not MPT.SelectedSeason or not MPT.SelectedCharacter then return end
+         if MPTSV.History and MPTSV.History[MPT.SelectedSeason] and MPTSV.History[MPT.SelectedSeason][MPT.SelectedCharacter] then
+              MPTSV.History[MPT.SelectedSeason][MPT.SelectedCharacter] = nil
+              if next(MPTSV.History[MPT.SelectedSeason]) == nil then
+                MPTSV.History[MPT.SelectedSeason] = nil
+                F.PBDataFrame:Hide()
+                MPT:ShowSeasonFrames()
+              else
+                MPT:ShowCharacterFrames(MPT.SelectedSeason)
+              end
+         end
+    end,
+    hideOnEscape = true,
+}
 
 function MPT:CreateEditPanel()
     local F = self.BestTimeFrame
@@ -452,6 +374,9 @@ function MPT:CreatePBFrame()
             if self.SelectedLevelButton then
                 self.SelectedLevelButton.Border:Hide()
             end
+            if self.SelectedDungeonButton then
+                self.SelectedDungeonButton.Border:Hide()
+            end
             self.SelectedLevel = nil
             self:ShowCharacterFrames(self.SelectedSeason)
         end)
@@ -648,6 +573,9 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     if F.DeleteButton then F.DeleteButton:Hide() end
     if self.SelectedLevelButton then
         self.SelectedLevelButton.Border:Hide()
+        if self.SelectedLevelButton.BorderFrame then
+            self.SelectedLevelButton.BorderFrame:Hide()
+        end
     end
     self.SelectedLevel = nil
     local first = true
@@ -659,13 +587,24 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
             if not btn then
                 btn = self:CreateButton(90, 40, F.LevelContent, true, true, color, {0.2, 0.6, 1, 0.5}, "Expressway", 16, {1, 1, 1, 1})
                 F.LevelButtons[num] = btn
+                btn.BorderFrame = CreateFrame("Frame", nil, btn, "BackdropTemplate")
+                btn.BorderFrame:SetAllPoints(btn)
+                btn.BorderFrame:SetBackdrop({
+                    edgeFile = "Interface\\Buttons\\WHITE8x8",
+                    edgeSize = 2,
+                })
+                btn.BorderFrame:SetBackdropBorderColor(1, 0, 0, 1) -- or any color you want
+                btn.BorderFrame:Hide()
             end
-            btn:SetPoint("TOP", F.LevelContent, "TOP", 0, num == 1 and -5 or ((num-1)*-45)-5)
+            btn:SetPoint("TOP", F.LevelContent, "TOP", -5, num == 1 and -5 or ((num-1)*-45)-5)
             btn.BG:SetColorTexture(unpack(color))
             if level ~= 100 then
                 btn:SetScript("OnClick", function()
                     if self.SelectedLevelButton then
                         self.SelectedLevelButton.Border:Hide()
+                        if self.SelectedLevelButton.BorderFrame then
+                            self.SelectedLevelButton.BorderFrame:Hide()
+                        end
                     end
                     self.SelectedLevelButton = btn
                     self.SelectedLevel = level
@@ -676,6 +615,9 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
                     first = false
                     if self.SelectedLevelButton then
                         self.SelectedLevelButton.Border:Hide()
+                        if self.SelectedLevelButton.BorderFrame then
+                            self.SelectedLevelButton.BorderFrame:Hide()
+                        end
                     end
                     self.SelectedLevelButton = btn
                     self.SelectedLevel = level
@@ -695,6 +637,41 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
     end
     F.LevelContent:SetHeight(num*50)
 end
+
+function MPT:ShowCharacterFrames(seasonID)
+    local F = self.BestTimeFrame
+    if not F then return end
+    local num = 1
+    for k, v in pairs(F.LevelButtons or {}) do
+        v.Border:Hide()
+        v:Hide()
+    end
+    if F.PBDataText then F.PBDataText:Hide() end
+    if F.PBDataText2 then F.PBDataText2:Hide() end
+    if F.DeleteButton then F.DeleteButton:Hide() end
+    if self.SelectedLevelButton then
+        self.SelectedLevelButton.Border:Hide()
+        if self.SelectedLevelButton.BorderFrame then
+            self.SelectedLevelButton.BorderFrame:Hide()
+        end
+    end
+    self.SelectedLevel = nil
+    local first = true
+    local history = MPTSV.History and MPTSV.History[seasonID]
+    if history then
+        num = self:AddCharacterButton({name = "Total"}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
+        local GUID = UnitGUID("player")
+        num = self:AddCharacterButton(history[GUID], num, seasonID, GUID)
+        self.SelectedCharacter = GUID
+        for G, data in pairs(history or {}) do
+            if not (G == GUID) then
+                num = self:AddCharacterButton(data, num, seasonID, G)
+            end
+        end
+    end
+    F.LevelContent:SetHeight(num*50)
+end
+
 
 function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
     local F = self.BestTimeFrame
@@ -734,22 +711,9 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             self:AddMouseoverTooltip(F.DeleteButton, "Delete the currently selected run from your saved best times.\nIt does not remove it from your total run history.")
             F.DeleteButton.Text:SetText("Delete Run")
             F.DeleteButton:SetScript("OnClick", function()
-                if not self.SelectedSeason or not self.SelectedDungeon or not self.SelectedLevel then return end
-                if MPTSV.BestTime and MPTSV.BestTime[self.SelectedSeason] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon] and MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] then
-                    MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon][self.SelectedLevel] = nil
-                    if next(MPTSV.BestTime[self.SelectedSeason][self.SelectedDungeon]) == nil then
-                        if next(MPTSV.BestTime[self.SelectedSeason]) == nil then
-                            MPTSV.BestTime[self.SelectedSeason] = nil
-                            self:ShowSeasonFrames()
-                        else
-                            self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
-                        end
-                    else
-                        self:ShowLevelFrames(self.SelectedDungeon, self.SelectedSeason)
-                    end
-                end
+                StaticPopup_Show("MPT_DELETE_RUN")
             end)
-        end     
+        end
         if completedruns > 0 or depletedruns > 0 or abandonedruns > 0 then
             local runtext = completedruns + depletedruns == 1 and "Run" or "Runs"
             text = text..string.format("Total: |cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)", completedruns + depletedruns, runtext, completedruns, depletedruns, abandonedruns)
@@ -811,18 +775,8 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
             
             F.DeleteButton.Text:SetText("Delete Character")
             F.DeleteButton:SetScript("OnClick", function()
-                if not self.SelectedSeason or not self.SelectedCharacter then return end
-                if MPTSV.History and MPTSV.History[self.SelectedSeason] and MPTSV.History[self.SelectedSeason][self.SelectedCharacter] then
-                    MPTSV.History[self.SelectedSeason][self.SelectedCharacter] = nil
-                        if next(MPTSV.History[self.SelectedSeason]) == nil then
-                            MPTSV.History[self.SelectedSeason] = nil
-                            F.PBDataFrame:Hide()
-                            self:ShowSeasonFrames()
-                        else
-                            self:ShowCharacterFrames(self.SelectedSeason)
-                        end
-                    end
-                end)
+                StaticPopup_Show("MPT_DELETE_CHARACTER")
+            end)
             F.DeleteButton:Show()
             self:AddMouseoverTooltip(F.DeleteButton, "Delete the selected character from your saved history.\nThis does not delete their runs from your saved best times.\nKeep in mind that these will be added again when you log into that character\nDeletion is meant for characters that no longer exist or have been transferred")
         else
@@ -886,46 +840,23 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
     end
 end
 
-function MPT:ShowCharacterFrames(seasonID)
-    local F = self.BestTimeFrame
-    if not F then return end
-    local num = 1
-    for k, v in pairs(F.LevelButtons or {}) do
-        v.Border:Hide()
-        v:Hide()
-    end
-    if F.PBDataText then F.PBDataText:Hide() end
-    if F.PBDataText2 then F.PBDataText2:Hide() end
-    if F.DeleteButton then F.DeleteButton:Hide() end
-    if self.SelectedLevelButton then
-        self.SelectedLevelButton.Border:Hide()
-    end
-    self.SelectedLevel = nil
-    local first = true
-    local history = MPTSV.History and MPTSV.History[seasonID]
-    if history then
-        num = self:AddCharacterButton({name = "Total"}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
-        local GUID = UnitGUID("player")
-        num = self:AddCharacterButton(history[GUID], num, seasonID, GUID)
-        self.SelectedCharacter = GUID
-        for G, data in pairs(history or {}) do
-            if not (G == GUID) then
-                num = self:AddCharacterButton(data, num, seasonID, G)
-            end
-        end
-    end
-    F.LevelContent:SetHeight(num*50)
-end
-
 function MPT:AddCharacterButton(data, num, seasonID, G, color)
     local F = self.BestTimeFrame
     local btn = F.LevelButtons[num]
     if not data then return num end
     if not btn then
         btn = self:CreateButton(90, 40, F.LevelContent, true, true, {0.3, 0.3, 0.3, 0.9}, {0.2, 0.6, 1, 0.5}, "Expressway", 16, {1, 1, 1, 1})
-        F.LevelButtons[num] = btn
+        btn.BorderFrame = CreateFrame("Frame", nil, btn, "BackdropTemplate")
+        btn.BorderFrame:SetAllPoints(btn)
+        btn.BorderFrame:SetBackdrop({
+            edgeFile = "Interface\\Buttons\\WHITE8x8",
+            edgeSize = 3,
+        })
+        btn.BorderFrame:SetBackdropBorderColor(1, 1, 1, 1)
+        btn.BorderFrame:Hide()
+        F.LevelButtons[num] = btn        
     end
-    btn:SetPoint("TOP", F.LevelContent, "TOP", 0, num == 1 and -5 or ((num-1)*-45)-5)
+    btn:SetPoint("TOP", F.LevelContent, "TOP", -5, num == 1 and -5 or ((num-1)*-45)-5)
     local color = color or self:GetClassColor(data.class)
     btn.BG:SetColorTexture(color.r, color.g, color.b, color.a)
     btn.colors = color
@@ -934,12 +865,18 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
             self.SelectedLevelButton.Border:Hide()
             local color = self.SelectedLevelButton.colors
             self.SelectedLevelButton.BG:SetColorTexture(color.r, color.g, color.b, color.a)
+            if self.SelectedLevelButton.BorderFrame then
+                self.SelectedLevelButton.BorderFrame:Hide()
+            end
         end
         self.SelectedLevelButton = btn
         self.SelectedCharacter = G
         self:ShowTotalStatsFrame(seasonID, G, G)
-        btn.Border:Show()
-        btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+        --btn.Border:Show()
+        if data.class == "PRIEST" then
+            btn.BorderFrame:SetBackdropBorderColor(1, 0, 0, 1) -- use red border for priests
+        end
+        btn.BorderFrame:Show()
     end)        
     local text = data.name
     if data.realm and data.realm ~= GetNormalizedRealmName() then
@@ -950,8 +887,11 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
     if G and G == UnitGUID("player") then
         self.SelectedLevelButton = btn
         self:ShowTotalStatsFrame(seasonID, true, G)
-        btn.Border:Show()
-        btn.BG:SetColorTexture(0.3, 0.3, 0.3, 0.9)
+        --btn.Border:Show()
+        if data.class == "PRIEST" then
+            btn.BorderFrame:SetBackdropBorderColor(1, 0, 0, 1) -- use red border for priests
+        end
+        btn.BorderFrame:Show()
     end
     num = num+1  
     return num   
