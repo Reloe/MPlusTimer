@@ -1,16 +1,16 @@
 local _, MPT = ...
 
-function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames, intime) -- called on completion of a run
+function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames) -- called on completion of a run
     if (not self.seasonID) or self.seasonID == 0 then
         C_MythicPlus.RequestMapInfo()
         self.seasonID = C_MythicPlus.GetCurrentSeason()
-        if not self.seasonID or self.seasonID == 0 then return end
+        if (not self.seasonID) or self.seasonID == 0 then return end
     end
     if not MPTSV.BestTime then MPTSV.BestTime = {} end
     if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
     if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
     if not MPTSV.BestTime[self.seasonID][cmap][level] then MPTSV.BestTime[self.seasonID][cmap][level] = {} end
-    local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"]
+    local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or (self.LowerKey and MPTSV.BestTime[self.seasonID][cmap][level-1] and MPTSV.BestTime[self.seasonID][cmap][level-1]["finish"])
     if not MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or time < MPTSV.BestTime[self.seasonID][cmap][level]["finish"] then
         MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time
         MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
