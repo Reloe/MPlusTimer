@@ -114,11 +114,16 @@ end
 
 function MPT:ModernizeProfile(profile)
     if self:GetVersion() > profile.Version then
-        if profile.Version < 2 then  
+        if profile.Version < 2 then
+            profile.TimerText.Decimals = 1
+            profile.TimerText.SuccessColor = {0, 1, 0, 1}
+            profile.TimerText.FailColor = {1, 0, 0, 1}
+            profile.RealCount.CurrentPullColor = {0, 1, 0, 1}
+            profile.PercentCount.CurrentPullColor = {0, 1, 0, 1}
             -- add stuff to profile that was missing in that version.
         end
 
-        profile.Version = self:GetVersion()
+        self.Version = self:GetVersion()
     end
 end
 

@@ -127,7 +127,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
 }
 
 MPT.DefaultProfile = {
-    Version = 1,
+    Version = MPT:GetVersion(),
     name = "default",
     Spacing = 3,
     UpdateRate = 0.2,
@@ -248,8 +248,11 @@ MPT.DefaultProfile = {
         yOffset = 0,
         Font = "Expressway",
         FontSize = 16,
+        Decimals = 1,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
+        SuccessColor = {0, 1, 0, 1},
+        FailColor = {1, 0, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
     },
@@ -387,6 +390,7 @@ MPT.DefaultProfile = {
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
+        CurrentPullColor = {0, 1, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
     },
@@ -404,6 +408,7 @@ MPT.DefaultProfile = {
         FontSize = 16,
         Outline = "OUTLINE",
         Color = {1, 1, 1, 1},
+        CurrentPullColor = {0, 1, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
     },

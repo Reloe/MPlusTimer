@@ -274,6 +274,12 @@ TimerStatusBar.args.ThreeChestColor = MPT:CreateColor(15, "Three Chest Color", "
 TimerStatusBar.args.DepleteColor = MPT:CreateColor(16, "Deplete Color", "Color of the Timer Bar when the timer is depleted", {"TimerBar", "Color", 1})
 TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(17, {[1] = "Relevant Chest Timer", [2] = "All Chest Timers", [3] = "No Chest Timer"}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
 local TimerText = MPT:CreateTextSetting("Main Timer", "TimerText", 2, true)
+TimerText.args.Decimals = MPT:CreateDropDown(11, {[0] = "0", [1] = "1", [2] = "2", [3] = "3"}, "Final Time Decimals", "Number of decimal places on the Final Timer", {"TimerText", "Decimals"}, true)
+TimerText.args.SuccessColor = MPT:CreateColor(12, "Intime Color", "Color of the Timer Text on timing the key", {"TimerText", "SuccessColor"}, true)
+TimerText.args.FailColor = MPT:CreateColor(13, "Deplete Color", "Color of the Timer Text on deplete", {"TimerText", "FailColor"}, true)
+
+
+           
 local ChestTimer1 = MPT:CreateTextSetting("Chest Timer 1", "ChestTimer1", 1, true)
 ChestTimer1.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
 ChestTimer1.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
