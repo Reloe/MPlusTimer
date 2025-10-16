@@ -71,6 +71,10 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "PLAYER_ENTERING_WORLD" then
+        local login, reload = ...
+        if login then
+            C_Timer.After(10, function() self:EventHandler("PLAYER_ENTERING_WORLD", false, true) end) -- re initiate after 10 seconds as a lot of this data is not available on initial login
+        end
         if self.HideTracker and not self.Hooked then
             self.Hooked = true
             local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
@@ -87,19 +91,14 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:ShowFrame(false)
             self:ToggleEventRegister(false)
         end
-        if seasonID > 0 then
+        if seasonID > 0 and (login or reload) then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
             if not MPTSV.History then MPTSV.History = {} end
             if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
             if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
             self.seasonID = seasonID
-        end
-        local G = UnitGUID("player")
-        if MPTSV.History and MPTSV.History[seasonID] and not MPTSV.History[seasonID][G] then
-            local login, reload = ...
-            if login then
-                C_Timer.After(10, function() self:AddCharacterHistory() end) -- wait 10 seconds because data is weird on initial login
-            elseif reload then
+            local G = UnitGUID("player")
+            if MPTSV.History and MPTSV.History[seasonID] and not MPTSV.History[seasonID][G] then
                 self:AddCharacterHistory()
             end
         end

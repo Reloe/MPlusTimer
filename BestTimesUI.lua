@@ -356,7 +356,7 @@ function MPT:CreatePBFrame()
 
         -- Delete Button
         F.DeleteButton = CreateFrame("Button", nil, F.PBDataFrame)
-        F.DeleteButton:SetSize(100, 32)
+        F.DeleteButton:SetSize(120, 32)
         F.DeleteButton:SetPoint("TOPRIGHT", F.PBDataFrame, "TOPRIGHT", -20, -20)
         F.DeleteButton.BG = F.DeleteButton:CreateTexture(nil, "BACKGROUND")
         F.DeleteButton.BG:SetAllPoints()
