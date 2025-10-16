@@ -183,7 +183,7 @@ end
 function MPT:ImportWAData(data)
     local data = {}
     local WANames = {"M+ Bosses", "M+ Enemy Forces Bar"}
-    if not WeakAuras then print("Could not importa WA data, WeakAura Addon appears to not be loaded") return end
+    if not WeakAuras then print("Could not import WA data, WeakAura Addon appears to not be loaded") return end
     local LS = LibStub("LibSerialize") -- WA uses this library so we don't include it ourselves
     for i, name in ipairs(WANames) do
         local aura = WeakAuras.GetData(name)
