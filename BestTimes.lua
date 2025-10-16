@@ -11,7 +11,7 @@ function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames) -- 
     if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
     if not MPTSV.BestTime[self.seasonID][cmap][level] then MPTSV.BestTime[self.seasonID][cmap][level] = {} end
     local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or (self.LowerKey and MPTSV.BestTime[self.seasonID][cmap][level-1] and MPTSV.BestTime[self.seasonID][cmap][level-1]["finish"])
-    if not MPTSV.BestTime[self.seasonID][cmap][level]["finish"] or time < MPTSV.BestTime[self.seasonID][cmap][level]["finish"] then
+    if (not MPTSV.BestTime[self.seasonID][cmap][level]["finish"]) or time < MPTSV.BestTime[self.seasonID][cmap][level]["finish"] then
         MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time
         MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
         MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
