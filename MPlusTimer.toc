@@ -28,6 +28,6 @@ EventHandler.lua
 Data.lua
 Display.lua
 Profiles.lua
-UI.lua
 BestTimesUI.lua
 PBData.lua
+UI.lua
