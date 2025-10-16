@@ -182,12 +182,19 @@ end
 
 function MPT:ImportWAData(data)
     local data = {}
-    if not MPTAPI.GetBossesData or not MPTAPI.GetForcesData then
-        print("Could not import WA data, please click on the WA in the options window to enable the necessary function.")
-        return
+    local WANames = {"M+ Bosses", "M+ Enemy Forces Bar"}
+    if not WeakAuras then print("Could not importa WA data, WeakAura Addon appears to not be loaded") return end
+    local LS = LibStub("LibSerialize") -- WA uses this library so we don't include it ourselves
+    for i, name in ipairs(WANames) do
+        local aura = WeakAuras.GetData(name)
+        local saved = aura and aura.information and aura.information.saved
+        if not saved then print("Could not import WA data, the aura appears to be missing or renamed") return end
+        local decodedPrint =  Compress:DecodeForPrint(saved)
+        local decompressedDeflated = Compress:DecompressDeflate(decodedPrint)
+        local success, deserialized = LS:Deserialize(decompressedDeflated)
+        if (not success) or (not deserialized) then print("Importing WA data failed.") return end
+        if i == 1 then data.Bosses = deserialized else data.Forces = deserialized end     
     end
-    data.Bosses = MPTAPI:GetBossesData()
-    data.Forces = MPTAPI:GetForcesData()
     if not data or not data.Bosses or not data.Forces or next(data.Bosses) == nil or next(data.Forces) == nil then
         print("Could not import WA data, there appears to be no data available.")
         return 
