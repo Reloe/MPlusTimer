@@ -387,6 +387,7 @@ function MPT:UpdateBosses(Start, count, preview)
         local killtime = 0
         self:MuteJournalSounds()
         self.BossNames = {}
+        self.MaxBossFrame = 5
         for i=1, 5 do
             EJ_SelectInstance(721)
             local name = EJ_GetEncounterInfoByIndex(i, 721)
