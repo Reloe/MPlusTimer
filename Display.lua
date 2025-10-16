@@ -538,7 +538,7 @@ function MPT:UpdateBosses(Start, count, preview)
 
 end
 
-function MPT:UpdateEnemyForces(Start, preview)
+function MPT:UpdateEnemyForces(Start, preview, completion)
     -- Current Pull Overlay is only shown in Preview as no API for it is available in midnight
     -- If an API is provided I have to add stuff to the else statement below
     -- Mostly copy paste from the preview
@@ -622,6 +622,8 @@ function MPT:UpdateEnemyForces(Start, preview)
             F.ForcesBar.Completion:Hide()
         end
     else
+        percent = completion and 100 or percent
+        count = completion and total or count
         local forcesColor =
         (percent < 20 and self.ForcesBar.Color[1]) or
         (percent < 40 and self.ForcesBar.Color[2]) or

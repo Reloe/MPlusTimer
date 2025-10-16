@@ -116,7 +116,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:ToggleEventRegister(false)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         self:UpdateTimerBar(false, true)
-        self:UpdateEnemyForces(false, false)
+        self:UpdateEnemyForces(false, false, true)
         self:SetSV(false, false, false, true)
         self:ToggleEventRegister(false)
         C_Timer.After(5, function() self:AddCharacterHistory() end) -- add to history 5s delayed to make sure blizzard API has the data
