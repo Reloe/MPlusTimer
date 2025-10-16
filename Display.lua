@@ -334,18 +334,16 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
     F.TimerBar:SetValue(self.timer)
     self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", self:FormatTime(self.timer, completion and 1), self:FormatTime(self.timelimit)))
     if diff or preview then
-        local ComparisonTime = preview and math.random(-200, 200) or diff or "" -- math.random(-200, 200)
-        local ComparisonColor = ComparisonTime < 0 and self.ComparisonTimer.SuccessColor or ComparisonTime > 0 and self.ComparisonTimer.FailColor or self.ComparisonTimer.EqualColor
+        local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
+        local ComparisonColor = (ComparisonTime < 0 and self.ComparisonTimer.SuccessColor) or (ComparisonTime > 0 and self.ComparisonTimer.FailColor) or self.ComparisonTimer.EqualColor
         local prefix = ""
-        if ComparisonTime then
-            if ComparisonTime < 0 then 
-                ComparisonTime = ComparisonTime*-1
-                prefix = "-"
-            elseif ComparisonTime > 0 then
-                prefix = "+"
-            end
-            self:ApplyTextSettings(F.TimerBar.ComparisonTimer, self.ComparisonTimer, string.format("%s%s", prefix, ComparisonTime == 0 and "+-0" or self:FormatTime(ComparisonTime, true)), ComparisonColor)
+        if ComparisonTime < 0 then 
+            ComparisonTime = ComparisonTime*-1
+            prefix = "-"
+        elseif ComparisonTime > 0 then
+            prefix = "+"
         end
+        self:ApplyTextSettings(F.TimerBar.ComparisonTimer, self.ComparisonTimer, string.format("%s%s", prefix, ComparisonTime == 0 and "+-0" or self:FormatTime(ComparisonTime, true)), ComparisonColor)
     else
         F.TimerBar.ComparisonTimer:Hide()
     end
