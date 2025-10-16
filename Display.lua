@@ -536,7 +536,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
                     end
                     self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
-                    if completed and defeated and pb and pb[i] then
+                    if defeated and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -641,9 +641,9 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
         if percent >= 100 then
             if not self.done then
-                local defeat = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
+                local defeated = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
                 if defeated then
-                    local cur = select(2, GetWorldElapsedTime(1)) - defeat
+                    local cur = select(2, GetWorldElapsedTime(1)) - defeated
                     self.forcesTime = cur
                     local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
                     if pb and pb["forces"] then
@@ -654,7 +654,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
                         self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
                     end
                     self.done = true
-                    local completionText = criteria.completed and self:FormatTime(criteria.elapsed) or ""
+                    local completionText = defeated and self:FormatTime(defeated) or ""
                     self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
                 end
             end   
