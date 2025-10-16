@@ -332,7 +332,15 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
     local F = self.Frame
     local displayed = 0
     F.TimerBar:SetValue(self.timer)
-    self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", self:FormatTime(self.timer, completion and 1), self:FormatTime(self.timelimit)))
+
+    local timertext = self:FormatTime(math.floor(self.timer))
+    if completion and self.TimerText.Decimals > 0 then
+        local timeMS  = self.timer and select(2, strsplit(".", (self.timer)))
+        timeMS = timeMS and (".%s"):format(string.sub(timeMS, 1, self.TimerText.Decimals))
+        timertext = timeMS and ("%s%s"):format(timertext, timeMS) or "00:00"
+    end
+    local timercolor = completion and (self.timer < self.timelimit and self.TimerText.SuccessColor) or (self.timer > self.timelimit and self.TimerText.FailColor) or self.TimerText.Color
+    self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)))
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
         local ComparisonColor = (ComparisonTime < 0 and self.ComparisonTimer.SuccessColor) or (ComparisonTime > 0 and self.ComparisonTimer.FailColor) or self.ComparisonTimer.EqualColor
@@ -352,6 +360,9 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         if self.TimerBar.ChestTimerDisplay ~= 3 and self["ChestTimer"..i].enabled and (((chest >= i or (i == 1 and remTime < 0)) and (self.TimerBar.ChestTimerDisplay == 2 or displayed == 0)) or (self.TimerBar.ChestTimerDisplay == 1 and completion and chest+1 >= i and displayed < 2 and chest ~= 3 and not preview)) then
             displayed = displayed +1
             local color = i == 1 and remTime < 0 and self["ChestTimer"..i].BehindColor
+            if completion then
+                color = (remTime < 0 and self["ChestTimer"..i].BehindColor) or (remTime > 0 and self["ChestTimer"..i].AheadColor) or self["ChestTimer"..i].EqualColor
+            end
             local prefix = ""
             if remTime < 0 then prefix = "+" remTime = remTime*-1 end
             self:ApplyTextSettings(F.TimerBar["ChestTimer"..i], self["ChestTimer"..i], prefix..self:FormatTime(remTime), color, false, i)
@@ -510,7 +521,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
                     end
                     self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
-                    if completed and defeated and defeated ~= 0 and pb and pb[i]then
+                    if completed and defeated and defeated ~= 0 and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
@@ -610,22 +621,19 @@ function MPT:UpdateEnemyForces(Start, preview)
             F.ForcesBar.Completion:Hide()
         end
     else
-        F.ForcesBar:SetMinMaxValues(0, total)
-        F.ForcesBar:SetValue(current)
         local forcesColor =
         (percent < 20 and self.ForcesBar.Color[1]) or
         (percent < 40 and self.ForcesBar.Color[2]) or
         (percent < 60 and self.ForcesBar.Color[3]) or
         (percent < 80 and self.ForcesBar.Color[4]) or
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
-        F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
         if percent >= 100 then
             if not self.done then
                 local defeat = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
                 if defeated and defeated ~= 0 then
                     local cur = select(2, GetWorldElapsedTime(1)) - defeat
                     self.forcesTime = cur
-                    local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+                    local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
                     if pb and pb["forces"] then
                         local diff = cur - pb["forces"]
                         local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
@@ -637,7 +645,10 @@ function MPT:UpdateEnemyForces(Start, preview)
                     local completionText = criteria.completed and self:FormatTime(criteria.elapsed) or ""
                     self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
                 end
-            end             
+            end   
+            F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
+            F.ForcesBar:SetMinMaxValues(0, 1)
+            F.ForcesBar:SetValue(1)          
             F.ForcesBar.PercentCount:Hide()
             F.ForcesBar.RealCount:Hide()
             F.ForcesBar.CurrentPullBar:Hide()
@@ -647,6 +658,9 @@ function MPT:UpdateEnemyForces(Start, preview)
             local remaining = self.RealCount.remaining and total-current or current
             local remainingText = self.RealCount.total and string.format("%s/%s", remaining, total) or remaining
             percent = self.PercentCount.remaining and 100-percent or percent
+            F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
+            F.ForcesBar:SetMinMaxValues(0, total)
+            F.ForcesBar:SetValue(current)
             self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, string.format("%.2f%%", percent))
             self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, remainingText)
             self:UpdateCurrentPull()
@@ -708,6 +722,7 @@ function MPT:UpdateCurrentPull()
         else
             currentText = rawValue ~= 0 and string.format("%s(%s%s)", currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
         end
+        
         self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, currentText, color)
     end
     if self.PercentCount.enabled and self.PercentCount.pullcount and current < total then
