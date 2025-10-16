@@ -332,14 +332,14 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
     local F = self.Frame
     local displayed = 0
     F.TimerBar:SetValue(self.timer)
-
     local timertext = self:FormatTime(math.floor(self.timer))
     if completion and self.TimerText.Decimals > 0 then
         local timeMS  = self.timer and select(2, strsplit(".", (self.timer)))
         timeMS = timeMS and (".%s"):format(string.sub(timeMS, 1, self.TimerText.Decimals))
-        timertext = timeMS and ("%s%s"):format(timertext, timeMS) or "00:00"
+        timertext = timeMS and ("%s%s"):format(timertext, timeMS) or timertext
     end
-    local timercolor = completion and (self.timer < self.timelimit and self.TimerText.SuccessColor) or (self.timer > self.timelimit and self.TimerText.FailColor) or self.TimerText.Color
+    local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
+    local timercolor = completion and (upgrades > 0 and self.TimerText.SuccessColor or self.TimerText.FailColor) or self.TimerText.Color
     self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)))
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
@@ -360,11 +360,12 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         if self.TimerBar.ChestTimerDisplay ~= 3 and self["ChestTimer"..i].enabled and (((chest >= i or (i == 1 and remTime < 0)) and (self.TimerBar.ChestTimerDisplay == 2 or displayed == 0)) or (self.TimerBar.ChestTimerDisplay == 1 and completion and chest+1 >= i and displayed < 2 and chest ~= 3 and not preview)) then
             displayed = displayed +1
             local color = i == 1 and remTime < 0 and self["ChestTimer"..i].BehindColor
-            if completion then
-                color = (remTime < 0 and self["ChestTimer"..i].BehindColor) or (remTime > 0 and self["ChestTimer"..i].AheadColor) or self["ChestTimer"..i].EqualColor
-            end
             local prefix = ""
             if remTime < 0 then prefix = "+" remTime = remTime*-1 end
+            if completion then
+                color = upgrades < i and self["ChestTimer"..i].BehindColor or self["ChestTimer"..i].AheadColor
+                prefix = upgrades < i and "+" or "-"
+            end
             self:ApplyTextSettings(F.TimerBar["ChestTimer"..i], self["ChestTimer"..i], prefix..self:FormatTime(remTime), color, false, i)
         else
             F.TimerBar["ChestTimer"..i]:Hide()
