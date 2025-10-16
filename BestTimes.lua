@@ -1,22 +1,5 @@
 local _, MPT = ...
 
-function MPT:CreateFakeSV()    
-    for i=1, 50 do
-        local cmap = self.SeasonData[15].Dungeons[math.random(1, 8)]
-        local BossNames = {"Big Dragon", "Evil Mage", "Ugly Troll", "Addon Apocalypse", "Kungen"}
-        local BossTimes = {math.random(100, 200), math.random(250, 350), math.random(400, 500), math.random(550, 650), math.random(700, 800)}
-        local time = math.random(900000, 1300000)
-        local forces = math.random(600, 700)
-        local level = math.random(10, 20)
-        local intime = math.random(1, 5) <= 4
-        self:UpdatePB(time, forces, cmap, level, {monthDay = math.random(1,28), month = math.random(1, 12), year = 2025, hour = math.random(0,23), minute = math.random(0,59)}, BossTimes, BossNames, intime)
-        if math.random(1, 5) == 1 then
-            self:AddHistory(false, cmap, level, false, true)
-        end
-    end
-    self:AddHistory(false, 499, 5, false, true)
-end
-
 function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames, intime) -- called on completion of a run
     if (not self.seasonID) or self.seasonID == 0 then
         C_MythicPlus.RequestMapInfo()
@@ -110,8 +93,8 @@ end
 
 function MPT:GetPB(cmap, level, seasonID, lowerkey)
     C_MythicPlus.RequestMapInfo()
-    local seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
-    return MPTSV.BestTime and MPTSV.BestTime[seasonID] and MPTSV.BestTime[seasonID][cmap] and (MPTSV.BestTime[seasonID][cmap][level] or (lowerkey and MPTSV.BestTime[seasonID][cmap][level-1]))
+    self.seasonID = seasonID or ((self.seasonID and self.seasonID ~= 0 and self.seasonID) or C_MythicPlus.GetCurrentSeason())
+    return MPTSV.BestTime and MPTSV.BestTime[self.seasonID] and MPTSV.BestTime[self.seasonID][cmap] and (MPTSV.BestTime[self.seasonID][cmap][level] or (lowerkey and MPTSV.BestTime[self.seasonID][cmap][level-1]))
 end
 
 function MPT:AddRun(cmap, level, seasonID, time, forces, date, BossNames, BossTimes) -- called when manually adding a run
@@ -121,18 +104,18 @@ function MPT:AddRun(cmap, level, seasonID, time, forces, date, BossNames, BossTi
             BossTimes[i] = self:StrToTime(v)
         end
     end
-    local seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
+    self.seasonID = seasonID or (self.seasonID and self.seasonID ~= 0 and self.seasonID or C_MythicPlus.GetCurrentSeason())
     if not MPTSV.BestTime then MPTSV.BestTime = {} end
-    if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
-    if not MPTSV.BestTime[seasonID][cmap] then MPTSV.BestTime[seasonID][cmap] = {} end
+    if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
+    if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
     if time and forces and BossNames and cmap and level and BossTimes and type(BossTimes) == "table" then
-        MPTSV.BestTime[seasonID][cmap][level] = MPTSV.BestTime[seasonID][cmap][level] or {}
-        MPTSV.BestTime[seasonID][cmap][level] = BossTimes
-        MPTSV.BestTime[seasonID][cmap][level]["BossNames"] = BossNames
-        MPTSV.BestTime[seasonID][cmap][level]["finish"] = time*1000
-        MPTSV.BestTime[seasonID][cmap][level]["forces"] = forces
-        MPTSV.BestTime[seasonID][cmap][level]["date"] = date
-        MPTSV.BestTime[seasonID][cmap][level]["level"] = level
+        MPTSV.BestTime[self.seasonID][cmap][level] = MPTSV.BestTime[self.seasonID][cmap][level] or {}
+        MPTSV.BestTime[self.seasonID][cmap][level] = BossTimes
+        MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = BossNames
+        MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = time*1000
+        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = forces
+        MPTSV.BestTime[self.seasonID][cmap][level]["date"] = date
+        MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
     end
 end
 
