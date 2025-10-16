@@ -593,7 +593,7 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
                     edgeFile = "Interface\\Buttons\\WHITE8x8",
                     edgeSize = 2,
                 })
-                btn.BorderFrame:SetBackdropBorderColor(1, 0, 0, 1) -- or any color you want
+                btn.BorderFrame:SetBackdropBorderColor(1, 1, 1, 1)
                 btn.BorderFrame:Hide()
             end
             btn:SetPoint("TOP", F.LevelContent, "TOP", -5, num == 1 and -5 or ((num-1)*-45)-5)
