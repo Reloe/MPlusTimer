@@ -21,7 +21,8 @@ function MPT:Init(preview)
     self.level = level
     self.opened = false
     self.done = false
-    self.IsPreview = preview    
+    self.IsPreview = preview   
+    self.PreviousMaxBossFrame = 0 
     self:CreateStates(preview)
     if not preview then self:UpdateAllStates() end
     self:ShowFrame(true)
@@ -139,7 +140,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
     local F = self.Frame
     -- Main Frame     
     if BackgroundOnly then    
-        local bosscount = #self.BossNames    
+        local bosscount = self.MaxBossFrame
         local spacing = self.Spacing*(bosscount-1)
         if self.KeyInfo.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
         if self.TimerBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
@@ -217,7 +218,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                 end
             end
         end        
-        local parent = (self.KeyInfo.AnchoredTo == "MainFrame" and F) or (self.KeyInfo.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.KeyInfo.AnchoredTo]
+        local parent = (self.KeyInfo.AnchoredTo == "MainFrame" and F) or (self.KeyInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.KeyInfo.AnchoredTo]
         local spacing = parent == F and 0 or self.Spacing
         self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, -spacing+self.KeyInfo.yOffset)
         F.KeyInfo:SetSize(self.KeyInfo.Width, self.KeyInfo.Height)
@@ -273,7 +274,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
             if (self.cmap and self.cmap ~= 0) or preview then
                 self.timelimit = preview and 2280 or select(3, C_ChallengeMode.GetMapUIInfo(self.cmap))
                 local timeremain = self.timelimit-self.timer
-                local parent = (self.TimerBar.AnchoredTo == "MainFrame" and F) or (self.TimerBar.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.TimerBar.AnchoredTo]
+                local parent = (self.TimerBar.AnchoredTo == "MainFrame" and F) or (self.TimerBar.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.TimerBar.AnchoredTo]
                 local spacing = parent == F and 0 or self.Spacing
                 self:SetPoint(F.TimerBar, self.TimerBar.Anchor, parent, self.TimerBar.RelativeTo, self.TimerBar.xOffset, -spacing+self.TimerBar.yOffset)
                 F.TimerBar:SetSize(self.TimerBar.Width, self.TimerBar.Height)
@@ -458,6 +459,7 @@ function MPT:UpdateBosses(Start, count, preview)
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
             local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+            self.MaxBossFrame = 0
             for i=1, max do
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
                 local name = self.BossNames[num]
@@ -470,7 +472,8 @@ function MPT:UpdateBosses(Start, count, preview)
                 end
                 if self.cmap == 227 and num == 3 then name = "Opera Hall" end       
                 if name and name ~= "" then   
-                    name = self:Utf8Sub(name, 1, self.BossName.MaxLength)            
+                    name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
+                    self.MaxBossFrame = i       
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
                     local frame = F["Bosses"..i]
@@ -501,6 +504,17 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     frame:Show()
                 end                
+            end
+            if self.MaxBossFrame > self.PreviousMaxBossFrame then -- re-anchor other elements if they are anchored to Bosses
+                if self.KeyInfo.AnchoredTo == "Bosses" then self:UpdateKeyInfo(true, true) end
+                if self.TimerBar.AnchoredTo == "Bosses" then self:UpdateTimerBar(true) end
+                if self.ForcesBar.AnchoredTo == "Bosses" then self:UpdateEnemyForces(true) end
+            end
+            self.PreviousMaxBossFrame = self.MaxBossFrame
+            if self.MaxBossFrame == 0 then 
+                local frame = F["Bosses"..1] -- if somehow we don't have any boss frame, we force show one to prevent errors
+                frame:Show()
+                self.MaxBossFrame = 1 
             end
         end        
     elseif not self.IsPreview then
@@ -533,15 +547,10 @@ function MPT:UpdateBosses(Start, count, preview)
                 end
             end
         end
-        return true
     end
-
 end
 
 function MPT:UpdateEnemyForces(Start, preview, completion)
-    -- Current Pull Overlay is only shown in Preview as no API for it is available in midnight
-    -- If an API is provided I have to add stuff to the else statement below
-    -- Mostly copy paste from the preview
     local F = self.Frame
     local steps = preview and 5 or select(3, C_Scenario.GetStepInfo())
     if not steps or steps <= 0 then
@@ -558,7 +567,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
     end
     if Start or preview then
         local bosscount = preview and 5 or #self.BossNames
-        local parent = (self.ForcesBar.AnchoredTo == "MainFrame" and F) or (self.ForcesBar.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.ForcesBar.AnchoredTo]
+        local parent = (self.ForcesBar.AnchoredTo == "MainFrame" and F) or (self.ForcesBar.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.ForcesBar.AnchoredTo]
         local spacing = parent == F and 0 or self.Spacing
         self:SetPoint(F.ForcesBar, self.ForcesBar.Anchor, parent, self.ForcesBar.RelativeTo, self.ForcesBar.xOffset, -spacing+self.ForcesBar.yOffset)
         F.ForcesBar:SetSize(self.ForcesBar.Width, self.ForcesBar.Height)
@@ -681,7 +690,7 @@ function MPT:UpdatePBInfo(preview)
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
         local date = self:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
         text = string.format("PB: +%s %s %s", level, self:FormatTime(finishtime/1000), date)
-        local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..#self.BossNames]) or F[self.PBInfo.AnchoredTo]
+        local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
     end
 end
