@@ -12,6 +12,15 @@ for _, texture in ipairs(texturelist) do
     textureTable[texture] = texture
 end
 
+StaticPopupDialogs["MPT_RESET_PROFILE"] = {
+    text = "Are you sure you want to reset the current profile to the default settings?",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function()
+        MPT:ResetProfile()
+    end
+}
+
 function MPT:CreateTextSetting(name, key, order, Color)
     local settings = {
         type = "group",
@@ -526,7 +535,7 @@ local Profiles = {
             type = "execute",
             order = 3,
             name = "Reset Current Profile",
-            func = function() MPT:ResetProfile() end,
+            func = function() StaticPopup_Show("MPT_RESET_PROFILE") end,
         },
         MainProfile = MainProfile,
         Seperate = {
