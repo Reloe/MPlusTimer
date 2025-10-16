@@ -115,7 +115,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         self:ToggleEventRegister(false)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
-        self:UpdateTimerBar(false, true)
+        self:UpdateTimerBar(false, true, false)
         self:UpdateEnemyForces(false, false, true)
         self:SetSV(false, false, false, true)
         self:ToggleEventRegister(false)
