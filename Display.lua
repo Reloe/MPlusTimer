@@ -338,7 +338,7 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         timertext = timeMS and ("%s%s"):format(timertext, timeMS) or timertext
     end
     local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
-    local timercolor = (completion and (upgrades > 0 and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
+    local timercolor = (completion and (C_ChallengeMode.GetChallengeCompletionInfo().onTime and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
     self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)))
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
