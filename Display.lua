@@ -27,7 +27,7 @@ end
 
 function MPT:UpdateAllStates(preview)
     self:UpdateMainFrame()        
-    self:UpdateBosses(false, (not preview) and 1, preview)       
+    self:UpdateBosses(true, (not preview) and 1, preview)       
     self:UpdateKeyInfo(true, false, preview)
     self:UpdateTimerBar(true, false, preview)
     self:UpdateEnemyForces(true, preview)
@@ -426,11 +426,11 @@ function MPT:UpdateBosses(Start, count, preview)
             frame["BossTimer"..i]:SetText("")
             frame["BossSplit"..i]:SetText("")
         end
+        self.MaxBossFrame = 0
         if max > 0 then
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
             local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
-            self.MaxBossFrame = 0
             for i=1, max do
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
                 local name = self.BossNames[num]
@@ -537,7 +537,6 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         percent = current / total * 100
     end
     if Start or preview then
-        local bosscount = preview and 5 or #self.BossNames
         local parent = (self.ForcesBar.AnchoredTo == "MainFrame" and F) or (self.ForcesBar.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.ForcesBar.AnchoredTo]
         local spacing = parent == F and 0 or self.Spacing
         self:SetPoint(F.ForcesBar, self.ForcesBar.Anchor, parent, self.ForcesBar.RelativeTo, self.ForcesBar.xOffset, -spacing+self.ForcesBar.yOffset)
