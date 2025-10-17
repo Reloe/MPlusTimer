@@ -88,13 +88,15 @@ end
 
 function MPT:CreateText(parent, name, settings, num)    
     parent[name] = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    if type(settings.xOffset) == "table" then
+    if settings.xOffset and type(settings.xOffset) == "table" then
         settings.xOffset = settings.xOffset[num] or 0
     end
-    parent[name]:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
-    parent[name]:SetFont(self.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
-    parent[name]:SetShadowColor(unpack(settings.ShadowColor))
-    parent[name]:SetShadowOffset(unpack(settings.ShadowOffset))
+    parent[name]:SetPoint(settings.Anchor or "CENTER", parent, settings.RelativeTo or "CENTER", settings.xOffset or 0, settings.yOffset or 0)
+    parent[name]:SetFont(settings.Font and self.LSM:Fetch("font", settings.Font) or self.LSM:Fetch("font", "Expressway"), settings.FontSize or 13, settings.Outline or "OUTLINE")
+    parent[name]:SetShadowColor(unpack(settings.ShadowColor or {0, 0, 0, 1}))
+    parent[name]:SetShadowOffset(unpack(settings.ShadowOffset or {0, 0}))
+    parent[name]:SetTextColor(unpack(settings.Color or {1, 1, 1, 1}))
+    parent[name]:SetText(settings.text or "")
 end
 
 function MPT:CreateStatusBar(parent, name, Backdrop, border)
@@ -110,13 +112,35 @@ function MPT:CreateStatusBar(parent, name, Backdrop, border)
     end
 end
 
+function MPT:AddBGBackground(parent, bgname, bordername, edgeSize, bgColor, bordercolor)
+    self:AddBackground(parent, bgname, bgColor)
+    self:AddBorder(parent, bordername, edgeSize, bordercolor)
+end
+
+function MPT:AddBackground(parent, name, color)
+    parent[name] = parent:CreateTexture(nil, "BACKGROUND")
+    parent[name]:SetAllPoints(parent)
+    parent[name]:SetColorTexture(unpack(color or {0, 0, 0, 0.7}))
+end
+
+function MPT:AddBorder(parent, name, edgeSize, color)
+    parent[name] = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    self:AddBackDrop(parent[name], edgeSize, color)
+end
+
+function MPT:AddBackDrop(parent, edgeSize, color)
+    parent:SetBackdrop({
+        edgeFile = "Interface\\Buttons\\WHITE8x8",
+        edgeSize = edgeSize or 2,
+    })
+    parent:SetBackdropBorderColor(unpack(color or {1, 1, 1, 1}))
+end
+        
 function MPT:CreateButton(width, height, parent, Background, Border, BGColor, BorderColor, font, fontSize, fontColor, text)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(width, height)
     if Background then
-        btn.BG = btn:CreateTexture(nil, "BACKGROUND")
-        btn.BG:SetAllPoints()
-        btn.BG:SetColorTexture(unpack(BGColor or {0, 0, 0, 0.5}))
+        self:AddBackground(btn, "BG", BGColor or {0, 0, 0, 0.5})
     end
     if Border then
         btn.Border = btn:CreateTexture(nil, "OVERLAY")
@@ -124,11 +148,9 @@ function MPT:CreateButton(width, height, parent, Background, Border, BGColor, Bo
         btn.Border:SetColorTexture(unpack(BorderColor or {0.2, 0.6, 1, 0.5}))
         btn.Border:Hide()
     end
-    btn.Text = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    btn.Text:SetPoint("CENTER", btn, "CENTER", 0, 0)
-    btn.Text:SetFont(self.LSM:Fetch("font", font or "Expressway"), fontSize or 13, "OUTLINE")
-    btn.Text:SetTextColor(unpack(fontColor or {1, 1, 1, 1}))
-    btn.Text:SetText(text or "")
+    if font or text then
+        self:CreateText(btn, "Text", {Font = font, FontSize = fontSize, text = text, Color = fontColor})
+    end
     return btn
 end
 
