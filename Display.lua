@@ -80,9 +80,6 @@ function MPT:CreateStates(preview)
 
         -- Bosses            
         F.Bosses = {}
-        for i=1, 5 do -- Boss Bars & Texts
-            self:CreateBossFrame(i)
-        end
 
         -- Enemy Forces
         self:CreateStatusBar(F, "ForcesBar", true, true)
@@ -309,7 +306,7 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         timertext = timeMS and ("%s%s"):format(timertext, timeMS) or timertext
     end
     local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
-    local timercolor = (completion and (C_ChallengeMode.GetChallengeCompletionInfo().onTime and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
+    local timercolor = ((not preview) and completion and (C_ChallengeMode.GetChallengeCompletionInfo().onTime and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
     self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)), timercolor)
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
@@ -333,8 +330,8 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
             local prefix = ""
             if remTime < 0 then prefix = "+" remTime = remTime*-1 end
             if completion then
-                color = upgrades < i and self["ChestTimer"..i].BehindColor or self["ChestTimer"..i].AheadColor
-                prefix = upgrades < i and "+" or "-"
+                color = (preview and self["ChestTimer"..i].Color) or (upgrades < i and self["ChestTimer"..i].BehindColor or self["ChestTimer"..i].AheadColor)
+                prefix = (preview and "") or (upgrades < i and "+" or "-")
             end
             self:ApplyTextSettings(F.TimerBar["ChestTimer"..i], self["ChestTimer"..i], prefix..self:FormatTime(remTime), color, false, i)
         else
@@ -427,7 +424,10 @@ function MPT:UpdateBosses(Start, count, preview)
             local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             for i=1, max do
+                -- manually offset which bossname we want for megadungeons
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
+                -- limit how many bosses to show for some of the lower parts of megadungeons
+                local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
                 local name = self.BossNames[num]
                 local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
                 for j = 1, #(self.BossNames) do
@@ -436,8 +436,8 @@ function MPT:UpdateBosses(Start, count, preview)
                         break
                     end
                 end
-                if self.cmap == 227 and num == 3 then name = "Opera Hall" end       
-                if name and name ~= "" then   
+                if self.cmap == 227 and num == 3 then name = "Opera Hall" end 
+                if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then   
                     name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
                     self.MaxBossFrame = i       
                     local completed = criteria.completed
@@ -471,10 +471,11 @@ function MPT:UpdateBosses(Start, count, preview)
                     frame:Show()
                 end                
             end
-            if self.MaxBossFrame > self.PreviousMaxBossFrame then -- re-anchor other elements if they are anchored to Bosses
+            if self.MaxBossFrame ~= self.PreviousMaxBossFrame then -- re-anchor other elements if they are anchored to Bosses
                 if self.KeyInfo.AnchoredTo == "Bosses" then self:UpdateKeyInfo(true, true) end
                 if self.TimerBar.AnchoredTo == "Bosses" then self:UpdateTimerBar(true) end
                 if self.ForcesBar.AnchoredTo == "Bosses" then self:UpdateEnemyForces(true) end
+                self:UpdateMainFrame(true)
             end
             self.PreviousMaxBossFrame = self.MaxBossFrame
             if self.MaxBossFrame == 0 then 
