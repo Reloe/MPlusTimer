@@ -121,10 +121,10 @@ function MPT:CreateSpace(order)
     return t
 end
 
-local GeneralOptions = {
+
+local MainOptions = {
     type = "group",
-    name = "General Options",
-    order = 1,
+    name = "Non-Display Settings",
     args = {
         Preview = {
             type = "execute",
@@ -152,21 +152,30 @@ local GeneralOptions = {
                 MPT:ShowPBFrame()
             end,         
         },
-        FrameStrata = MPT:CreateDropDown(3, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
-        Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
-        Spacing = MPT:CreateRange(5, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
         UpdateRate = MPT:CreateRange(6, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
-        HideTracker = MPT:CreateToggle(7, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-        CloseBags = MPT:CreateToggle(8, "Close Bags", "Automatically close bags after inserting the Keystone", "CloseBags"),
-        Keyslot = MPT:CreateToggle(9, "Automatic Keyslot", "Automatically insert Keystone", "KeySlot"),     	
         LowerKey = {
             type = "toggle",
             order = 9,
             name = "Data from Lower Level",
-            width = "full",
             desc = "Get Split Timers from one key level lower if no data for current level exists",
             set = function(_, value) MPTSV.LowerKey = value end,
             get = function() return MPTSV.LowerKey end,
+        },
+        CloseBags = {
+            type = "toggle",
+            order = 9,
+            name = "Close Bags",
+            desc = "Automatically close bags after inserting the Keystone",
+            set = function(_, value) MPTSV.CloseBags = value end,
+            get = function() return MPTSV.CloseBags end,
+        },
+        KeySlot = {
+            type = "toggle",
+            order = 9,
+            name = "Automatic Keyslot",
+            desc = "Automatically insert Keystone when interacting with the Keystone Interface",
+            set = function(_, value) MPTSV.KeySlot = value end,
+            get = function() return MPTSV.KeySlot end,
         },
         Gap = MPT:CreateSpace(10),
         ImportFromWA = {
@@ -178,7 +187,6 @@ local GeneralOptions = {
                 MPT:ImportWAData()
             end,         
         },
-        
     }
 }
 local Position = {
@@ -186,11 +194,7 @@ local Position = {
     name = "Frame Position",
     order = 2,
     args = {
-        Anchor = MPT:CreateDropDown(1, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
-        relativeTo = MPT:CreateDropDown(2, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        Gap = MPT:CreateSpace(3),
-        xOffset = MPT:CreateRange(4, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(5, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),        
+              
     }
 }
 local Background = {
@@ -209,19 +213,37 @@ local Background = {
     }
 }
 
-
+local GeneralOptions = {
+    type = "group",
+    name = "General Options",
+    order = 1,
+    args = {
+        FrameStrata = MPT:CreateDropDown(1, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        Scale = MPT:CreateRange(2, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
+        Spacing = MPT:CreateRange(3, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        HideTracker = MPT:CreateToggle(4, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
+        Gap = MPT:CreateSpace(5),
+        Desc = {
+            type = "header",
+            order = 6,
+            name = "Main Frame Positioning",
+        },
+        Anchor = MPT:CreateDropDown(7, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(8, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        Gap = MPT:CreateSpace(9),
+        xOffset = MPT:CreateRange(10, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(11, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
+    } 
+}
 local General = {
     type = "group",
     name = "General",
-    handler = MPTUI,
-    order = 1,
     childGroups = "tab",
+    order = 1,
     args = {
-        GeneralOptions = GeneralOptions,
-        Position = Position,
-        Background = Background,  
-        BestTimes = BestTimes,
-    },
+        General = GeneralOptions,
+        Background = Background,
+    }
 }
 
 
@@ -441,6 +463,9 @@ local PBInfo = MPT:CreateTextSetting("PB Info", "PBInfo", 6, true)
 PBInfo.args.Format = MPT:CreateDropDown(11, {[1] = "DD/MM/YY", [2] = "MM/DD/YY"}, "Date Format", "Format in which the date is displayed", {"PBInfo", "Format"}, true)
 PBInfo.args.AnchoredTo = MPT:CreateDropDown(12, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the PB Info is anchored to", {"PBInfo", "AnchoredTo"}, true)
 
+
+
+
 local MainProfile = {
     type = "select",
     name = "Main Profile",
@@ -515,8 +540,7 @@ local DeleteProfile = {
     get = function() return "" end,
 }
 
-
-local Profiles = {
+local profiles = {
     type = "group",
     name = "Profiles",
     order = 6,
@@ -571,8 +595,8 @@ local Profiles = {
     }
 }
 
-local options= { 
-	name = "General Settings",
+local settings = {
+	name = "Display Settings",
 	handler = MPTUI,
     childGroups = "tab",
 	type = "group",
@@ -585,15 +609,25 @@ local options= {
         PBInfo = PBInfo,
     },    
 }
+  
+
+
+
+local options = {
+
+
+}
 
 
 function MPT.UI:OnInitialize()
     local AceConfig = LibStub("AceConfig-3.0")
-	AceConfig:RegisterOptionsTable("MPTUI", options)
-    AceConfig:RegisterOptionsTable("MPTProfiles", Profiles)
+	AceConfig:RegisterOptionsTable("MPTUI", MainOptions)
+    AceConfig:RegisterOptionsTable("MPTSettings", settings)
+    AceConfig:RegisterOptionsTable("MPTProfiles", profiles)
     local AceConfigdialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "MPlusTimer")
-    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer") -- needs to be after the optionsFrame is created
+    self.settingsFrame = AceConfigdialog:AddToBlizOptions("MPTSettings", "Display Settings", "MPlusTimer")
+    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer")
 	self:RegisterChatCommand("mpt", "SlashCommand")
 	self:RegisterChatCommand("mplustimer", "SlashCommand")
 end
