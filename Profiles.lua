@@ -112,8 +112,11 @@ function MPT:LoadProfile(name)
     end
 end
 
-function MPT:ModernizeProfile(profile)
-    if self:GetVersion() > profile.Version then
+function MPT:ModernizeProfile(profile, generic)
+    if generic then -- update non-profile settings if they don't exist yet
+        if MPTSV.CloseBags == nil then MPTSV.CloseBags = true end
+        if MPTSV.KeySlot == nil then MPTSV.KeySlot = true end
+    elseif profile and self:GetVersion() > profile.Version then
         if profile.Version < 2 then
             profile.TimerText.Decimals = 1
             profile.TimerText.SuccessColor = {0, 1, 0, 1}

@@ -43,9 +43,9 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         local success = ...
         print(success, "abandon vote finished", C_ChallengeMode.IsChallengeModeActive(), self.seasonID, self.cmap, self.level)
     end
-    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and self.CloseBags then
+    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
         CloseAllBags()
-    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and self.KeySlot then
+    elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPTSV.KeySlot then
         local index = select(3, GetInstanceInfo())
         if index == 8 or index == 23 then
             local IDs = {138019, 158923, 180653, 186159, 187786, 151086}
@@ -137,9 +137,12 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         if not MPTSV then -- first load of the addon
             MPTSV = {}            
             MPTSV.LowerKey = true
+            MPTSV.CloseBags = true
+            MPTSV.KeySlot = true
             MPTSV.BestTime = {}
             self:CreateProfile("default") 
         else
+            self:ModernizeProfile(false, true)
             self:LoadProfile()
         end        
         if MPTSV.debug then
