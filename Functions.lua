@@ -45,8 +45,10 @@ function MPT:HasAnchorLoop(key, value)
     return false
 end
 
-function MPT:SetPoint(frame, Anchor, parent, relativeTo, xOffset, yOffset)
-    frame:ClearAllPoints()
+function MPT:SetPoint(frame, Anchor, parent, relativeTo, xOffset, yOffset, keep)
+    if not keep then
+        frame:ClearAllPoints()
+    end
     frame:SetPoint(Anchor, parent, relativeTo, xOffset, yOffset)
 end
 
