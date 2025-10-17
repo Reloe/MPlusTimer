@@ -28,30 +28,30 @@ function MPT:UpdatePB(time, forces, cmap, level, date, BossTimes, BossNames) -- 
 end
 
 function MPT:AddCharacterHistory(tryagain)
-    local data = (C_MythicPlus.GetRunHistory(true, true))
-    if MPTSV.LastHistoryData == data or data == {} then 
-        if tryagain then
-            C_Timer.After(10, function() self:AddCharacterHistory(false) end) -- try again in 10 seconds. Data is weird on initial login
-        end
-        return     
-    end
-    MPTSV.LastHistoryData = data
-    if not data or #data == 0 then return end
-    local G = UnitGUID("player")    
+    if PlayerIsTimerunning() then return end -- do not add remix data
+    C_MythicPlus.RequestMapInfo() -- try to refresh data
     if (not self.seasonID) or self.seasonID == 0 then
-        C_MythicPlus.RequestMapInfo()
         self.seasonID = C_MythicPlus.GetCurrentSeason()
-        if not self.seasonID or self.seasonID == 0 then return end
+        if (not self.seasonID) or self.seasonID == 0 then return end -- avoid doing anything if no seasonID was found, we are likely in pre-season
+    end
+    local G = UnitGUID("player") 
+    local data = (C_MythicPlus.GetRunHistory(true, true))
+    if (not data) or #data == 0 then
+        -- nil the current character if no/empty data.
+        if MPTSV.History[self.seasonID] and MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = nil end
+        return
     end
     if not MPTSV.History then MPTSV.History = {} end
     if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
-    if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(2, UnitClass("player"))} end
+    -- clear current character data to avoid duplicates
+    MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(2, UnitClass("player"))}
     for i, v in ipairs(data) do
-        if (not MPTSV.History[self.seasonID][G].keys) or (not MPTSV.History[self.seasonID][G].keys[i]) then -- only add this run if it hasn't been added before
-            local cmap = v.mapChallengeModeID
-            local level = v.level
-            local time = v.durationSec
-            local intime = v.completed
+        local cmap = v.mapChallengeModeID
+        local level = v.level
+        local time = v.durationSec
+        local intime = v.completed
+         -- only add runs from dungeons of the current season. Might be relevant for remix? 
+        if self.SeasonData[self.seasonID] and self.SeasonData[self.seasonID].Dungeons and tContains(self.SeasonData[self.seasonID].Dungeons, cmap) then
             if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
             if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
             if not MPTSV.History[self.seasonID][G].keys then MPTSV.History[self.seasonID][G].keys = {} end
@@ -65,6 +65,7 @@ function MPT:AddHistory(time, cmap, level, intime, abandoned) -- abandoned runs 
     local G = UnitGUID("player")
     if abandoned and level and cmap then
         if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
+        if (not self.SeasonData[self.seasonID]) or (not self.SeasonData[self.seasonID].Dungeons) or (not t.contains(self.SeasonData[self.seasonID].Dungeons, cmap)) then return end -- only add runs from dungeons of the current season
         if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(3, UnitClass("player"))} end
         if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
         if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end

@@ -71,9 +71,9 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "PLAYER_ENTERING_WORLD" then
-        local login, reload = ...
-        if login then
-            C_Timer.After(10, function() self:EventHandler("PLAYER_ENTERING_WORLD", false, true) end) -- re initiate after 10 seconds as a lot of this data is not available on initial login
+        local login, reload, delayed = ...
+        if login or reload then
+            C_Timer.After(10, function() self:EventHandler("PLAYER_ENTERING_WORLD", false, false, true) end) -- re initiate after 10 seconds as a lot of this data is not available on initial login
         end
         if self.HideTracker and not self.Hooked then
             self.Hooked = true
@@ -91,14 +91,16 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:ShowFrame(false)
             self:ToggleEventRegister(false)
         end
-        if seasonID > 0 and (login or reload) then
+        if seasonID > 0 and (login or reload or delayed) then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
             if not MPTSV.History then MPTSV.History = {} end
             if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
             if not MPTSV.History[seasonID] then MPTSV.History[seasonID] = {} end
+            MPTSV.HistoryData = MPTSV.HistoryData or {}
             self.seasonID = seasonID
             local G = UnitGUID("player")
-            if MPTSV.History and MPTSV.History[seasonID] and not MPTSV.History[seasonID][G] then
+            -- only allow delayed data because data on initial login contains other character's data.
+            if delayed and MPTSV.History and MPTSV.History[seasonID] then
                 self:AddCharacterHistory()
             end
         end
@@ -118,6 +120,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:UpdateEnemyForces(false, false, true)
         self:SetSV(false, false, false, true)
         self:ToggleEventRegister(false)
+        C_MythicPlus.RequestMapInfo() -- try to refresh data
         C_Timer.After(5, function() self:AddCharacterHistory() end) -- add to history 5s delayed to make sure blizzard API has the data
     elseif e == "SCENARIO_CRITERIA_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         self:UpdateBosses(false, false)
