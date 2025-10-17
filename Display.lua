@@ -1,12 +1,17 @@
 local _, MPT = ...
 local LSM = LibStub("LibSharedMedia-3.0")
 
-function MPT:HideStates()
-    if self.Frame then self.Frame:Hide() end
-end
-
-function MPT:ShowStates()
-    if self.Frame then self.Frame:Show() end
+function MPT:HideBossFrames()
+    local F = self.Frame
+    for i=1, 20 do
+        local frame = F["Bosses"..i]
+        if frame then
+            frame:Hide()
+            frame["BossName"..i]:SetText("")
+            frame["BossTimer"..i]:SetText("")
+            frame["BossSplit"..i]:SetText("")
+        end
+    end
 end
 
 function MPT:Init(preview)
@@ -76,12 +81,7 @@ function MPT:CreateStates(preview)
         -- Bosses            
         F.Bosses = {}
         for i=1, 5 do -- Boss Bars & Texts
-            self:CreateStatusBar(F, "Bosses"..i, false, false)
-            F["Bosses"..i]:SetStatusBarColor(0, 0, 0, 0)
-            F["Bosses"..i]:Hide()
-            self:CreateText(F["Bosses"..i], "BossName"..i, self.BossName)
-            self:CreateText(F["Bosses"..i], "BossTimer"..i, self.BossTimer)
-            self:CreateText(F["Bosses"..i], "BossSplit"..i, self.BossSplit)
+            self:CreateBossFrame(i)
         end
 
         -- Enemy Forces
@@ -359,13 +359,14 @@ function MPT:UpdateBosses(Start, count, preview)
         self:MuteJournalSounds()
         self.BossNames = {}
         self.MaxBossFrame = 5
+        self:HideBossFrames()
         for i=1, 5 do
             EJ_SelectInstance(721)
             local name = EJ_GetEncounterInfoByIndex(i, 721)
             name = self:Utf8Sub(name, 1, 20) or "Boss "..i
             killtime = killtime+math.random(240, 420)
             local time = self:FormatTime(killtime, true)
-            local frame = F["Bosses"..i]
+            local frame = self:CreateBossFrame(i)
             self.BossNames[i] = name
             local parent = self.Bosses.AnchoredTo == "MainFrame" and F or F[self.Bosses.AnchoredTo]
             local spacing = parent == F and i == 1 and 0 or self.Spacing -- only use spacing if not anchored to main frame or not first boss
@@ -419,13 +420,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     self:UpdateBosses(true, count+1)
             end)
         end 
-        for i=1, 5 do
-            local frame = F["Bosses"..i]
-            frame:Hide()
-            frame["BossName"..i]:SetText("")
-            frame["BossTimer"..i]:SetText("")
-            frame["BossSplit"..i]:SetText("")
-        end
+        self:HideBossFrames()
         self.MaxBossFrame = 0
         if max > 0 then
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
@@ -447,7 +442,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     self.MaxBossFrame = i       
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
-                    local frame = F["Bosses"..i]
+                    local frame = self:CreateBossFrame(i)
                     local parent = self.Bosses.AnchoredTo == "MainFrame" and F or F[self.Bosses.AnchoredTo]
                     local spacing = parent == F and 0 or self.Spacing
                     self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
@@ -496,25 +491,23 @@ function MPT:UpdateBosses(Start, count, preview)
         for i=1, max do
             local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
             if criteria.completed then
-                local frame = F["Bosses"..i]
-                if frame then                
-                    local defeated = criteria.elapsed
-                    frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
-                    local timercolor = self.BossTimer.Color
-                    local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
-                    self.BossTimes[i] = time
-                    if pb and pb[i] then
-                        timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
-                    end
-                    self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
-                    if defeated and pb and pb[i] then
-                        local time = select(2, GetWorldElapsedTime(1))-defeated or 0
-                        local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
-                        local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
-                        local diff = time-pb[i]
-                        if diff < 0 then diff = diff*-1 end
-                        self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
-                    end
+                local frame = self:CreateBossFrame(i)
+                local defeated = criteria.elapsed
+                frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
+                local timercolor = self.BossTimer.Color
+                local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
+                self.BossTimes[i] = time
+                if pb and pb[i] then
+                    timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
+                end
+                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
+                if defeated and pb and pb[i] then
+                    local time = select(2, GetWorldElapsedTime(1))-defeated or 0
+                    local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
+                    local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
+                    local diff = time-pb[i]
+                    if diff < 0 then diff = diff*-1 end
+                    self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
                 end
             end
         end

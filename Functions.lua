@@ -171,6 +171,20 @@ function MPT:CreateEditBox(parent, Anchor, RelativeFrame, RelativeTo, xOffset, y
     return editBox
 end
 
+function MPT:CreateBossFrame(i)
+    local F = self.Frame
+    if F["Bosses"..i] then
+        return F["Bosses"..i]
+    end
+    self:CreateStatusBar(F, "Bosses"..i, false, false)
+    F["Bosses"..i]:SetStatusBarColor(0, 0, 0, 0)
+    F["Bosses"..i]:Hide()
+    self:CreateText(F["Bosses"..i], "BossName"..i, self.BossName)
+    self:CreateText(F["Bosses"..i], "BossTimer"..i, self.BossTimer)
+    self:CreateText(F["Bosses"..i], "BossSplit"..i, self.BossSplit)
+    return F["Bosses"..i]
+end
+
 function MPT:FormatTime(time, round)
     if time then
         local timeMin = math.floor(time / 60)
