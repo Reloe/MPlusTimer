@@ -195,8 +195,7 @@ function MPT:EnableEditBoxKeyboard(editbox)
     end)
 end
 
-function MPT:CreatePBFrame()       
-        
+function MPT:CreatePBFrame()               
     if not self.PBInfoFrame then
         -- Main Frame
         self.BestTimeFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -274,6 +273,8 @@ function MPT:CreatePBFrame()
         F.CloseButton:SetSize(24, 24)
         self:SetPoint(F.CloseButton, "TOPRIGHT", F, "TOPRIGHT", -8, -8)
         F.CloseButton:SetScript("OnClick", function(s)
+            StaticPopup_Hide("MPT_DELETE_RUN") -- hide when literally any button is pressed because the parameters have changed
+            StaticPopup_Hide("MPT_DELETE_CHARACTER") -- hide when literally any button is pressed because the parameters have changed
             F:Hide()
         end)
 
@@ -362,6 +363,8 @@ end
 function MPT:HidePBButtons(level)
     local F = self.BestTimeFrame
     if level >= 1 then -- Clicking on Level/Character Button
+        StaticPopup_Hide("MPT_DELETE_RUN") -- hide when literally any button is pressed because the parameters have changed
+        StaticPopup_Hide("MPT_DELETE_CHARACTER") -- hide when literally any button is pressed because the parameters have changed
         if F.PBDataText then F.PBDataText:Hide() end
         if F.PBDataText2 then F.PBDataText2:Hide() end
         if F.DeleteButton then F.DeleteButton:Hide() end
