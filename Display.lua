@@ -310,7 +310,7 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
     end
     local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
     local timercolor = (completion and (C_ChallengeMode.GetChallengeCompletionInfo().onTime and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
-    self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)))
+    self:ApplyTextSettings(F.TimerBar.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)), timercolor)
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
         local ComparisonColor = (ComparisonTime < 0 and self.ComparisonTimer.SuccessColor) or (ComparisonTime > 0 and self.ComparisonTimer.FailColor) or self.ComparisonTimer.EqualColor
@@ -527,7 +527,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
     current = tonumber(current)
     local percent = 0
     if current then
-        percent = current / total * 100
+        percent = (current / total) * 100
     end
     if Start or preview then
         local parent = (self.ForcesBar.AnchoredTo == "MainFrame" and F) or (self.ForcesBar.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.ForcesBar.AnchoredTo]
@@ -602,33 +602,26 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         (percent < 60 and self.ForcesBar.Color[3]) or
         (percent < 80 and self.ForcesBar.Color[4]) or
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
-        if percent >= 100 then
-            if not self.done then
-                local defeated = C_ScenarioInfo.GetCriteriaInfo(steps) and C_ScenarioInfo.GetCriteriaInfo(steps).elapsed or 0
-                if defeated then
-                    local cur = select(2, GetWorldElapsedTime(1)) - defeated
-                    self.forcesTime = cur
-                    local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
-                    if pb and pb["forces"] then
-                        local diff = cur - pb["forces"]
-                        local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
-                        local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
-                        if diff < 0 then diff = diff * -1 end
-                        self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
-                    end
-                    self.done = true
-                    local completionText = defeated and self:FormatTime(defeated) or ""
-                    self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
-                end
-            end   
-            F.ForcesBar:SetStatusBarColor(unpack(forcesColor))
+        if percent >= 100 or criteria.completed then
+            local cur = criteria.elapsed and select(2, GetWorldElapsedTime(1)) - criteria.elapsed
+            local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+            if pb and pb["forces"] then
+                local diff = cur - pb["forces"]
+                local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
+                local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
+                if diff < 0 then diff = diff * -1 end
+                self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
+            end
+            self.done = true
+            self.forcesTime = cur or 0
+            local completionText = cur and self:FormatTime(cur) or ""
+            self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
+            F.ForcesBar:SetStatusBarColor(unpack(self.ForcesBar.CompletionColor))
             F.ForcesBar:SetMinMaxValues(0, 1)
             F.ForcesBar:SetValue(1)          
             F.ForcesBar.PercentCount:Hide()
             F.ForcesBar.RealCount:Hide()
             F.ForcesBar.CurrentPullBar:Hide()
-            self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, "")
-            self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, "")
         elseif not self.done then
             local remaining = self.RealCount.remaining and total-current or current
             local remainingText = self.RealCount.total and string.format("%s/%s", remaining, total) or remaining
