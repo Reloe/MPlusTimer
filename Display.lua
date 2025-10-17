@@ -604,7 +604,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
         if percent >= 100 or criteria.completed then
             local cur = criteria.elapsed and select(2, GetWorldElapsedTime(1)) - criteria.elapsed
-            local pb = self.ForcesSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+            local pb = self.ForcesSplits.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             if pb and pb["forces"] then
                 local diff = cur - pb["forces"]
                 local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
