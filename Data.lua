@@ -178,7 +178,7 @@ MPT.DefaultProfile = {
         ShadowOffset = {0, 0},
     },
     AffixIcons = {
-        enabled = true,
+        enabled = false,
         Anchor = "CENTER",
         RelativeTo = "CENTER",
         xOffset = 0,
