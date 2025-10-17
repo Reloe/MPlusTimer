@@ -10,34 +10,32 @@ function MPT:ShowStates()
 end
 
 function MPT:Init(preview)
-    
-    local mapID = C_ChallengeMode.GetActiveChallengeMapID()
-    if mapID then
-        self.cmap = mapID
-    else
-        mapID = self.cmap
-    end
-    local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-    self.level = level
+    self:SetKeyInfo(true)
     self.opened = false
     self.done = false
     self.IsPreview = preview   
     self.PreviousMaxBossFrame = 0 
     self:CreateStates(preview)
-    if not preview then self:UpdateAllStates() end
+end
+
+function MPT:SetKeyInfo(init)
+    if init or (not self.cmap) or (not self.level) or (not self.affixes) or self.level == 0 or self.affixes == {} then
+        self.cmap = C_ChallengeMode.GetActiveChallengeMapID()
+        self.level, self.affixes = C_ChallengeMode.GetActiveKeystoneInfo()
+    end
+end
+
+function MPT:UpdateAllStates(preview)
+    self:UpdateMainFrame()        
+    self:UpdateBosses(false, (not preview) and 1, preview)       
+    self:UpdateKeyInfo(true, false, preview)
+    self:UpdateTimerBar(true, false, preview)
+    self:UpdateEnemyForces(true, preview)
+    self:UpdatePBInfo(preview)
+    self:UpdateMainFrame(true)
+    self:MoveFrame(preview)
     self:ShowFrame(true)
 end
-
-function MPT:UpdateAllStates()
-    self:UpdateMainFrame()
-    self:UpdateBosses(true, 1) -- Bosses need to be done first so other auras can properly anchor to them
-    self:UpdateKeyInfo(true)
-    self:UpdateTimerBar(true, false)
-    self:UpdateEnemyForces(true, false)
-    self:UpdatePBInfo(false)
-    self:UpdateMainFrame(true)
-end
-
 
 function MPT:CreateStates(preview)
     if self.Frame then self.Frame:Hide() end
@@ -114,46 +112,26 @@ function MPT:CreateStates(preview)
         end)
 
     end  
-    
- 
-
-    -- Set preview values
-    if preview and self.Frame then
-        self:UpdateMainFrame()              
-        -- Bosses
-        self:UpdateBosses(false, false, true)       
-        -- Key Info Bar
-        self:UpdateKeyInfo(true, false, true)
-        -- Timer Bar
-        self:UpdateTimerBar(true, true, true)
-        -- Forces Bar
-        self:UpdateEnemyForces(true, true)
-        -- PB Info
-        self:UpdatePBInfo(true)
-        -- Fix Background Size
-        self:UpdateMainFrame(true)
-        self:MoveFrame(true)
-    end
+   self:UpdateAllStates(preview)
 end
+
 
 function MPT:UpdateMainFrame(BackgroundOnly)
     local F = self.Frame
     -- Main Frame     
     if BackgroundOnly then    
-        local bosscount = self.MaxBossFrame
-        local spacing = self.Spacing*(bosscount-1)
+        local spacing = self.Spacing*(self.MaxBossFrame-1)
         if self.KeyInfo.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
         if self.TimerBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
         if self.ForcesBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
         if self.Bosses.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
-        local size = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*bosscount)+spacing
+        local size = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*self.MaxBossFrame)+spacing
         F:SetSize(self.TimerBar.Width, size)
         F:SetFrameStrata(self.FrameStrata)
         if self.Background.enabled then
             local w, h = F:GetWidth(), F:GetHeight()
             F.BG:SetSize(w+(self.Background.WidthOffset), h+(self.Background.HeightOffset))
-            F.BG:ClearAllPoints()
-            F.BG:SetPoint("TOPLEFT", F, "TOPLEFT", self.Background.xOffset, self.Background.yOffset)
+            self:SetPoint(F.BG, "TOPLEFT", F, "TOPLEFT", self.Background.xOffset, self.Background.yOffset)
             F.BG:SetColorTexture(unpack(self.Background.Color))  
             F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)
             F.BGBorder:SetAllPoints(F.BG)
@@ -194,9 +172,6 @@ end
 function MPT:UpdateKeyInfo(Full, Deaths, preview)
     local F = self.Frame
     if Full then
-        local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-        local keyLevel = (preview and "+30") or "+"..level
-        local DungeonName = (preview and "Halls of Valor") or self:GetDungeonName(self.cmap)
         local AffixDisplay = ""
         local deathcount = (preview and "20") or C_ChallengeMode.GetDeathCount()
         if preview then            
@@ -205,7 +180,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             end 
         else
             local icon = ""
-            for _, v in pairs(affixes) do
+            for _, v in pairs(self.affixes) do
                 if icon == "" then
                     icon = select(3, C_ChallengeMode.GetAffixInfo(v))
                 else
@@ -222,8 +197,8 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         local spacing = parent == F and 0 or self.Spacing
         self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, -spacing+self.KeyInfo.yOffset)
         F.KeyInfo:SetSize(self.KeyInfo.Width, self.KeyInfo.Height)
-        self:ApplyTextSettings(F.KeyInfo.KeyLevel, self.KeyLevel, keyLevel)
-        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, DungeonName, false, F.KeyInfo)
+        self:ApplyTextSettings(F.KeyInfo.KeyLevel, self.KeyLevel, preview and "+30" or "+"..self.level)
+        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, preview and "Halls of Valor" or self:GetDungeonName(self.cmap), false, F.KeyInfo)
         self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo)
         if self.DeathCounter.enabled then
             self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathcount, false, F.KeyInfo) 
@@ -313,11 +288,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
     if (not Start) and (not Completion) and ((not self.Last) or self.Last < now-self.UpdateRate) and (time == 0) and self.started then
         self.last = now
         if (not self.lasttimer) or self.lasttimer ~= self.timer then
-            if not self.cmap then
-                local level, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-                self.cmap = self.cmap or C_ChallengeMode.GetActiveChallengeMapID()
-                self.level = level
-            end
+            self:SetKeyInfo()
             self.lasttimer = self.timer
             local timeremain = self.timelimit-self.timer
             F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest+1]))
@@ -410,7 +381,7 @@ function MPT:UpdateBosses(Start, count, preview)
             if splittext then self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, splittext, splitcolor) end
         end
     elseif Start and not self.IsPreview then
-        self.cmap = self.cmap or C_ChallengeMode.GetActiveChallengeMapID()
+        self:SetKeyInfo()
         self.BossTimes = {}
         self.BossNames = {}
         local max = select(3, C_Scenario.GetStepInfo())
@@ -685,11 +656,9 @@ function MPT:UpdatePBInfo(preview)
     local F = self.Frame
     F.ForcesBar.PBInfo:Hide()
     if preview or (pb and pb.finish) then
-        local level = preview and 29 or self.level
-        local mapname = preview and "Halls of Valor" or self:GetDungeonName(self.cmap)
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
         local date = self:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
-        text = string.format("PB: +%s %s %s", level, self:FormatTime(finishtime/1000), date)
+        text = string.format("PB: +%s %s %s", preview and 29 or self.level, self:FormatTime(finishtime/1000), date)
         local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
     end
