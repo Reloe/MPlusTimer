@@ -17,10 +17,13 @@ end
 function MPT:Init(preview)
     self:SetKeyInfo(true)
     self.opened = false
-    self.done = false
     self.IsPreview = preview   
     self.PreviousMaxBossFrame = 0 
-    self:CreateStates(preview)
+    local time = C_ChallengeMode.GetChallengeCompletionInfo().time
+    if time == 0 then -- prevent setting this to false on completion
+        self.done = false
+        self:CreateStates(preview)
+    end
 end
 
 function MPT:SetKeyInfo(init)
@@ -606,17 +609,19 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         if percent >= 100 or criteria.completed then
             local cur = criteria.elapsed and select(2, GetWorldElapsedTime(1)) - criteria.elapsed
             local pb = self.ForcesSplits.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
-            if pb and pb["forces"] then
+            if pb and pb["forces"] and not self.done then
                 local diff = cur - pb["forces"]
                 local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
                 local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
                 if diff < 0 then diff = diff * -1 end
                 self:ApplyTextSettings(F.ForcesBar.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
             end
+            if not self.done then
+                self.forcesTime = cur or 0
+                local completionText = cur and self:FormatTime(cur) or ""
+                self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
+            end
             self.done = true
-            self.forcesTime = cur or 0
-            local completionText = cur and self:FormatTime(cur) or ""
-            self:ApplyTextSettings(F.ForcesBar.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
             F.ForcesBar:SetStatusBarColor(unpack(self.ForcesBar.CompletionColor))
             F.ForcesBar:SetMinMaxValues(0, 1)
             F.ForcesBar:SetValue(1)          
