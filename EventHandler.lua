@@ -39,11 +39,10 @@ function MPT:ToggleEventRegister(On)
 end
 
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
-    if e == "INSTANCE_ABANDON_VOTE_FINISHED" then
+    if e == "INSTANCE_ABANDON_VOTE_FINISHED" and C_ChallengeMode.IsChallengeModeActive() then
         local success = ...
-        print(success, "abandon vote finished", C_ChallengeMode.IsChallengeModeActive(), self.seasonID, self.cmap, self.level)
-    end
-    if e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
+        self:AddHistory(false, self.cmap, self.level, false, success)
+    elseif e == "CHALLENGE_MODE_KEYSTONE_SLOTTED" and MPTSV.CloseBags then
         CloseAllBags()
     elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPTSV.KeySlot then
         local index = select(3, GetInstanceInfo())
@@ -109,12 +108,6 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "CHALLENGE_MODE_START" then
         self:Init()
         self:ToggleEventRegister(true)
-    elseif e == "INSTANCE_ABANDON_VOTE_FINISHED" and C_ChallengeMode.IsChallengeModeActive() then
-        local success = ...
-        if success then
-            self:AddHistory(false, self.cmap, self.level, false, true) -- add as abandoned run
-        end
-        self:ToggleEventRegister(false)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
         self:UpdateTimerBar(false, true, false)
         self:UpdateEnemyForces(false, false, true)

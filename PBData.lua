@@ -44,6 +44,7 @@ function MPT:AddCharacterHistory(tryagain)
     if not MPTSV.History then MPTSV.History = {} end
     if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
     -- clear current character data to avoid duplicates
+    local olddata = MPTSV.History[self.seasonID][G] and CopyTable(MPTSV.History[self.seasonID][G]) -- need this to keep abandoned data
     MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(2, UnitClass("player"))}
     for i, v in ipairs(data) do
         local cmap = v.mapChallengeModeID
@@ -52,8 +53,8 @@ function MPT:AddCharacterHistory(tryagain)
         local intime = v.completed
          -- only add runs from dungeons of the current season. Might be relevant for remix? 
         if self.SeasonData[self.seasonID] and self.SeasonData[self.seasonID].Dungeons and tContains(self.SeasonData[self.seasonID].Dungeons, cmap) then
-            if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
-            if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
+            if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = (olddata and olddata[cmap] and olddata[cmap].abandoned) or 0} end
+            if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = (olddata and olddata[cmap] and olddata[cmap][level] and olddata[cmap][level].abandoned) or 0} end
             if not MPTSV.History[self.seasonID][G].keys then MPTSV.History[self.seasonID][G].keys = {} end
             MPTSV.History[self.seasonID][G].keys[i] = true
             self:AddHistory(time, cmap, level, intime, false)
@@ -65,13 +66,12 @@ function MPT:AddHistory(time, cmap, level, intime, abandoned) -- abandoned runs 
     local G = UnitGUID("player")
     if abandoned and level and cmap then
         if not MPTSV.History[self.seasonID] then MPTSV.History[self.seasonID] = {} end
-        if (not self.SeasonData[self.seasonID]) or (not self.SeasonData[self.seasonID].Dungeons) or (not t.contains(self.SeasonData[self.seasonID].Dungeons, cmap)) then return end -- only add runs from dungeons of the current season
+        if (not self.SeasonData[self.seasonID]) or (not self.SeasonData[self.seasonID].Dungeons) or (not tContains(self.SeasonData[self.seasonID].Dungeons, cmap)) then return end -- only add runs from dungeons of the current season
         if not MPTSV.History[self.seasonID][G] then MPTSV.History[self.seasonID][G] = {name = UnitName("player"), realm = GetNormalizedRealmName(), class = select(3, UnitClass("player"))} end
         if not MPTSV.History[self.seasonID][G][cmap] then MPTSV.History[self.seasonID][G][cmap] = {intime = 0, depleted = 0, highestrun = 0, abandoned = 0} end
         if not MPTSV.History[self.seasonID][G][cmap][level] then MPTSV.History[self.seasonID][G][cmap][level] = {intime = 0, depleted = 0, abandoned = 0} end
-        MPTSV.History[self.seasonID][G][cmap].abandoned = MPTSV.History[self.seasonID][G][cmap].abandoned + 1
-        MPTSV.History[self.seasonID][G][cmap][level].abandoned = MPTSV.History[self.seasonID][G][cmap][level].abandoned + 1
-        print('adding abandoned run for', cmap, level)
+        MPTSV.History[self.seasonID][G][cmap].abandoned = (MPTSV.History[self.seasonID][G][cmap].abandoned or 0) + 1
+        MPTSV.History[self.seasonID][G][cmap][level].abandoned = (MPTSV.History[self.seasonID][G][cmap][level].abandoned or 0) + 1
         return
     end
     if time and not MPTSV.History[self.seasonID][G][cmap].fastestrun then
@@ -86,7 +86,7 @@ function MPT:AddHistory(time, cmap, level, intime, abandoned) -- abandoned runs 
         elseif level == MPTSV.History[self.seasonID][G][cmap].highestrun and time*1000 < MPTSV.History[self.seasonID][G][cmap].fastestrun then
             MPTSV.History[self.seasonID][G][cmap].fastestrun = time*1000 -- save faster run if same level
         end
-    else
+    elseif time then 
         MPTSV.History[self.seasonID][G][cmap][level].depleted = MPTSV.History[self.seasonID][G][cmap][level].depleted + 1
         MPTSV.History[self.seasonID][G][cmap].depleted = MPTSV.History[self.seasonID][G][cmap].depleted + 1
     end

@@ -84,7 +84,6 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [382] = {1187, "Theater"},
     [391] = {1194, "Streets"},
     [392] = {1194, "Gambit"},
-    
     -- Dragonflight
     
     [399] = {1202, "Ruby Pools"},
