@@ -1,5 +1,8 @@
 local _, MPT = ...
 
+local LDB = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
+local LDBIcon = LibStub("LibDBIcon-1.0", true)
+local AceConfigdialog = LibStub("AceConfigDialog-3.0")
 local fontlist = MPT.LSM:List("font")
 local fontTable = {}
 for _, font in ipairs(fontlist) do
@@ -10,6 +13,32 @@ local texturelist = MPT.LSM:List("statusbar")
 local textureTable = {}
 for _, texture in ipairs(texturelist) do
     textureTable[texture] = texture
+end
+
+
+function MPT:CreateMiniMapButton()
+    if not LDB then return end
+    local databroker = LDB:NewDataObject("MPlusTimer", {
+        type = "launcher",
+        label = "MPlusTimer",
+        icon = [[Interface\Icons\inv_relics_hourglass]],
+        showInCompartment = true,
+        OnClick = function(self, button)
+            if button == "LeftButton" then
+                Settings.OpenToCategory(MPT.UI.optionsFrame.name)
+            elseif button == "RightButton" then
+                MPT:ShowPBFrame()
+            end
+        end,
+        OnTooltipShow = function(tooltip)
+            tooltip:AddLine("MPlusTimer", 0, 1, 1)
+            tooltip:AddLine("|cFFCFCFCFLeft click|r: Show/Hide Options Window\n|cFFCFCFCFRight click|r: View Best Times")
+        end
+    })
+    if (databroker and not LDBIcon:IsRegistered("MPlusTimer")) then
+        LDBIcon:Register("MPlusTimer", databroker, MPTSV.MinimapIcon)
+        LDBIcon:AddButtonToCompartment("MPlusTimer")
+    end
 end
 
 StaticPopupDialogs["MPT_RESET_PROFILE"] = {
@@ -135,7 +164,7 @@ local MainOptions = {
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(2, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
+        UpdateRate = MPT:CreateRange(2, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
         Gap = MPT:CreateSpace(3),
         LowerKey = {
             type = "toggle",
@@ -161,9 +190,18 @@ local MainOptions = {
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
+        MinimapIcon = {
+            type = "toggle",
+            order = 7,
+            name = "Hide Minimap Icon",
+            desc = "Hide the Minimap Icon",
+            set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
+            get = function() return MPTSV.MinimapIcon.hide end,
+        },
+        Gap2 = MPT:CreateSpace(8),
         ImportFromWA = {
             type = "execute",
-            order = 7,
+            order = 9,
             name = "Import WA Times",
             desc = "Import Best Times from the M+ WA. This is only possible until Pre-Patch hits.",
             func = function() 
@@ -221,18 +259,45 @@ local GeneralOptions = {
         FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
         Gap = MPT:CreateSpace(3),
         Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
-        Spacing = MPT:CreateRange(5, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        AllFonts = {
+            type = "select",
+            order = 5,
+            name = "Change All Fonts",
+            desc = "Changes all fonts used in the main display of the addon at once",
+            values = fontTable,
+            set = function(_, value)
+                MPT:SetSV({"KeyLevel", "Font"}, value, false)
+                MPT:SetSV({"DungeonName", "Font"}, value, false)
+                MPT:SetSV({"DeathCounter", "Font"}, value, false)
+                MPT:SetSV({"TimerText", "Font"}, value, false)
+                MPT:SetSV({"ChestTimer1", "Font"}, value, false)
+                MPT:SetSV({"ChestTimer2", "Font"}, value, false)
+                MPT:SetSV({"ChestTimer3", "Font"}, value, false)
+                MPT:SetSV({"ComparisonTimer", "Font"}, value, false)
+                MPT:SetSV({"BossName", "Font"}, value, false)
+                MPT:SetSV({"BossSplit", "Font"}, value, false)
+                MPT:SetSV({"BossTimer", "Font"}, value, false)
+                MPT:SetSV({"PercentCount", "Font"}, value, false)
+                MPT:SetSV({"RealCount", "Font"}, value, false)
+                MPT:SetSV({"ForcesSplits", "Font"}, value, false)
+                MPT:SetSV({"ForcesCompletion", "Font"}, value, false)
+                MPT:SetSV({"PBInfo", "Font"}, value, false)
+                MPT:UpdateDisplay()                
+            end,
+            get = function() return "" end,
+        },
         HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
+        Spacing = MPT:CreateRange(7, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
         Desc = {
             type = "header",
-            order = 7,
+            order = 8,
             name = "Main Frame Positioning",
         },
-        Anchor = MPT:CreateDropDown(8, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
-        relativeTo = MPT:CreateDropDown(9, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        Gap = MPT:CreateSpace(10),
-        xOffset = MPT:CreateRange(11, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(12, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
+        Anchor = MPT:CreateDropDown(9, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        Gap = MPT:CreateSpace(11),
+        xOffset = MPT:CreateRange(12, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(13, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
     } 
 }
 local General = {
@@ -624,7 +689,6 @@ function MPT.UI:OnInitialize()
 	AceConfig:RegisterOptionsTable("MPTUI", MainOptions)
     AceConfig:RegisterOptionsTable("MPTSettings", settings)
     AceConfig:RegisterOptionsTable("MPTProfiles", profiles)
-    local AceConfigdialog = LibStub("AceConfigDialog-3.0")
 	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "MPlusTimer")
     self.settingsFrame = AceConfigdialog:AddToBlizOptions("MPTSettings", "Display Settings", "MPlusTimer")
     self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer")

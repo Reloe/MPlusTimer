@@ -135,6 +135,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             MPTSV.LowerKey = true
             MPTSV.CloseBags = true
             MPTSV.KeySlot = true
+            MPTSV.MinimapIcon = {hide = true}
             MPTSV.BestTime = {}
             self:CreateProfile("default") 
         else
@@ -145,6 +146,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             MPTAPI = MPT
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
+        self:CreateMiniMapButton()
     elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
         if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
         local _, se, _, _, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
