@@ -126,36 +126,20 @@ local MainOptions = {
     type = "group",
     name = "Non-Display Settings",
     args = {
-        Preview = {
-            type = "execute",
-            order = 1,
-            name = "Preview",
-            desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
-            func = function() 
-                if not MPT.IsPreview then -- not currently in preview
-                    MPT:Init(true) -- Frame is set to movable in here as well
-                elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
-                    MPT:Init(false)
-                    MPT:MoveFrame(false)
-                elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
-                    MPT:MoveFrame(false)
-                    MPT:ShowFrame(false)
-                end 
-            end,         
-        },        
         ViewBestTimes = {
             type = "execute",
-            order = 2,
+            order = 1,
             name = "View Best Times",
             desc = "View your stored Best Times",
             func = function() 
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(6, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
+        UpdateRate = MPT:CreateRange(2, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),
+        Gap = MPT:CreateSpace(3),
         LowerKey = {
             type = "toggle",
-            order = 9,
+            order = 4,
             name = "Data from Lower Level",
             desc = "Get Split Timers from one key level lower if no data for current level exists",
             set = function(_, value) MPTSV.LowerKey = value end,
@@ -163,7 +147,7 @@ local MainOptions = {
         },
         CloseBags = {
             type = "toggle",
-            order = 9,
+            order = 5,
             name = "Close Bags",
             desc = "Automatically close bags after inserting the Keystone",
             set = function(_, value) MPTSV.CloseBags = value end,
@@ -171,16 +155,15 @@ local MainOptions = {
         },
         KeySlot = {
             type = "toggle",
-            order = 9,
+            order = 6,
             name = "Automatic Keyslot",
             desc = "Automatically insert Keystone when interacting with the Keystone Interface",
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
-        Gap = MPT:CreateSpace(10),
         ImportFromWA = {
             type = "execute",
-            order = 11,
+            order = 7,
             name = "Import WA Times",
             desc = "Import Best Times from the M+ WA. This is only possible until Pre-Patch hits.",
             func = function() 
@@ -218,21 +201,38 @@ local GeneralOptions = {
     name = "General Options",
     order = 1,
     args = {
-        FrameStrata = MPT:CreateDropDown(1, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
-        Scale = MPT:CreateRange(2, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
-        Spacing = MPT:CreateRange(3, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
-        HideTracker = MPT:CreateToggle(4, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-        Gap = MPT:CreateSpace(5),
+        Preview = {
+            type = "execute",
+            order = 1,
+            name = "Preview",
+            desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
+            func = function() 
+                if not MPT.IsPreview then -- not currently in preview
+                    MPT:Init(true) -- Frame is set to movable in here as well
+                elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
+                    MPT:Init(false)
+                    MPT:MoveFrame(false)
+                elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
+                    MPT:MoveFrame(false)
+                    MPT:ShowFrame(false)
+                end 
+            end,         
+        }, 
+        FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        Gap = MPT:CreateSpace(3),
+        Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
+        Spacing = MPT:CreateRange(5, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
         Desc = {
             type = "header",
-            order = 6,
+            order = 7,
             name = "Main Frame Positioning",
         },
-        Anchor = MPT:CreateDropDown(7, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
-        relativeTo = MPT:CreateDropDown(8, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        Gap = MPT:CreateSpace(9),
-        xOffset = MPT:CreateRange(10, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(11, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
+        Anchor = MPT:CreateDropDown(8, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(9, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        Gap = MPT:CreateSpace(10),
+        xOffset = MPT:CreateRange(11, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(12, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
     } 
 }
 local General = {
