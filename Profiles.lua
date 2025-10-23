@@ -104,7 +104,12 @@ function MPT:LoadProfile(name)
         MPTSV.ProfileKey[ProfileKey] = name
         self:UpdateDisplay()
     elseif MPTSV.ProfileKey[ProfileKey] and MPTSV.Profiles[MPTSV.ProfileKey[ProfileKey]] then -- load saved profile if no profile name was provided/the requested profile doesn't exist
-        self:LoadProfile(MPTSV.ProfileKey[ProfileKey])
+        if MPTSV.MainProfile and MPTSV.ProfileKey[ProfileKey] == "default" then 
+            -- load main profile if character was using default profile before but user now has a main profile
+            self:LoadProfile(MPTSV.MainProfile)
+        else
+            self:LoadProfile(MPTSV.ProfileKey[ProfileKey])
+        end
     elseif MPTSV.MainProfile then -- load the selected Main Profile -> player is logging onto a new character
         self:LoadProfile(MPTSV.MainProfile)
     else
@@ -116,6 +121,7 @@ function MPT:ModernizeProfile(profile, generic)
     if generic then -- update non-profile settings if they don't exist yet
         if MPTSV.CloseBags == nil then MPTSV.CloseBags = true end
         if MPTSV.KeySlot == nil then MPTSV.KeySlot = true end
+        if MPTSV.MinimapIcon == nil then MPTSV.MinimapIcon = {hide = true} end
     elseif profile and self:GetVersion() > profile.Version then
         if profile.Version < 2 then
             profile.TimerText.Decimals = 1
