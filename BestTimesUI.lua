@@ -356,6 +356,24 @@ function MPT:CreatePBFrame()
             F:SetScale(s:GetValue())
         end)
 
+        local version = "v"..C_AddOns.GetAddOnMetadata("MPlusTimer", "Version")
+        if version == "v@project-version@" then
+            version = "Dev Build"
+        end
+        self:CreateText(F, "Title", {
+            Anchor = "TOP",
+            RelativeTo = "TOP",
+            xOffset = 0,
+            yOffset = -6,
+            Font = "Expressway",
+            FontSize = 12,
+            Outline = "OUTLINE",
+            ShadowColor = {0,0,0,1},
+            ShadowOffset = {1,-1},
+            Color = {1, 1, 1, 1},
+            text = "MPlusTimer "..version
+        })
+
         self:CreateEditPanel()
     end
 end
