@@ -3,6 +3,7 @@
 ## Title: MPlusTimer
 ## Version: @project-version@
 ## Author: Reloe
+## IconTexture: Interface\Icons\inv_relics_hourglass
 ## DefaultState: Enable
 ## SavedVariables: MPTSV
 ## X-Curse-Project-ID: 1363447
@@ -20,6 +21,8 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibDeflate\lib.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
+Libs\LibDBIcon-1.0\lib.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 
 MPlusTimer.lua
 Functions.lua
