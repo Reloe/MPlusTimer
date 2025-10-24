@@ -214,25 +214,26 @@ function MPT:ImportWAData(data)
         return 
     end
     if not MPTSV.BestTime then MPTSV.BestTime = {} end
-    if not MPTSV.BestTime[self.seasonID] then MPTSV.BestTime[self.seasonID] = {} end
+    local seasonID = 15 -- hardcode to 15 since WA data is only from that season
+    if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end
     local importcount = 0
     for cmap, leveldata in pairs(data.Bosses) do
-        if data.Forces[cmap] then
-            if not MPTSV.BestTime[self.seasonID][cmap] then MPTSV.BestTime[self.seasonID][cmap] = {} end
+        if data.Forces[cmap] and tContains(self.SeasonData[15].Dungeons, cmap) then
+            if not MPTSV.BestTime[seasonID][cmap] then MPTSV.BestTime[seasonID][cmap] = {} end
             for level, timedata in pairs(leveldata) do
                 if data.Forces[cmap][level] then
-                    if not MPTSV.BestTime[self.seasonID][cmap][level] then MPTSV.BestTime[self.seasonID][cmap][level] = {} end
-                    if not MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] then MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"] = {} end
-                    local before = MPTSV.BestTime[self.seasonID][cmap][level]["finish"]
+                    if not MPTSV.BestTime[seasonID][cmap][level] then MPTSV.BestTime[seasonID][cmap][level] = {} end
+                    if not MPTSV.BestTime[seasonID][cmap][level]["BossNames"] then MPTSV.BestTime[seasonID][cmap][level]["BossNames"] = {} end
+                    local before = MPTSV.BestTime[seasonID][cmap][level]["finish"]
                     if (not before) or (timedata["finish"] < before) then
-                        MPTSV.BestTime[self.seasonID][cmap][level]["finish"] = timedata["finish"]
-                        MPTSV.BestTime[self.seasonID][cmap][level]["forces"] = data.Forces[cmap][level][0]
-                        MPTSV.BestTime[self.seasonID][cmap][level]["level"] = level
-                        MPTSV.BestTime[self.seasonID][cmap][level]["date"] = {}
+                        MPTSV.BestTime[seasonID][cmap][level]["finish"] = timedata["finish"]
+                        MPTSV.BestTime[seasonID][cmap][level]["forces"] = data.Forces[cmap][level][0]
+                        MPTSV.BestTime[seasonID][cmap][level]["level"] = level
+                        MPTSV.BestTime[seasonID][cmap][level]["date"] = {}
                         for i=1, 5 do
                             if timedata[i] then
-                                MPTSV.BestTime[self.seasonID][cmap][level][i] = timedata[i]
-                                MPTSV.BestTime[self.seasonID][cmap][level]["BossNames"][i] = "Boss "..i
+                                MPTSV.BestTime[seasonID][cmap][level][i] = timedata[i]
+                                MPTSV.BestTime[seasonID][cmap][level]["BossNames"][i] = "Boss "..i
                             end
                         end
                         importcount = importcount + 1
