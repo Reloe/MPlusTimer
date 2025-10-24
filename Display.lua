@@ -564,10 +564,20 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         local currentPull = preview and math.random(50, 120) or 0 -- edit this to whatever new API blizzard hopefully comes up with
         local currentPullPercent = preview and (currentPull/total)*100 or 0 -- edit this to whatever new API blizzard hopefully comes up with
         if not completed then -- protection because I anticipate blizzard's current pull API might still return data if we're already at 100%
-            local prefix = self.RealCount.remaining and "-" or "+"
-            remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s%s)", remainingText, prefix, currentPull) or remainingText
-            local percentprefix = self.PercentCount.remaining and "-" or "+"
-            percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%s%.2f%%)", percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
+            if self.RealCount.afterPull then
+                local afterpull = self.RealCount.remaining and (total-(current+currentPull)) or (current+currentPull)
+                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s)", remainingText, afterpull) or remainingText
+            else                
+                local prefix = self.RealCount.remaining and "-" or "+"
+                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s%s)", remainingText, prefix, currentPull) or remainingText
+            end
+            if self.PercentCount.afterPull then
+                local afterpull = self.PercentCount.remaining and (100-((current+currentPull)/total)*100) or (((current+currentPull)/total)*100)
+                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%.2f%%)", percentText, afterpull) or string.format("%.2f%%", percentText)
+            else
+                local percentprefix = self.PercentCount.remaining and "-" or "+"
+                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%s%.2f%%)", percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
+            end
         end
         self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, percentText)
         self:ApplyTextSettings(F.ForcesBar.RealCount, self.RealCount, remainingText)
@@ -686,11 +696,13 @@ function MPT:UpdateCurrentPull()
         else
             currentText = self.RealCount.remaining and total-current or current
         end
-        if self.RealCount.AfterPull then
+        if self.RealCount.afterPull then
+            local currentValue = current
             if self.RealCount.remaining then
                 rawValue = rawValue * -1
+                currentValue = total - current
             end
-            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, current+rawValue) or currentText
+            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, currentValue+rawValue) or currentText
         else
             currentText = rawValue ~= 0 and string.format("%s(%s%s)", currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
         end
@@ -700,9 +712,10 @@ function MPT:UpdateCurrentPull()
     if self.PercentCount.enabled and self.PercentCount.pullcount and current < total then
         local color = current + rawValue >= total and self.PercentCount.CurrentPullColor or self.PercentCount.Color
         percentText = string.format("%.2f%%", self.PercentCount.remaining and 100-percent or percent)
-        if self.PercentCount.AfterPull then
+        if self.PercentCount.afterPull then
             if self.PercentCount.remaining then
                 percentValue = percentValue * -1
+                percent = 100 - percent
             end
             percentText = percentValue ~= 0 and string.format("%s(%.2f%%)", percentText, percent+percentValue) or percentText
         else
