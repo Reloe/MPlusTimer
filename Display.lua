@@ -498,7 +498,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 local frame = self:CreateBossFrame(i)
                 local defeated = criteria.elapsed
                 frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
-                local timercolor = self.BossTimer.Color
+                local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                 local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
                 self.BossTimes[i] = time
                 if pb and pb[i] then
