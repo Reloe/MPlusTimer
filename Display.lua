@@ -698,11 +698,12 @@ function MPT:UpdateCurrentPull()
         end
         if self.RealCount.afterPull then
             local currentValue = current
+            local countValue = rawValue
             if self.RealCount.remaining then
-                rawValue = rawValue * -1
+                countValue = rawValue * -1
                 currentValue = total - current
             end
-            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, currentValue+rawValue) or currentText
+            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, currentValue+countValue) or currentText
         else
             currentText = rawValue ~= 0 and string.format("%s(%s%s)", currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
         end
@@ -723,7 +724,7 @@ function MPT:UpdateCurrentPull()
         end
         self:ApplyTextSettings(F.ForcesBar.PercentCount, self.PercentCount, percentText, color)
     end
-    if self.CurrentPullBar.enabled and rawValue and rawValue > 0 and percentValue and percentValue > 0 and current < total then
+    if self.CurrentPullBar.enabled and rawValue and rawValue > 0 and current < total then
             local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()        
             F.ForcesBar.CurrentPullBar:SetSize(self.ForcesBar.Width-xOffset, self.ForcesBar.Height)
             F.ForcesBar.CurrentPullBar:ClearAllPoints()    
