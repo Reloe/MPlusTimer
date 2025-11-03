@@ -604,8 +604,8 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
             self:ApplyTextSettings(F.ForcesBarBorder.Splits, self.ForcesSplits, prefix..self:FormatTime(diff), color)
             self:ApplyTextSettings(F.ForcesBarBorder.Completion, self.ForcesCompletion, self:FormatTime(math.random(900, 2000)), self.ForcesCompletion.Color)
         else
-            F.ForcesBar.Splits:Hide()
-            F.ForcesBar.Completion:Hide()
+            F.ForcesBarBorder.Splits:Hide()
+            F.ForcesBarBorder.Completion:Hide()
         end
     else
         percent = completion and 100 or percent
