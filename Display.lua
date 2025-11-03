@@ -635,8 +635,8 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
             F.ForcesBar:SetStatusBarColor(unpack(self.ForcesBar.CompletionColor))
             F.ForcesBar:SetMinMaxValues(0, 1)
             F.ForcesBar:SetValue(1)          
-            F.ForcesBar.PercentCount:Hide()
-            F.ForcesBar.RealCount:Hide()
+            F.ForcesBarBorder.PercentCount:Hide()
+            F.ForcesBarBorder.RealCount:Hide()
             F.ForcesBar.CurrentPullBar:Hide()
         elseif not self.done then
             local remaining = self.RealCount.remaining and total-current or current
