@@ -2,12 +2,12 @@ local _, MPT = ...
 local Serialize = LibStub("AceSerializer-3.0")
 local Compress = LibStub("LibDeflate")
 
-function MPTAPI:ImportProfile(string, key, mainProfile)
+function MPTAPI:ImportProfile(string, key, mainProfile) -- global import function
     if string then
         local decoded = Compress:DecodeForPrint(string)
         local decompressed = Compress:DecompressDeflate(decoded)
         local success, data = Serialize:Deserialize(decompressed)
-        local name = key or data.name
+        local name = key or data.name -- get name from data if it's not specifically provided
         if success and data and name then
             data.name = name -- ensure the profile key has the same name as stored in the profile table
             MPT:CreateImportedProfile(data, name, mainProfile)
@@ -19,13 +19,23 @@ function MPTAPI:ImportProfile(string, key, mainProfile)
     end
 end
 
+function MPTAPI:GetExportString(key) -- global export function
+    key = key or MPT.ActiveProfile -- export current profile if no key is provided
+    if key and MPTSV.Profiles[key] then
+        local serialized = Serialize:Serialize(MPTSV.Profiles[key])
+        local compressed = Compress:CompressDeflate(serialized)
+        local encoded = Compress:EncodeForPrint(compressed)
+        return encoded
+    end
+end
+
 function MPT:CreateImportedProfile(data, name, mainProfile)
     if data then
         name = name or data.name
         if not name then return end
         if MPTSV.Profiles[name] then -- change name if profile already exists
             name = name.." 2"
-            self:CreateImportedProfile(data, name)
+            self:CreateImportedProfile(data, name, mainProfile)
         else
             data.name = name -- ensure the profile key has the same name as stored in the profile table
             MPTSV.Profiles[name] = data
@@ -34,16 +44,6 @@ function MPT:CreateImportedProfile(data, name, mainProfile)
                 MPT:SetMainProfile(name)
             end
         end
-    end
-end
-
-function MPTAPI:GetExportString(key)
-    key = key or MPT.ActiveProfile
-    if key and MPTSV.Profiles[key] then
-        local serialized = Serialize:Serialize(MPTSV.Profiles[key])
-        local compressed = Compress:CompressDeflate(serialized)
-        local encoded = Compress:EncodeForPrint(compressed)
-        return encoded
     end
 end
 
