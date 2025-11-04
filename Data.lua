@@ -192,6 +192,8 @@ MPT.DefaultProfile = {
     DeathCounter = {
         enabled = true,
         Iconenabled = true,
+        ShowTimer = false,
+        SquareBrackets = true,
         IconAnchor = "RIGHT",
         IconRelativeTo = "RIGHT",
         IconxOffset = 0,
@@ -239,6 +241,7 @@ MPT.DefaultProfile = {
     },
     TimerText = {
         enabled = true,
+        Space = true,
         Anchor = "LEFT",
         RelativeTo = "LEFT",
         xOffset = 2,
@@ -313,7 +316,12 @@ MPT.DefaultProfile = {
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
     },
-    Ticks = {
+    Tick1 = {
+        enabled = true,
+        Width = 2,
+        Color = {1, 1, 1, 1},
+    },
+    Tick2 = {
         enabled = true,
         Width = 2,
         Color = {1, 1, 1, 1},
@@ -390,6 +398,7 @@ MPT.DefaultProfile = {
         CurrentPullColor = {0, 1, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
+        SquareBrackets = true,
     },
     RealCount = {
         enabled = true,
@@ -408,6 +417,7 @@ MPT.DefaultProfile = {
         CurrentPullColor = {0, 1, 0, 1},
         ShadowColor = {0, 0, 0, 1},
         ShadowOffset = {0, 0},
+        SquareBrackets = true,
     },
     ForcesSplits = {
         enabled = true,
