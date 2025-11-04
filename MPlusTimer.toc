@@ -28,9 +28,9 @@ MPlusTimer.lua
 Functions.lua
 SlashCommands.lua
 EventHandler.lua
-Data.lua
 Display.lua
 Profiles.lua
+Data.lua
 BestTimesUI.lua
 PBData.lua
 UI.lua
