@@ -107,6 +107,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
+        self.PlayerDeaths = {}
         self:Init()
         self:ToggleEventRegister(true)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
@@ -150,11 +151,18 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:CreateMiniMapButton()
     elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
         if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
-        local _, se, _, _, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
+        local _, se, _, _, _, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
         if (se == "UNIT_DIED" or se == "UNIT_DESTROYED" or se == "UNIT_DISSIPATES") and destGUID then
             if self.CurrentPull and self.CurrentPull[destGUID] then
                 self.CurrentPull[destGUID] = "DEAD"
                 if not self.done then self:UpdateCurrentPull() end
+            end
+            if se == "UNIT_DIED" and destName and UnitIsPlayer(destName) then
+                self.PlayerDeaths = self.PlayerDeaths or {}
+                num = self.PlayerDeaths and self.PlayerDeaths[destName] or 0
+                if UnitHealth(destName) == 0 then
+                    self.PlayerDeaths[destName] = num and num+1 or 1
+                end
             end
         end
     elseif e == "UNIT_THREAT_LIST_UPDATE" and C_ChallengeMode.IsChallengeModeActive() and InCombatLockdown() then
