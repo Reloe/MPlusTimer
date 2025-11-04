@@ -314,3 +314,17 @@ function MPT:Utf8Sub(str, startChar, endChar)
 
     return string.sub(str, startIndex, endIndex)
 end
+
+function MPT:Profiling(key, start)
+    if not MPTSV.debug then return end
+    key = key or "default"
+    if start then
+        self.ProfilingTimes = self.ProfilingTimes or {}
+        self.ProfilingTimes[key] = debugprofilestop()
+    elseif self.ProfilingTimes and self.ProfilingTimes[key] then
+        local duration = debugprofilestop() - self.ProfilingTimes[key]
+        local color = duration > 1 and "|cFFFF0000" or "|cFFFFFFFF"
+        print("MPT: "..color.."The profiling for "..key.." took "..duration.." ms.|r")
+        self.ProfilingTimes[key] = nil
+    end
+end
