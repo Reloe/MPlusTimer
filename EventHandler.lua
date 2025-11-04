@@ -71,25 +71,8 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
     elseif e == "PLAYER_ENTERING_WORLD" then
         local login, reload, delayed = ...
-        if login or reload then
-            C_Timer.After(10, function() self:EventHandler("PLAYER_ENTERING_WORLD", false, false, true) end) -- re initiate after 10 seconds as a lot of this data is not available on initial login
-        end
-        if self.HideTracker and not self.Hooked then
-            self.Hooked = true
-            local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
-            hooksecurefunc(frame, "Show", function() 
-                if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
-            end)
-        end
         C_MythicPlus.RequestMapInfo()
         local seasonID = C_MythicPlus.GetCurrentSeason()
-        if C_ChallengeMode.IsChallengeModeActive() then
-            self:Init(false)
-            self:ToggleEventRegister(true)
-        else
-            self:ShowFrame(false)
-            self:ToggleEventRegister(false)
-        end
         if seasonID > 0 and (login or reload or delayed) then
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
             if not MPTSV.History then MPTSV.History = {} end
@@ -102,7 +85,25 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             if delayed and MPTSV.History and MPTSV.History[seasonID] then
                 self:AddCharacterHistory()
             end
+            if delayed then return end
         end
+        if login or reload then
+            C_Timer.After(10, function() self:EventHandler("PLAYER_ENTERING_WORLD", false, false, true) end) -- re initiate after 10 seconds as a lot of this data is not available on initial login
+        end
+        if self.HideTracker and not self.Hooked then
+            self.Hooked = true
+            local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
+            hooksecurefunc(frame, "Show", function() 
+                if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
+            end)
+        end
+        if C_ChallengeMode.IsChallengeModeActive() then
+            self:Init(false)
+            self:ToggleEventRegister(true)
+        else
+            self:ShowFrame(false)
+            self:ToggleEventRegister(false)
+        end        
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
@@ -143,7 +144,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:LoadProfile()
         end        
         if MPTSV.debug then
-            MPTAPI = MPT
+            MPTGlobal = MPT
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
         self:CreateMiniMapButton()

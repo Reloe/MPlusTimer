@@ -263,7 +263,7 @@ local GeneralOptions = {
             type = "select",
             order = 5,
             name = "Change All Fonts",
-            desc = "Changes all fonts used in the main display of the addon at once",
+            desc = "Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI",
             values = fontTable,
             set = function(_, value)
                 MPT:SetSV({"KeyLevel", "Font"}, value, false)
@@ -288,16 +288,30 @@ local GeneralOptions = {
         },
         HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
         Spacing = MPT:CreateRange(7, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        AllTextures = {
+            type = "select",
+            order = 8,
+            name = "Change All Textures",
+            desc = "Changes all bar textures at once",
+            values = textureTable,
+            set = function(_, value)
+                MPT:SetSV({"TimerBar", "Texture"}, value, false)
+                MPT:SetSV({"ForcesBar", "Texture"}, value, false)
+                MPT:SetSV({"CurrentPullBar", "Texture"}, value, false)
+                MPT:UpdateDisplay()                
+            end,
+            get = function() return "" end,
+        },
         Desc = {
             type = "header",
-            order = 8,
+            order = 9,
             name = "Main Frame Positioning",
         },
-        Anchor = MPT:CreateDropDown(9, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
-        relativeTo = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        Gap = MPT:CreateSpace(11),
-        xOffset = MPT:CreateRange(12, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(13, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
+        Anchor = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        Gap = MPT:CreateSpace(12),
+        xOffset = MPT:CreateRange(13, "X Offset", "X Offset", -4000, 4000, 1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(14, "Y Offset", "Y Offset", -4000, 4000, 1, {"Position", "yOffset"}, true),  
     } 
 }
 local General = {
@@ -332,6 +346,8 @@ local DungeonName = MPT:CreateTextSetting("Dungeon Name", "DungeonName", 3, true
 DungeonName.args.Shorten = MPT:CreateRange(11, "Shorten", "Shorten Dungeon Name after X Characters", 5, 30, 1, {"DungeonName", "Shorten"}, true)
 local Affixes = MPT:CreateTextSetting("Affixes", "AffixIcons", 4, true)
 local Deaths = MPT:CreateTextSetting("Deaths", "DeathCounter", 5, true)
+Deaths.args.ShowTime = MPT:CreateToggle(11, "Show Time of Deaths", "Show the total time lost from deaths", {"DeathCounter", "ShowTimer"}, true)
+Deaths.args.DeathBrackets = MPT:CreateToggle(12, "Square Brackets", "Show Death Count in Square Brackets instead of Round Brackets", {"DeathCounter", "SquareBrackets"}, true)
 local DeathIcon = {
     type = "group",
     name = "Death Icon",
@@ -373,6 +389,7 @@ local TimerText = MPT:CreateTextSetting("Main Timer", "TimerText", 2, true)
 TimerText.args.Decimals = MPT:CreateDropDown(11, {[0] = "0", [1] = "1", [2] = "2", [3] = "3"}, "Final Time Decimals", "Number of decimal places on the Final Timer", {"TimerText", "Decimals"}, true)
 TimerText.args.SuccessColor = MPT:CreateColor(12, "Intime Color", "Color of the Timer Text on timing the key", {"TimerText", "SuccessColor"}, true)
 TimerText.args.FailColor = MPT:CreateColor(13, "Deplete Color", "Color of the Timer Text on deplete", {"TimerText", "FailColor"}, true)
+TimerText.args.Space = MPT:CreateToggle(14, "Add Spacing", "Adds a space before and after the '/' for readability", {"TimerText", "Space"}, true)
 
 
            
@@ -401,14 +418,35 @@ ComparisonTimer.args.Gap = MPT:CreateSpace(11)
 ComparisonTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Comparison Timer when a new PB was achieved", {"ComparisonTimer", "SuccessColor"}, true)
 ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color of the Comparison Timer on slower Runs", {"ComparisonTimer", "FailColor"}, true)
 ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor"}, true)
+local Tick1 = {
+    type = "group",
+    name = "2 Chest Tick",
+    order = 1,
+    args = {
+        enabled = MPT:CreateToggle(1, "Enable", "Enable 2 Chest Tick", {"Tick1", "enabled"}, true),
+        Width = MPT:CreateRange(2, "2 Chest Tick Width", "Width of 2 Chest Tick", 1, 10, 1, {"Tick1", "Width"}, true),
+        Color = MPT:CreateColor(3, "2 Chest Tick Color", "Color of 2 Chest Tick", {"Tick1", "Color"}, true),
+    }
+}
+local Tick2 = {
+    type = "group",
+    name = "3 Chest Tick",
+    order = 2,
+    args = {
+        enabled = MPT:CreateToggle(1, "Enable", "Enable 3 Chest Tick", {"Tick2", "enabled"}, true),
+        Width = MPT:CreateRange(2, "3 Chest Tick Width", "Width of 3 Chest Tick", 1, 10, 1, {"Tick2", "Width"}, true),
+        Color = MPT:CreateColor(3, "3 Chest Tick Color", "Color of 3 Chest Tick", {"Tick2", "Color"}, true),
+    }
+}
+
 local Ticks = {
     type = "group",
     name = "Ticks",
+    childGroups = "tab",
     order = 5,
     args = {
-        enabled = MPT:CreateToggle(1, "Enable", "Enable Timer Ticks", {"Ticks", "enabled"}, true),
-        Width = MPT:CreateRange(2, "Tick Width", "Width of each Tick", 1, 10, 1, {"Ticks", "Width"}, true),
-        Color = MPT:CreateColor(3, "Tick Color", "Color of the Ticks", {"Ticks", "Color"}, true),
+        Tick1 = Tick1,
+        Tick2 = Tick2,
     },
 }
 local TimerBar = {
@@ -506,7 +544,10 @@ local CurrentPullBar = {
         RealAfterPull = MPT:CreateToggle(10, "RealCount After Pull", "Show Count after Pull instead of how much you are gaining", {"RealCount", "afterPull"}, true),
         PercentAfterPull = MPT:CreateToggle(11, "Percent After Pull", "Show Percent after Pull instead of how much you are gaining", {"PercentCount", "afterPull"}, true),
         Gap3 = MPT:CreateSpace(12),
-        RealTotalCount = MPT:CreateToggle(13, "Show Total", "Show Total Count needed", {"RealCount", "total"}, true),
+        CountBrackets = MPT:CreateToggle(13, "Square Brackets Count", "Uses Square instead of Round Brackets", {"RealCount", "SquareBrackets"}, true),
+        PercentBrackets = MPT:CreateToggle(14, "Square Brackets Perc", "Uses Square instead of Round Brackets", {"PercentCount", "SquareBrackets"}, true),
+        Gap4 = MPT:CreateSpace(15),
+        RealTotalCount = MPT:CreateToggle(16, "Show Total", "Show Total Count needed", {"RealCount", "total"}, true),
     }
 }
 local EnemyForces = {

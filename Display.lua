@@ -173,7 +173,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
     local F = self.Frame
     if Full then
         local AffixDisplay = ""
-        local deathcount = (preview and "20") or C_ChallengeMode.GetDeathCount()
+        local deathtext = (preview and "20") or C_ChallengeMode.GetDeathCount()
         if preview then            
             for i=1, 4 do
                 AffixDisplay = AffixDisplay.."\124T"..select(i, strsplit(" ", "236401 1035055 451169 1385910"))..":"..self.AffixIcons.FontSize..":"..self.AffixIcons.FontSize..":"..1-i..":0:64:64:6:60:6:60\124t"
@@ -201,7 +201,20 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, preview and "Halls of Valor" or self:GetDungeonName(self.cmap), false, F.KeyInfo)
         self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo)
         if self.DeathCounter.enabled then
-            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathcount, false, F.KeyInfo) 
+            if self.DeathCounter.ShowTimer then
+                local timelost = preview and 100 or select(2,C_ChallengeMode.GetDeathCount())
+                if timelost > 0 then
+                    local lostmin = math.floor(timelost/60)
+                    local lostsec = timelost - (lostmin*60)
+                    local mintext = lostmin > 0 and lostmin.."m" or ""
+                    local sectext = lostsec > 0 and lostsec.."s" or ""
+                    local bracket1 = self.DeathCounter.SquareBrackets and "[" or "("
+                    local bracket2 = self.DeathCounter.SquareBrackets and "]" or ")"
+                    sectext = mintext ~= "" and " "..sectext or sectext
+                    deathtext = deathtext.." "..bracket1.."+"..mintext..sectext..bracket2
+                end
+            end
+            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo) 
         else
             F.KeyInfo.DeathCounter:Hide() 
         end
@@ -228,7 +241,24 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         end
     end
     if Deaths then
-        F.KeyInfo.DeathCounter:SetText(C_ChallengeMode.GetDeathCount())
+        if self.DeathCounter.enabled then
+            local deathtext, timelost = C_ChallengeMode.GetDeathCount()
+            if self.DeathCounter.ShowTimer then
+                if timelost > 0 then
+                    local lostmin = math.floor(timelost/60)
+                    local lostsec = timelost - (lostmin*60)
+                    local mintext = lostmin > 0 and lostmin.."m" or ""
+                    local sectext = lostsec > 0 and lostsec.."s" or ""
+                    local bracket1 = self.DeathCounter.SquareBrackets and "[" or "("
+                    local bracket2 = self.DeathCounter.SquareBrackets and "]" or ")"
+                    sectext = mintext ~= "" and " "..sectext or sectext
+                    deathtext = deathtext.." "..bracket1.."+"..mintext..sectext..bracket2
+                end
+            end
+            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo) 
+        else
+            F.KeyInfo.DeathCounter:Hide() 
+        end
     end
 end
 
@@ -310,7 +340,8 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
     end
     local upgrades = completion and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels or 0
     local timercolor = ((not preview) and completion and (C_ChallengeMode.GetChallengeCompletionInfo().onTime and self.TimerText.SuccessColor or self.TimerText.FailColor)) or self.TimerText.Color
-    self:ApplyTextSettings(F.TimerBarBorder.TimerText, self.TimerText, string.format("%s/%s", timertext, self:FormatTime(self.timelimit)), timercolor)
+    timertext = self.TimerText.Space and string.format("%s / %s", timertext, self:FormatTime(self.timelimit)) or string.format("%s/%s", timertext, self:FormatTime(self.timelimit))
+    self:ApplyTextSettings(F.TimerBarBorder.TimerText, self.TimerText, timertext, timercolor)
     if diff or preview then
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
         local ComparisonColor = (ComparisonTime < 0 and self.ComparisonTimer.SuccessColor) or (ComparisonTime > 0 and self.ComparisonTimer.FailColor) or self.ComparisonTimer.EqualColor
@@ -340,9 +371,9 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         else
             F.TimerBarBorder["ChestTimer"..i]:Hide()
         end
-        if i > 1 and self.Ticks.enabled and chest >= i then
-            F.TimerBar.Ticks[i-1]:SetColorTexture(unpack(self.Ticks.Color))
-            F.TimerBar.Ticks[i-1]:SetWidth(self.Ticks.Width)
+        if i > 1 and self["Tick"..i-1].enabled and chest >= i then
+            F.TimerBar.Ticks[i-1]:SetColorTexture(unpack(self["Tick"..i-1].Color))
+            F.TimerBar.Ticks[i-1]:SetWidth(self["Tick"..i-1].Width)
             F.TimerBar.Ticks[i-1]:SetHeight(self.TimerBar.Height)
             self:SetPoint(F.TimerBar.Ticks[i-1], "LEFT", F.TimerBar, "LEFT", (i == 2 and self.TimerBar.Width*0.8) or (i == 3 and self.TimerBar.Width*0.6) , 0)
             F.TimerBar.Ticks[i-1]:Show()
@@ -415,7 +446,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 end
             end
         end
-        if count <= 6 then -- check again in 2 seconds a few times to make sure data is correct
+        if count <= 4 then -- check again in 2 seconds a few times to make sure data is correct
             C_Timer.After(2, function()
                     self:UpdateBosses(true, count+1)
             end)
@@ -482,11 +513,11 @@ function MPT:UpdateBosses(Start, count, preview)
             end
             self.PreviousMaxBossFrame = self.MaxBossFrame
             if self.MaxBossFrame == 0 then 
-                local frame = F["Bosses"..1] -- if somehow we don't have any boss frame, we force show one to prevent errors
+                local frame = self:CreateBossFrame(1)
                 frame:Show()
                 self.MaxBossFrame = 1 
             end
-        end        
+        end   
     elseif not self.IsPreview then
         self.BossTimes = self.BossTimes or {}
         local max = select(3, C_Scenario.GetStepInfo())
@@ -564,19 +595,23 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         local currentPull = preview and math.random(50, 120) or 0 -- edit this to whatever new API blizzard hopefully comes up with
         local currentPullPercent = preview and (currentPull/total)*100 or 0 -- edit this to whatever new API blizzard hopefully comes up with
         if not completed then -- protection because I anticipate blizzard's current pull API might still return data if we're already at 100%
+            local bracket1 = self.RealCount.SquareBrackets and "[" or "("
+            local bracket2 = self.RealCount.SquareBrackets and "]" or ")"
             if self.RealCount.afterPull then
                 local afterpull = self.RealCount.remaining and (total-(current+currentPull)) or (current+currentPull)
-                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s)", remainingText, afterpull) or remainingText
+                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s "..bracket1.."%s"..bracket2, remainingText, afterpull) or remainingText
             else                
                 local prefix = self.RealCount.remaining and "-" or "+"
-                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s (%s%s)", remainingText, prefix, currentPull) or remainingText
+                remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s "..bracket1.."%s%s"..bracket2, remainingText, prefix, currentPull) or remainingText
             end
+            bracket1 = self.PercentCount.SquareBrackets and "[" or "("
+            bracket2 = self.PercentCount.SquareBrackets and "]" or ")"
             if self.PercentCount.afterPull then
                 local afterpull = self.PercentCount.remaining and (100-((current+currentPull)/total)*100) or (((current+currentPull)/total)*100)
-                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%.2f%%)", percentText, afterpull) or string.format("%.2f%%", percentText)
+                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% "..bracket1.."%.2f%%"..bracket2, percentText, afterpull) or string.format("%.2f%%", percentText)
             else
                 local percentprefix = self.PercentCount.remaining and "-" or "+"
-                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% (%s%.2f%%)", percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
+                percentText = self.PercentCount.pullcount and currentPullPercent and currentPullPercent > 0 and string.format("%.2f%% "..bracket1.."%s%.2f%%"..bracket2, percentText, percentprefix, currentPullPercent) or string.format("%.2f%%", percentText)
             end
         end
         self:ApplyTextSettings(F.ForcesBarBorder.PercentCount, self.PercentCount, percentText)
@@ -652,7 +687,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
     end
 end
 
-function MPT:UpdatePBInfo(preview)
+function MPT:UpdatePBInfo(preview)    
     local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
     local F = self.Frame
     F.ForcesBar.PBInfo:Hide()
@@ -690,6 +725,8 @@ function MPT:UpdateCurrentPull()
     local currentText = ""
     local percentText = ""
     if self.RealCount.enabled and self.RealCount.pullcount and current < total then
+        local bracket1 = self.RealCount.SquareBrackets and "[" or "("
+        local bracket2 = self.RealCount.SquareBrackets and "]" or ")"
         local color = current + rawValue >= total and self.RealCount.CurrentPullColor or self.RealCount.Color
         if self.RealCount.total then
             currentText = self.RealCount.remaining and string.format("%s/%s", total-current, total) or string.format("%s/%s", current, total)
@@ -703,14 +740,16 @@ function MPT:UpdateCurrentPull()
                 countValue = rawValue * -1
                 currentValue = total - current
             end
-            currentText = rawValue ~= 0 and string.format("%s(%s)", currentText, currentValue+countValue) or currentText
+            currentText = rawValue ~= 0 and string.format("%s "..bracket1.."%s"..bracket2, currentText, currentValue+countValue) or currentText
         else
-            currentText = rawValue ~= 0 and string.format("%s(%s%s)", currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
+            currentText = rawValue ~= 0 and string.format("%s "..bracket1.."%s"..bracket2, currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
         end
         
         self:ApplyTextSettings(F.ForcesBarBorder.RealCount, self.RealCount, currentText, color)
     end
     if self.PercentCount.enabled and self.PercentCount.pullcount and current < total then
+        local bracket1 = self.PercentCount.SquareBrackets and "[" or "("
+        local bracket2 = self.PercentCount.SquareBrackets and "]" or ")"
         local color = current + rawValue >= total and self.PercentCount.CurrentPullColor or self.PercentCount.Color
         percentText = string.format("%.2f%%", self.PercentCount.remaining and 100-percent or percent)
         if self.PercentCount.afterPull then
@@ -718,9 +757,9 @@ function MPT:UpdateCurrentPull()
                 percentValue = percentValue * -1
                 percent = 100 - percent
             end
-            percentText = percentValue ~= 0 and string.format("%s(%.2f%%)", percentText, percent+percentValue) or percentText
+            percentText = percentValue ~= 0 and string.format("%s "..bracket1.."%.2f%%"..bracket2, percentText, percent+percentValue) or percentText
         else
-            percentText = percentValue ~= 0 and string.format("%s(%s%.2f%%)", percentText, self.PercentCount.remaining and "-" or "+", percentValue) or percentText
+            percentText = percentValue ~= 0 and string.format("%s "..bracket1.."%s%.2f%%"..bracket2, percentText, self.PercentCount.remaining and "-" or "+", percentValue) or percentText
         end
         self:ApplyTextSettings(F.ForcesBarBorder.PercentCount, self.PercentCount, percentText, color)
     end
