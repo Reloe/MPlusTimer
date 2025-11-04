@@ -129,7 +129,26 @@ function MPT:ModernizeProfile(profile, generic)
             profile.TimerText.FailColor = {1, 0, 0, 1}
             profile.RealCount.CurrentPullColor = {0, 1, 0, 1}
             profile.PercentCount.CurrentPullColor = {0, 1, 0, 1}
-            -- add stuff to profile that was missing in that version.
+            profile.Version = 2
+        end
+        if profile.Version < 3 then
+            profile.Tick1 = profile.Ticks or {
+                enabled = true,
+                Width = 2,
+                Color = {1, 1, 1, 1},
+            }
+            profile.Tick2 = profile.Ticks or {
+                enabled = true,
+                Width = 2,
+                Color = {1, 1, 1, 1},
+            }
+            profile.Ticks = nil
+            profile.RealCount.SquareBrackets = true
+            profile.PercentCount.SquareBrackets = true
+            profile.DeathCounter.ShowTimer = false
+            profile.DeathCounter.SquareBrackets = true
+            profile.TimerText.Space = true
+            profile.Version = 3
         end
 
         self.Version = self:GetVersion()
