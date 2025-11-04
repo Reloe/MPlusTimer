@@ -2,7 +2,7 @@ local _, MPT = ...
 _G["MPTAPI"] = {}
 
 function MPT:GetVersion()
-    return 2
+    return 3
 end
 
 MPT.UI = LibStub("AceAddon-3.0"):NewAddon("MPlusTimer", "AceConsole-3.0")
