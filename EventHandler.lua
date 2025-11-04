@@ -47,24 +47,11 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" and MPTSV.KeySlot then
         local index = select(3, GetInstanceInfo())
         if index == 8 or index == 23 then
-            local IDs = {138019, 158923, 180653, 186159, 187786, 151086}
             for bagID = 0, NUM_BAG_SLOTS do
                 for invID = 1, C_Container.GetContainerNumSlots(bagID) do
                     local itemID = C_Container.GetContainerItemID(bagID, invID)
-                    if itemID and tContains(IDs, itemID) then 
-                        local item = ItemLocation:CreateFromBagAndSlot(bagID, invID)
-                        if item:IsValid() then
-                            local canuse = C_ChallengeMode.CanUseKeystoneInCurrentMap(item)
-                            if canuse then
-                                C_Container.PickupContainerItem(bagID, invID)
-                                C_Timer.After(0.1, function()
-                                        if CursorHasItem() then
-                                            C_ChallengeMode.SlotKeystone()
-                                        end
-                                end)
-                                break
-                            end
-                        end
+                    if itemID and C_Item.IsItemKeystoneByID(itemID) then
+                        C_Container.UseContainerItem(bagID, invID)
                     end
                 end
             end
