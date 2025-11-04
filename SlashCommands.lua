@@ -5,11 +5,11 @@ function MPT.UI:SlashCommand(msg)
     if msg == "debug" then
         if MPTSV.debug then
             MPTSV.debug = false
-            MPTAPI = {}
+            MPTGlobal = nil
             print("Disabled debug mode for MPlusTimer")
         else
             MPTSV.debug = true
-            MPTAPI = MPT
+            MPTGlobal = MPT
             print("Enabled debug mode for MPlusTimer, which allows accessing all local functions")
         end
     elseif msg == "preview" then
