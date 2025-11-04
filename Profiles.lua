@@ -117,6 +117,10 @@ function MPT:LoadProfile(name)
     end
 end
 
+function MPT:GetVersion()
+    return 3
+end
+
 function MPT:ModernizeProfile(profile, generic)
     if generic then -- update non-profile settings if they don't exist yet
         if MPTSV.CloseBags == nil then MPTSV.CloseBags = true end
