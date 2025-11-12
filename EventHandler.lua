@@ -19,18 +19,19 @@ end)
 
 function MPT:ToggleEventRegister(On)
     if On then
-        f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-        f:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-        f:RegisterEvent("PLAYER_REGEN_ENABLED")
-        f:RegisterEvent("PLAYER_DEAD")
         if not self.Timer then
             self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
                 self.Timer = nil
                 self:EventHandler("FRAME_UPDATE")
             end)
         end
+        if self:IsMidnight() then return end
+        f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+        f:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
+        f:RegisterEvent("PLAYER_REGEN_ENABLED")
+        f:RegisterEvent("PLAYER_DEAD")
     else
-        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
+        if self:IsMidnight() then return end
         f:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
         f:UnregisterEvent("UNIT_THREAT_LIST_UPDATE")
         f:UnregisterEvent("PLAYER_REGEN_ENABLED")
@@ -137,7 +138,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
         self:CreateMiniMapButton()
     elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
-        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
+        if self:IsMidnight() then return end
         local _, se, _, _, _, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
         if (se == "UNIT_DIED" or se == "UNIT_DESTROYED" or se == "UNIT_DISSIPATES") and destGUID then
             if self.CurrentPull and self.CurrentPull[destGUID] then
@@ -153,7 +154,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end
         end
     elseif e == "UNIT_THREAT_LIST_UPDATE" and C_ChallengeMode.IsChallengeModeActive() and InCombatLockdown() then
-        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
+        if self:IsMidnight() then return end
         local unit = ...
         if unit and UnitExists(unit) then
             local guid = UnitGUID(unit)
@@ -170,7 +171,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end            
         end
     elseif (e == "PLAYER_REGEN_ENABLED" or e == "PLAYER_DEAD") and C_ChallengeMode.IsChallengeModeActive() then
-        if GetRestrictedActionStatus then return end -- disable for midnight. Edit this later when I know how the API works
+        if self:IsMidnight() then return end
         for k, _ in pairs(self.CurrentPull or {}) do
             self.CurrentPull[k] = nil
         end
