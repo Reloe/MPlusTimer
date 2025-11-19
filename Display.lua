@@ -17,6 +17,7 @@ end
 function MPT:Init(preview)
     self:SetKeyInfo(true)
     self.opened = false
+    self.QuarryTime = false
     self.IsPreview = preview   
     self.PreviousMaxBossFrame = 0 
     local time = C_ChallengeMode.GetChallengeCompletionInfo().time
@@ -477,8 +478,9 @@ function MPT:UpdateBosses(Start, count, preview)
             local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             for i=1, max do
                 -- manually offset which bossname we want for megadungeons
-                local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
-                num = (self.cmap == 556 and i == 4 and 3) or num -- Looking for 3rd Boss in 4th Objective for Pit of Saron
+                local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i                
+                -- Looking for 3rd Boss in 4th Objective for Pit of Saron
+                num = (self.cmap == 556 and i == 4 and 3) or num 
                 -- limit how many bosses to show for some of the lower parts of megadungeons
                 local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
                 local name = self.BossNames[num]
@@ -509,6 +511,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     if pb2 and pb2[i] then
                         local time = completed and select(2, GetWorldElapsedTime(1))-defeated or pb2[i]
+                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual comppletion
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     elseif self.cmap == 556 and i == 3 then -- Pit of Saron Quarry liberated display
@@ -516,6 +519,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     if completed and defeated and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
+                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual comppletion
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
                         local diff = time-pb[i]
@@ -553,6 +557,10 @@ function MPT:UpdateBosses(Start, count, preview)
                 frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
                 local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                 local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
+                if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry returns info about 1/5 instead of 5/5 so gotta store the value the first it is reached.
+                    time = self.QuarryTime or select(2, GetWorldElapsedTime(1))
+                    self.QuarryTime = time
+                end
                 self.BossTimes[i] = time
                 if pb and pb[i] then
                     timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
@@ -567,6 +575,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
                 end
             elseif self.cmap == 556 and i == 3 then -- Quarry Camps in Pit of Saron
+                local frame = self:CreateBossFrame(i)
                 self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color)
             end
         end
