@@ -453,11 +453,11 @@ function MPT:UpdateBosses(Start, count, preview)
                 elseif i < select(3, C_Scenario.GetStepInfo()) and not self.opened then
                     EncounterJournal_OpenJournal(23, instanceID) 
                     EJ_SelectInstance(instanceID)
-                    self.opened = true
                     HideUIPanel(EncounterJournal)
                     local name = EJ_GetEncounterInfoByIndex(i, instanceID)
                     if name then
                         self.BossNames[i] = name
+                        self.opened = true
                     end
                 else
                     break
@@ -478,6 +478,7 @@ function MPT:UpdateBosses(Start, count, preview)
             for i=1, max do
                 -- manually offset which bossname we want for megadungeons
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
+                num = (self.cmap == 556 and i == 4 and 3) or num -- Looking for 3rd Boss in 4th Objective for Pit of Saron
                 -- limit how many bosses to show for some of the lower parts of megadungeons
                 local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
                 local name = self.BossNames[num]
@@ -488,6 +489,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         break
                     end
                 end
+                if self.cmap == 556 and i == 3 then name = criteria.description end -- Using Blizzard's name for "Quarry camps liberated" since there is no other translated version to use
                 if self.cmap == 227 and num == 3 then name = "Opera Hall" end 
                 if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then   
                     name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
@@ -509,6 +511,8 @@ function MPT:UpdateBosses(Start, count, preview)
                         local time = completed and select(2, GetWorldElapsedTime(1))-defeated or pb2[i]
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
+                    elseif self.cmap == 556 and i == 3 then -- Pit of Saron Quarry liberated display
+                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, BossColor)
                     end
                     if completed and defeated and pb and pb[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
@@ -542,7 +546,7 @@ function MPT:UpdateBosses(Start, count, preview)
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
         local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
         for i=1, max do
-            local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
+            local criteria = C_ScenarioInfo.GetCriteriaInfo(i)            
             if criteria.completed then
                 local frame = self:CreateBossFrame(i)
                 local defeated = criteria.elapsed
@@ -562,6 +566,8 @@ function MPT:UpdateBosses(Start, count, preview)
                     if diff < 0 then diff = diff*-1 end
                     self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
                 end
+            elseif self.cmap == 556 and i == 3 then -- Quarry Camps in Pit of Saron
+                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color)
             end
         end
     end
