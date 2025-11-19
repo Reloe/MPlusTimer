@@ -3,17 +3,7 @@ local _, MPT = ...
 local LDB = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
 local LDBIcon = LibStub("LibDBIcon-1.0", true)
 local AceConfigdialog = LibStub("AceConfigDialog-3.0")
-local fontlist = MPT.LSM:List("font")
-local fontTable = {}
-for _, font in ipairs(fontlist) do
-    fontTable[font] = font
-end
 
-local texturelist = MPT.LSM:List("statusbar")
-local textureTable = {}
-for _, texture in ipairs(texturelist) do
-    textureTable[texture] = texture
-end
 
 
 function MPT:CreateMiniMapButton()
@@ -50,6 +40,33 @@ StaticPopupDialogs["MPT_RESET_PROFILE"] = {
     end
 }
 
+function MPT:GetAllFonts()
+    local fontlist = MPT.LSM:List("font")
+    local fontTable = {}
+    for _, font in ipairs(fontlist) do
+        fontTable[font] = font
+    end
+    return fontTable
+end
+
+function MPT:GetAllTextures()
+    local texturelist = MPT.LSM:List("statusbar")
+    local textureTable = {}
+    for _, texture in ipairs(texturelist) do
+        textureTable[texture] = texture
+    end
+    return textureTable
+end
+
+function MPTAPI:GetAllTextures()
+    local texturelist = MPT.LSM:List("statusbar")
+    local textureTable = {}
+    for _, texture in ipairs(texturelist) do
+        textureTable[texture] = texture
+    end
+    return textureTable
+end
+
 function MPT:CreateTextSetting(name, key, order, Color)
     local settings = {
         type = "group",
@@ -62,7 +79,7 @@ function MPT:CreateTextSetting(name, key, order, Color)
     settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {key, "RelativeTo"}, true)
     settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -200, 200, 1, {key, "xOffset"}, true)
     settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)    
-    settings.args.Font = self:CreateDropDown(6, fontTable, "Font", "", {key, "Font"}, true)
+    settings.args.Font = self:CreateDropDown(6, "fonts", "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
     settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
     if Color then settings.args.Color = self:CreateColor(9, "Color", "", {key, "Color"}, true) end
@@ -82,7 +99,7 @@ function MPT:CreateStatusBarSettings(name, key, order)
     }    
     settings.args.Width = self:CreateRange(4, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
     settings.args.Height = self:CreateRange(5, "Height", "Height of the Status Bar", 6, 100, 1, {key, "Height"}, true)
-    settings.args.Texture = self:CreateDropDown(6, textureTable, "Texture", "", {key, "Texture"}, true)
+    settings.args.Texture = self:CreateDropDown(6, "textures", "Texture", "", {key, "Texture"}, true)
     settings.args.xOffset = self:CreateRange(7, "X Offset", "X Offset of the Status Bar", -300, 300, 1, {key, "xOffset"}, true)
     settings.args.yOffset = self:CreateRange(8, "Y Offset", "Y Offset of the Status Bar", -300, 300, 1, {key, "yOffset"}, true)
     settings.args.SizeGap = self:CreateSpace(9)
@@ -118,7 +135,14 @@ end
 function MPT:CreateDropDown(order, values, name, desc, key, update)
     local t = {}
     t.order = order
-    t.values = values
+    if values == "textures" then
+        t.values = function() return self:GetAllTextures() end
+    elseif values == "fonts" then
+        t.values = function() return self:GetAllFonts() end
+    else
+        t.values = values
+    end
+    
     t.type = "select"
     t.name = name
     t.desc = desc
@@ -264,7 +288,7 @@ local GeneralOptions = {
             order = 5,
             name = "Change All Fonts",
             desc = "Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI",
-            values = fontTable,
+            values = function() return MPT:GetAllFonts() end, 
             set = function(_, value)
                 MPT:SetSV({"KeyLevel", "Font"}, value, false)
                 MPT:SetSV({"DungeonName", "Font"}, value, false)
@@ -293,7 +317,7 @@ local GeneralOptions = {
             order = 8,
             name = "Change All Textures",
             desc = "Changes all bar textures at once",
-            values = textureTable,
+            values = function() return MPT:GetAllTextures() end,
             set = function(_, value)
                 MPT:SetSV({"TimerBar", "Texture"}, value, false)
                 MPT:SetSV({"ForcesBar", "Texture"}, value, false)
@@ -534,7 +558,7 @@ local CurrentPullBar = {
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Current Pull Bar", {"CurrentPullBar", "enabled"}, true),
         Color = MPT:CreateColor(2, "Color", "Color of the Current Pull Bar", {"CurrentPullBar", "Color"}, true),
-        texture = MPT:CreateDropDown(3, textureTable, "Texture", "", {"CurrentPullBar", "Texture"}, true),
+        texture = MPT:CreateDropDown(3, "textures", "Texture", "", {"CurrentPullBar", "Texture"}, true),
         Realenabled = MPT:CreateToggle(4, "RealCount Pull", "Show Current Pull Real Count", {"RealCount", "pullcount"}, true),
         Percentenabled = MPT:CreateToggle(5, "Percent Pull", "Show Current Pull Percent", {"PercentCount", "pullcount"}, true),
         Gap1 = MPT:CreateSpace(6),

@@ -119,7 +119,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:UpdateTimerBar()
         end
 
-    elseif e == "PLAYER_LOGIN" then        
+    elseif e == "PLAYER_LOGIN" then
         if not MPTSV then -- first load of the addon
             MPTSV = {}            
             MPTSV.LowerKey = true
