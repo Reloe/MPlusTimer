@@ -1,6 +1,5 @@
 local _, MPT = ...
 
-
 function MPT.UI:SlashCommand(msg)
     if msg == "debug" then
         if MPTSV.debug then

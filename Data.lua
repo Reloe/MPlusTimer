@@ -2,12 +2,13 @@ local _, MPT = ...
 
 MPT.SeasonData = {
     [15] = {name ="TWW S3", Dungeons = {503, 505, 499, 525, 542, 378, 391, 392}},
-    [16] = {name = "Midnight S1", Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
-    [17] = {name = "Midnight S2", Dungeons = {}},
-    [18] = {name = "Midnight S3", Dungeons = {}},
-    [19] = {name = "TLT S1", Dungeons = {}},
-    [20] = {name = "TLT S2", Dungeons = {}},
-    [21] = {name = "TLT S3", Dungeons = {}},
+    -- idk why there is a gap here but on Beta S1 is 17
+    [17] = {name = "Midnight S1", Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
+    [18] = {name = "Midnight S2", Dungeons = {}},
+    [19] = {name = "Midnight S3", Dungeons = {}},
+    [20] = {name = "TLT S1", Dungeons = {}},
+    [21] = {name = "TLT S2", Dungeons = {}},
+    [22] = {name = "TLT S3", Dungeons = {}},
 }
 
 function MPT:GetDungeonName(cmap)

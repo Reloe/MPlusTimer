@@ -82,7 +82,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self.Hooked = true
             local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
             hooksecurefunc(frame, "Show", function() 
-                if IsInInstance() and C_ChallengeMode.IsChallengeModeActive() then frame:Hide() end
+                if IsInInstance() and (C_ChallengeMode.IsChallengeModeActive() or C_ChallengeMode.GetChallengeCompletionInfo().time ~= 0) then frame:Hide() end
             end)
         end
         if C_ChallengeMode.IsChallengeModeActive() then
