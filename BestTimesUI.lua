@@ -357,9 +357,11 @@ function MPT:CreatePBFrame()
         end)
 
         local version = "v"..C_AddOns.GetAddOnMetadata("MPlusTimer", "Version")
+        --@debug@
         if version == "v@project-version@" then
             version = "Dev Build"
         end
+        --@end-debug@
         self:CreateText(F, "Title", {
             Anchor = "TOP",
             RelativeTo = "TOP",
