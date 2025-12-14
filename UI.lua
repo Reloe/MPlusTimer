@@ -175,24 +175,43 @@ function MPT:CreateSpace(order)
 end
 
 
+local PreviewButton = {
+    type = "execute", 
+    order = 1,
+    name = "Preview/Unlock",
+    desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
+    func = function() 
+        if not MPT.IsPreview then -- not currently in preview
+            MPT:Init(true) -- Frame is set to movable in here as well
+        elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
+            MPT:Init(false)
+            MPT:MoveFrame(false)
+        elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
+            MPT:MoveFrame(false)
+            MPT:ShowFrame(false)
+        end 
+    end,
+}
+
 local MainOptions = {
     type = "group",
     name = "Non-Display Settings",
     args = {
+        Preview = PreviewButton,
         ViewBestTimes = {
             type = "execute",
-            order = 1,
+            order = 2,
             name = "View Best Times",
             desc = "View your stored Best Times",
             func = function() 
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(2, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
-        Gap = MPT:CreateSpace(3),
+        UpdateRate = MPT:CreateRange(3, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
+        Gap = MPT:CreateSpace(4),
         LowerKey = {
             type = "toggle",
-            order = 4,
+            order = 5,
             name = "Data from Lower Level",
             desc = "Get Split Timers from one key level lower if no data for current level exists",
             set = function(_, value) MPTSV.LowerKey = value end,
@@ -200,7 +219,7 @@ local MainOptions = {
         },
         CloseBags = {
             type = "toggle",
-            order = 5,
+            order = 6,
             name = "Close Bags",
             desc = "Automatically close bags after inserting the Keystone",
             set = function(_, value) MPTSV.CloseBags = value end,
@@ -208,7 +227,7 @@ local MainOptions = {
         },
         KeySlot = {
             type = "toggle",
-            order = 6,
+            order = 7,
             name = "Automatic Keyslot",
             desc = "Automatically insert Keystone when interacting with the Keystone Interface",
             set = function(_, value) MPTSV.KeySlot = value end,
@@ -216,16 +235,16 @@ local MainOptions = {
         },
         MinimapIcon = {
             type = "toggle",
-            order = 7,
+            order = 8,
             name = "Hide Minimap Icon",
             desc = "Hide the Minimap Icon",
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
-        Gap2 = MPT:CreateSpace(8),
+        Gap2 = MPT:CreateSpace(9),
         ImportFromWA = {
             type = "execute",
-            order = 9,
+            order = 10,
             name = "Import WA Times",
             desc = "Import Best Times from the M+ WA. This is only possible until Pre-Patch hits.",
             func = function() 
@@ -263,23 +282,7 @@ local GeneralOptions = {
     name = "General Options",
     order = 1,
     args = {
-        Preview = {
-            type = "execute",
-            order = 1,
-            name = "Preview",
-            desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
-            func = function() 
-                if not MPT.IsPreview then -- not currently in preview
-                    MPT:Init(true) -- Frame is set to movable in here as well
-                elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
-                    MPT:Init(false)
-                    MPT:MoveFrame(false)
-                elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
-                    MPT:MoveFrame(false)
-                    MPT:ShowFrame(false)
-                end 
-            end,         
-        }, 
+        Preview = PreviewButton,
         FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
         Gap = MPT:CreateSpace(3),
         Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
