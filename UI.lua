@@ -389,7 +389,6 @@ local DeathIcon = {
 }
 local KeyInfo = {
     name = "Key Info Bar",
-    handler = MPTUI,
     type = "group",
     order = 2,
     childGroups = "tab",
@@ -478,7 +477,6 @@ local Ticks = {
 }
 local TimerBar = {
     name = "Timer Bar",
-    handler = MPTUI,
     type = "group",
     order = 3,
     childGroups = "tab",
@@ -522,7 +520,6 @@ BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Bos
 local Bosses = {
     type = "group",
     name = "Bosses",
-    handler = MPTUI,
     order = 4,
     childGroups = "tab",
     args = {
@@ -580,7 +577,6 @@ local CurrentPullBar = {
 local EnemyForces = {
     type = "group",
     name = "Enemy Forces",
-    handler = MPTUI,
     order = 5,
     childGroups = "tab",
     args = {
@@ -730,7 +726,6 @@ local profiles = {
 
 local settings = {
 	name = "Display Settings",
-	handler = MPTUI,
     childGroups = "tab",
 	type = "group",
 	args = {
@@ -754,10 +749,11 @@ local options = {
 
 function MPT.UI:OnInitialize()
     local AceConfig = LibStub("AceConfig-3.0")
-	AceConfig:RegisterOptionsTable("MPTUI", MainOptions)
+	AceConfig:RegisterOptionsTable("MPlusTimer", MainOptions)
     AceConfig:RegisterOptionsTable("MPTSettings", settings)
     AceConfig:RegisterOptionsTable("MPTProfiles", profiles)
-	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPTUI", "MPlusTimer")
+	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPlusTimer", "MPlusTimer")
+    DevTool:AddData(self.optionsFrame)
     self.settingsFrame = AceConfigdialog:AddToBlizOptions("MPTSettings", "Display Settings", "MPlusTimer")
     self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer")
 	self:RegisterChatCommand("mpt", "SlashCommand")
