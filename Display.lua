@@ -492,7 +492,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                 end
                 if self.cmap == 556 and i == 3 then name = criteria.description end -- Using Blizzard's name for "Quarry camps liberated" since there is no other translated version to use
-                if self.cmap == 227 and num == 3 then name = "Opera Hall" end 
+                if self.cmap == 227 and num == 3 then name = "Opera Hall" end -- figure out a way for localized name if the dungeon returns at some point
                 if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then   
                     name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
                     self.MaxBossFrame = i       
@@ -557,7 +557,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
                 local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                 local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
-                if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry returns info about 1/5 instead of 5/5 so gotta store the value the first it is reached.
+                if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry returns info about 1/6 instead of 6/6 so gotta store the value on completion.
                     time = self.QuarryTime or select(2, GetWorldElapsedTime(1))
                     self.QuarryTime = time
                 end
