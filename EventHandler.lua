@@ -25,17 +25,6 @@ function MPT:ToggleEventRegister(On)
                 self:EventHandler("FRAME_UPDATE")
             end)
         end
-        if self:IsMidnight() then return end
-        f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-        f:RegisterEvent("UNIT_THREAT_LIST_UPDATE")
-        f:RegisterEvent("PLAYER_REGEN_ENABLED")
-        f:RegisterEvent("PLAYER_DEAD")
-    else
-        if self:IsMidnight() then return end
-        f:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-        f:UnregisterEvent("UNIT_THREAT_LIST_UPDATE")
-        f:UnregisterEvent("PLAYER_REGEN_ENABLED")
-        f:UnregisterEvent("PLAYER_DEAD")
     end
 end
 
@@ -137,45 +126,6 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
         self:CreateMiniMapButton()
-    elseif e == "COMBAT_LOG_EVENT_UNFILTERED" and C_ChallengeMode.IsChallengeModeActive() then
-        if self:IsMidnight() then return end
-        local _, se, _, _, _, _, _, destGUID, destName = CombatLogGetCurrentEventInfo()
-        if (se == "UNIT_DIED" or se == "UNIT_DESTROYED" or se == "UNIT_DISSIPATES") and destGUID then
-            if self.CurrentPull and self.CurrentPull[destGUID] then
-                self.CurrentPull[destGUID] = "DEAD"
-                if not self.done then self:UpdateCurrentPull() end
-            end
-            if se == "UNIT_DIED" and destName and UnitIsPlayer(destName) then
-                self.PlayerDeaths = self.PlayerDeaths or {}
-                num = self.PlayerDeaths and self.PlayerDeaths[destName] or 0
-                if UnitHealth(destName) == 0 then
-                    self.PlayerDeaths[destName] = num and num+1 or 1
-                end
-            end
-        end
-    elseif e == "UNIT_THREAT_LIST_UPDATE" and C_ChallengeMode.IsChallengeModeActive() and InCombatLockdown() then
-        if self:IsMidnight() then return end
-        local unit = ...
-        if unit and UnitExists(unit) then
-            local guid = UnitGUID(unit)
-            self.CurrentPull = self.CurrentPull or {}
-            if guid and not self.CurrentPull[guid] then
-                local npcid = select(6, strsplit("-", guid))
-                if npcid then                        
-                    local value = MDT and MDT:GetEnemyForces(tonumber(npcid))
-                    if value and value ~= 0 then
-                        self.CurrentPull[guid] = {value, (value / (self.totalcount)) * 100}
-                        self:UpdateCurrentPull()         
-                    end
-                end
-            end            
-        end
-    elseif (e == "PLAYER_REGEN_ENABLED" or e == "PLAYER_DEAD") and C_ChallengeMode.IsChallengeModeActive() then
-        if self:IsMidnight() then return end
-        for k, _ in pairs(self.CurrentPull or {}) do
-            self.CurrentPull[k] = nil
-        end
-        if not self.done then self:UpdateCurrentPull() end
     end
 end
     

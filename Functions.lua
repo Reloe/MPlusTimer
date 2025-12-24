@@ -328,7 +328,3 @@ function MPT:Profiling(key, start)
         self.ProfilingTimes[key] = nil
     end
 end
-
-function MPT:IsMidnight()
-    return select(4, GetBuildInfo()) >= 120000
-end

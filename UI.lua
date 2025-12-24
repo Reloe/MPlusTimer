@@ -737,15 +737,6 @@ local settings = {
         PBInfo = PBInfo,
     },    
 }
-  
-
-
-
-local options = {
-
-
-}
-
 
 function MPT.UI:OnInitialize()
     local AceConfig = LibStub("AceConfig-3.0")

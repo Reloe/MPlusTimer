@@ -229,6 +229,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
                 local text = "Time lost: "..timelost
+                --[[ disabled death list for now, maybe I'll try some workaround for Midnight but not sure
                 local list = {}
                 self.PlayerDeaths = self.PlayerDeaths or {}
                 for unit, deaths in pairs(self.PlayerDeaths) do
@@ -246,7 +247,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                 end)
                 for _, v in ipairs(list) do
                     text = text.."\n"..v[1].." "..v[2]
-                end
+                end]]
                 GameTooltip:SetOwner(Frame, "ANCHOR_CURSOR")
                 GameTooltip:SetText(text)
                 GameTooltip:Show()                
@@ -715,7 +716,8 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
             F.ForcesBar:SetValue(current)
             self:ApplyTextSettings(F.ForcesBarBorder.PercentCount, self.PercentCount, string.format("%.2f%%", percent))
             self:ApplyTextSettings(F.ForcesBarBorder.RealCount, self.RealCount, remainingText)
-            self:UpdateCurrentPull()
+            -- self:UpdateCurrentPull() -- disabled for now until blizzard provides a new API for current pull in Midnight
+            -- probably have to call this on some other event too
         end
     end
 end
