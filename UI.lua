@@ -241,16 +241,6 @@ local MainOptions = {
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
-        Gap2 = MPT:CreateSpace(9),
-        ImportFromWA = {
-            type = "execute",
-            order = 10,
-            name = "Import WA Times",
-            desc = "Import Best Times from the M+ WA. This is only possible until Pre-Patch hits.",
-            func = function() 
-                MPT:ImportWAData()
-            end,         
-        },
     }
 }
 local Position = {
