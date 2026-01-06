@@ -32,7 +32,7 @@ StaticPopupDialogs["MPT_DELETE_CHARACTER"] = {
               MPTSV.History[MPT.SelectedSeason][MPT.SelectedCharacter] = nil
               if next(MPTSV.History[MPT.SelectedSeason]) == nil then
                 MPTSV.History[MPT.SelectedSeason] = nil
-                F.PBDataFrame:Hide()
+                MPT.BestTimeFrame.PBDataFrame:Hide()
                 MPT:ShowSeasonFrames()
               else
                 MPT:ShowCharacterFrames(MPT.SelectedSeason)
