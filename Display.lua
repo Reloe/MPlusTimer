@@ -229,7 +229,6 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
                 local text = "Time lost: "..timelost
-                --[[ disabled death list for now, maybe I'll try some workaround for Midnight but not sure
                 local list = {}
                 self.PlayerDeaths = self.PlayerDeaths or {}
                 for unit, deaths in pairs(self.PlayerDeaths) do
@@ -247,7 +246,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                 end)
                 for _, v in ipairs(list) do
                     text = text.."\n"..v[1].." "..v[2]
-                end]]
+                end
                 GameTooltip:SetOwner(Frame, "ANCHOR_CURSOR")
                 GameTooltip:SetText(text)
                 GameTooltip:Show()                

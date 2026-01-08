@@ -12,6 +12,7 @@ f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
 f:RegisterEvent("SCENARIO_POI_UPDATE")
 f:RegisterEvent("INSTANCE_ABANDON_VOTE_FINISHED")
+f:RegisterEvent("UNIT_DIED")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
@@ -126,6 +127,15 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
         end
         self:CreateMiniMapButton()
+    elseif e == "UNIT_DIED" then
+        local G = ...
+        if issecretvalue(G) then return end -- likely to be an enemy
+        local unit = UnitTokenFromGUID(G)
+        if UnitIsPlayer(unit) and not UnitIsFeignDeath(unit) then -- only count non-pets and ignore feign death
+            self.PlayerDeaths = self.PlayerDeaths or {}          
+            local name = UnitName(unit)  
+            self.PlayerDeaths[name] = self.PlayerDeaths[name] and self.PlayerDeaths[name]+1 or 1
+        end
     end
 end
     
