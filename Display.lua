@@ -288,6 +288,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
     self.timer = preview and math.random(900, 2000) or select(2, GetWorldElapsedTime(1))
     self.timelimit = preview and 2280 or self.timelimit or 0
     local chest = (C_ChallengeMode.GetChallengeCompletionInfo().onTime and C_ChallengeMode.GetChallengeCompletionInfo().keystoneUpgradeLevels)
+        or ((time ~= 0 and not C_ChallengeMode.GetChallengeCompletionInfo().onTime) and 0)
         or (self.timer >= self.timelimit and 0)
         or (self.timer >= self.timelimit*0.8 and 1)
         or (self.timer >= self.timelimit*0.6 and 2)
