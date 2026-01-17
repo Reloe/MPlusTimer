@@ -729,7 +729,7 @@ function MPT:UpdatePBInfo(preview)
     if preview or (pb and pb.finish) then
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
         local date = self:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
-        text = string.format("PB: +%s %s %s", preview and 29 or self.level, self:FormatTime(finishtime/1000), date)
+        local text = string.format("PB: +%s %s %s", preview and 29 or self.level, self:FormatTime(finishtime/1000), date)
         local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
     end
