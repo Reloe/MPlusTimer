@@ -434,6 +434,7 @@ function MPT:UpdateBosses(Start, count, preview)
         end
     elseif Start and not self.IsPreview then
         self:SetKeyInfo()
+        self.BossSplitted = {}
         self.BossTimes = {}
         self.BossNames = {}
         local max = select(3, C_Scenario.GetStepInfo())
@@ -512,15 +513,15 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     if pb2 and pb2[i] then
                         local time = completed and select(2, GetWorldElapsedTime(1))-defeated or pb2[i]
-                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual comppletion
+                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual completion
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     elseif self.cmap == 556 and i == 3 then -- Pit of Saron Quarry liberated display
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, BossColor)
                     end
-                    if completed and defeated and pb and pb[i] then
+                    if completed and defeated and pb and pb[i] and not self.BossSplitted[i] then
                         local time = select(2, GetWorldElapsedTime(1))-defeated or 0
-                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual comppletion
+                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual completion
                         local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
                         local diff = time-pb[i]
@@ -529,6 +530,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     else
                         frame["BossSplit"..i]:SetText("")
                     end
+                    if completed then self.BossSplitted[i] = true end
                     frame:Show()
                 end                
             end
@@ -552,7 +554,7 @@ function MPT:UpdateBosses(Start, count, preview)
         local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
         for i=1, max do
             local criteria = C_ScenarioInfo.GetCriteriaInfo(i)            
-            if criteria.completed then
+            if criteria.completed and not self.BossSplitted[i] then
                 local frame = self:CreateBossFrame(i)
                 local defeated = criteria.elapsed
                 frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
@@ -575,6 +577,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     if diff < 0 then diff = diff*-1 end
                     self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
                 end
+                self.BossSplitted[i] = true
             elseif self.cmap == 556 and i == 3 then -- Quarry Camps in Pit of Saron
                 local frame = self:CreateBossFrame(i)
                 self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color)
