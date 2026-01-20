@@ -209,13 +209,13 @@ local MainOptions = {
         },
         UpdateRate = MPT:CreateRange(3, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
         Gap = MPT:CreateSpace(4),
-        LowerKey = {
+        AutoGossip = {
             type = "toggle",
             order = 5,
-            name = "Data from Lower Level",
-            desc = "Get Split Timers from one key level lower if no data for current level exists",
-            set = function(_, value) MPTSV.LowerKey = value end,
-            get = function() return MPTSV.LowerKey end,
+            name = "Auto Accept Gossip",
+            desc = "Automatically accept various gossip options when interacting with NPC's. Holding down CTRL will prevent this behaviour.",
+            set = function(_, value) MPTSV.AutoGossip = value end,
+            get = function() return MPTSV.AutoGossip end,
         },
         CloseBags = {
             type = "toggle",
@@ -233,9 +233,17 @@ local MainOptions = {
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
-        MinimapIcon = {
+        LowerKey = {
             type = "toggle",
             order = 8,
+            name = "Data from Lower Level",
+            desc = "Get Split Timers from one key level lower if no data for current level exists",
+            set = function(_, value) MPTSV.LowerKey = value end,
+            get = function() return MPTSV.LowerKey end,
+        },
+        MinimapIcon = {
+            type = "toggle",
+            order = 9,
             name = "Hide Minimap Icon",
             desc = "Hide the Minimap Icon",
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,

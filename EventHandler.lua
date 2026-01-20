@@ -13,6 +13,7 @@ f:RegisterEvent("SCENARIO_CRITERIA_UPDATE")
 f:RegisterEvent("SCENARIO_POI_UPDATE")
 f:RegisterEvent("INSTANCE_ABANDON_VOTE_FINISHED")
 f:RegisterEvent("UNIT_DIED")
+f:RegisterEvent("GOSSIP_SHOW")
 
 f:SetScript("OnEvent", function(self, e, ...)
     MPT:EventHandler(e, ...)
@@ -122,6 +123,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:ModernizeProfile(false, true)
             self:LoadProfile()
         end        
+        if MPTSV.AutoGossip == nil then MPTSV.AutoGossip = true end
         if MPTSV.debug then
             MPTGlobal = MPT
             print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
@@ -136,23 +138,18 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             local name = UnitName(unit)  
             self.PlayerDeaths[name] = self.PlayerDeaths[name] and self.PlayerDeaths[name]+1 or 1
         end
-    end
-end
-    
-        
-        --[[
-    elseif e == "GOSSIP_SHOW" then
-        if UnitExists("npc") and (not aura_env.config.gossipctrl or not IsControlKeyDown()) then
+    elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then
+        if UnitExists("npc") and not IsControlKeyDown() then
             local GUID = UnitGUID("npc")
             local id = select(6, strsplit("-", GUID))
             id = tonumber(id)
-            if aura_env.gossips[id] and aura_env.gossips[id].enabled then
+            if self.Gossips[id] and self.Gossips[id].enabled then
                 local title = C_GossipInfo.GetOptions()
-                local num = aura_env.gossips[id].number
+                local num = self.Gossip[id].number
                 if title[num] and title[num].gossipOptionID then
-                    local popupWasShown = aura_env.popup()
+                    local popupWasShown = self:PopupIsShown()
                     C_GossipInfo.SelectOption(title[num].gossipOptionID)
-                    local popupIsShown = aura_env.popup()
+                    local popupIsShown = self:PopupIsShown()
                     if popupIsShown then
                         if not popupWasShown then
                             StaticPopup1Button1:Click()
@@ -164,12 +161,5 @@ end
                 end
             end
         end
-    for index = 1, STATICPOPUP_NUMDIALOGS do
-        local frame = _G["StaticPopup"..index]
-        if frame and frame:IsShown() then
-            return true
-        end
     end
-    return false
 end
-        ]]

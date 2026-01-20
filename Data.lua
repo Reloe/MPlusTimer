@@ -492,12 +492,63 @@ MPT.DefaultProfile = {
         enabled = true,
         Texture = "Details Flat",
         Color = {0, 1, 0, 1},
-    }
+    },
 }
+
 MPT.AnchorTypes = {
     ["MainFrame"] = true,
     ["KeyInfo"] = true,
     ["TimerBar"] = true,
     ["Bosses"] = true,
     ["ForcesBar"] = true,
+}
+
+MPT.Gossips = {
+    [196974] = {Name = "Academy Crit Buff", enabled = true, number = 1},
+    [196977] = {Name = "Academy Haste Buff", enabled = true, number = 1}, 
+    [196978] = {Name = "Academy Mastery Buff", enabled = true, number = 1},
+    [196981] = {Name = "Academy Versatility Buff", enabled = true, number = 1},
+    [196979] = {Name = "Academy Healing Taken Buff", enabled = true, number = 1},
+        
+    [97081] = {Name = "HoV - King Bjorn", enabled = true, number = 1},
+    [95843] = {Name = "HoV - King Haldor", enabled = true, number = 1}, 
+    [97083] = {Name = "HoV - King Ranulf", enabled = true, number = 1},
+    [97084] = {Name = "HoV - King Tor", enabled = true, number = 1},
+    [95676] = {Name = "HoV - Odyn", enabled = true, number = 1},
+
+    [194602] = {Name = "Azure Vault 1st Book", enabled = true, number = 1},
+    [194712] = {Name = "Azure Vault 2nd Book", enabled = true, number = 1}, 
+    [194713] = {Name = "Azure Vault 3rd Book", enabled = true, number = 1},
+    [194714] = {Name = "Azure Vault 4th Book", enabled = true, number = 1},
+    [194715] = {Name = "Azure Vault 5th Book", enabled = true, number = 1},        
+
+    [135978] = {Name = "Freehold - Beer Event", enabled = true, number = 1},
+    [130086] = {Name = "Davey", enabled = true, number = 1}, 
+
+    [194675] = {Name = "Brackenhide - Alchemy Cauldron", enabled = true, number = 1},
+
+    [194675] = {Name = "Halls of Infusion - Eng Buff", enabled = true, number = 1},
+    [197654] = {Name = "Halls of Infusion - Infused Mushroom", enabled = true, number = 1},
+        
+    [189219] = {Name = "Neltharus - Qalashi Goulash", enabled = true, number = 1},
+    [189786] = {Name = "Neltharus - Blazing Aegis", enabled = true, number = 1},        
+
+    [138761] = {Name = "Waycrest Manor - Entrance Teleport", enabled = true, number = 1},
+        
+    [105729] = {Name = "Court of Stars - Lantern", enabled = true, number = 1}, 
+    [106468] = {Name = "Court of Stars - Disguise", enabled = true, number = 1},
+    [107486] = {Name = "Court of Stars - Clue", enabled = true, number = 1},
+    [105157] = {Name = "Court of Stars - Engineering Orb", enabled = true, number = 1},        
+    [105117] = {Name = "Court of Stars - Alchemy Flask", enabled = true, number = 1}, 
+    [106018] = {Name = "Court of Stars - Bazaar Goods", enabled = true, number = 1},
+    [106113] = {Name = "Court of Stars - Nightborne Statue", enabled = true, number = 1},
+    [105215] = {Name = "Court of Stars - Discarded Junk", enabled = true, number = 1},        
+    [106112] = {Name = "Court of Stars - Wounded Civilian", enabled = true, number = 1}, 
+    [105160] = {Name = "Court of Stars - Fel Orb", enabled = true, number = 1},
+    [105831] = {Name = "Court of Stars - Infernal Tome", enabled = true, number = 1},
+    [106024] = {Name = "Court of Stars - Magical Lantern", enabled = true, number = 1},
+    [105249] = {Name = "Court of Stars - Refreshments", enabled = true, number = 1},        
+    [106108] = {Name = "Court of Stars - Rose Brew", enabled = true, number = 1}, 
+    [105340] = {Name = "Court of Stars - Umbral Bloom", enabled = true, number = 1},
+    [106110] = {Name = "Court of Stars - Waterlogged Scroll", enabled = true, number = 1},
 }

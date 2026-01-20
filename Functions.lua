@@ -29,6 +29,16 @@ function MPT:MuteJournalSounds()
     end)
 end
 
+function MPT:PopupIsShown()
+    for index = 1, 10 do
+        local frame = _G["StaticPopup"..index]
+        if frame and frame:IsShown() then
+            return true
+        end
+    end
+    return false
+end
+
 function MPT:HasAnchorLoop(key, value)
     if key and value and self.AnchorTypes[value] and self.AnchorTypes[key] then
         local current = value
