@@ -103,8 +103,8 @@ function MPT:CreateStates(preview)
         F:SetScript("OnDragStop", function(Frame)
             Frame:StopMovingOrSizing()       
             local Anchor, _, relativeTo, xOffset, yOffset = Frame:GetPoint()
-            xOffset = Round(xOffset)
-            yOffset = Round(yOffset)
+            xOffset = math.floor(xOffset * 10 + 0.5) / 10
+            yOffset = math.floor(yOffset * 10 + 0.5) / 10
             self:SetSV({"Position", "xOffset"}, xOffset)
             self:SetSV({"Position", "yOffset"}, yOffset)
             self:SetSV({"Position", "Anchor"}, Anchor)
