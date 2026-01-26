@@ -145,7 +145,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             id = tonumber(id)
             if self.Gossips[id] and self.Gossips[id].enabled then
                 local title = C_GossipInfo.GetOptions()
-                local num = self.Gossip[id].number
+                local num = self.Gossips[id].number
                 if title[num] and title[num].gossipOptionID then
                     local popupWasShown = self:PopupIsShown()
                     C_GossipInfo.SelectOption(title[num].gossipOptionID)
