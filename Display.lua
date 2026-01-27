@@ -580,7 +580,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
                 end
                 self.BossSplitted[i] = true
-            elseif self.cmap == 556 and i == 3 then -- Quarry Camps in Pit of Saron
+            elseif self.cmap == 556 and i == 3 and not self.BossSplitted[i] then -- Quarry Camps in Pit of Saron
                 local frame = self:CreateBossFrame(i)
                 self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color)
             end
