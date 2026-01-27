@@ -551,4 +551,6 @@ MPT.Gossips = {
     [106108] = {Name = "Court of Stars - Rose Brew", enabled = true, number = 1}, 
     [105340] = {Name = "Court of Stars - Umbral Bloom", enabled = true, number = 1},
     [106110] = {Name = "Court of Stars - Waterlogged Scroll", enabled = true, number = 1},
+
+    [252789] = {Name = "Pit of Saron - Quarry camps liberation", enabled = true, number = 1},
 }
