@@ -566,6 +566,7 @@ function MPT:UpdateBosses(Start, count, preview)
                 self.BossTimes[i] = time
                 if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry returns info about 1/6 instead of 6/6 so gotta store the value on completion.
                     time = self.QuarryTime or select(2, GetWorldElapsedTime(1))
+                    self.BossTimes[i] = time
                     self.QuarryTime = time
                 end
                 if pb and pb[i] then
