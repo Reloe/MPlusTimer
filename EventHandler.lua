@@ -141,6 +141,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then
         if UnitExists("npc") and not IsControlKeyDown() then
             local GUID = UnitGUID("npc")
+            if issecretvalue(GUID) then return end
             local id = select(6, strsplit("-", GUID))
             id = tonumber(id)
             if self.Gossips[id] and self.Gossips[id].enabled then
