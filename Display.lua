@@ -542,6 +542,11 @@ function MPT:UpdateBosses(Start, count, preview)
                     frame:Show()
                 end                
             end
+            if self.MaxBossFrame == 0 then 
+                local frame = self:CreateBossFrame(1)
+                frame:Show()
+                self.MaxBossFrame = 1 
+            end
             if self.MaxBossFrame ~= self.PreviousMaxBossFrame then -- re-anchor other elements if they are anchored to Bosses
                 if self.KeyInfo.AnchoredTo == "Bosses" then self:UpdateKeyInfo(true, true) end
                 if self.TimerBar.AnchoredTo == "Bosses" then self:UpdateTimerBar(true) end
@@ -549,11 +554,6 @@ function MPT:UpdateBosses(Start, count, preview)
                 self:UpdateMainFrame(true)
             end
             self.PreviousMaxBossFrame = self.MaxBossFrame
-            if self.MaxBossFrame == 0 then 
-                local frame = self:CreateBossFrame(1)
-                frame:Show()
-                self.MaxBossFrame = 1 
-            end
         end   
     elseif not self.IsPreview then
         self.BossTimes = self.BossTimes or {}
