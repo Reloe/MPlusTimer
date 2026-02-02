@@ -1,4 +1,5 @@
 local _, MPT = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer") --
 local LSM = LibStub("LibSharedMedia-3.0")
 
 function MPT:HideBossFrames()

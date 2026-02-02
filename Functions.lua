@@ -1,4 +1,5 @@
 local _, MPT = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer") --
 
 local SoundsToMute = {
     [567457] = true,

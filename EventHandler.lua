@@ -1,4 +1,5 @@
 local _, MPT = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer") 
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("CHALLENGE_MODE_KEYSTONE_SLOTTED")
@@ -126,7 +127,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         if MPTSV.AutoGossip == nil then MPTSV.AutoGossip = true end
         if MPTSV.debug then
             MPTGlobal = MPT
-            print("Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'")
+            print(L["Debug mode for MPlusTimer is currently enabled. You can disable it with '/mpt debug'"])
         end
         self:CreateMiniMapButton()
     elseif e == "UNIT_DIED" then

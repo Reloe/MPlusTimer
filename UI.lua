@@ -1,5 +1,5 @@
 local _, MPT = ...
-
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
 local LDB = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
 local LDBIcon = LibStub("LibDBIcon-1.0", true)
 local AceConfigdialog = LibStub("AceConfigDialog-3.0")
@@ -113,8 +113,8 @@ function MPT:CreateToggle(order, name, desc, key, update)
     local t = {}
     t.order = order
     t.type = "toggle"
-    t.name = name
-    t.desc = desc
+    t.name = L[name] or name  -- Nutzt Lokalisierung
+    t.desc = L[desc] or desc  -- Nutzt Lokalisierung
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -125,8 +125,8 @@ function MPT:CreateColor(order, name, desc, key, update)
     t.order = order
     t.type = "color"
     t.hasAlpha = true
-    t.name = name
-    t.desc = desc
+    t.name = L[name] or name
+    t.desc = L[desc] or desc
     t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, update) end
     t.get = function() return unpack(self:GetSV(key)) end
     return t
@@ -144,8 +144,8 @@ function MPT:CreateDropDown(order, values, name, desc, key, update)
     end
     
     t.type = "select"
-    t.name = name
-    t.desc = desc
+    t.name = L[name] or name
+    t.desc = L[desc] or desc
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -155,8 +155,8 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     local t = {}
     t.order = order
     t.type = "range"
-    t.name = name
-    t.desc = desc
+    t.name = L["name"] or name
+    t.desc = L["desc"] or desc
     t.min = min
     t.max = max
     t.step = step
@@ -164,6 +164,7 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     t.get = function() return self:GetSV(key) end
     return t
 end
+
 
 function MPT:CreateSpace(order)
     local t = {}
@@ -178,8 +179,8 @@ end
 local PreviewButton = {
     type = "execute", 
     order = 1,
-    name = "Preview/Unlock",
-    desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
+    name = L["Preview/Unlock"],
+    desc = L["Preview/Unlock Desc"],
     func = function() 
         if not MPT.IsPreview then -- not currently in preview
             MPT:Init(true) -- Frame is set to movable in here as well
@@ -195,57 +196,57 @@ local PreviewButton = {
 
 local MainOptions = {
     type = "group",
-    name = "Non-Display Settings",
+    name = L["Non-Display Settings"],
     args = {
         Preview = PreviewButton,
         ViewBestTimes = {
             type = "execute",
             order = 2,
-            name = "View Best Times",
-            desc = "View your stored Best Times",
+            name = L["View Best Times"],
+            desc = L["View Best Times Desc"],
             func = function() 
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(3, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
+        UpdateRate = MPT:CreateRange(3, L["Update Interval"], L["Update Interval Desc"], 0.1, 3, 0.1, L["UpdateRate"]),        
         Gap = MPT:CreateSpace(4),
         AutoGossip = {
             type = "toggle",
             order = 5,
-            name = "Auto Accept Gossip",
-            desc = "Automatically accept various gossip options when interacting with NPC's. Holding down CTRL will prevent this behaviour.",
+            name = L["Auto Accept Gossip"],
+            desc = L["Auto Accept Gossip Desc"],
             set = function(_, value) MPTSV.AutoGossip = value end,
             get = function() return MPTSV.AutoGossip end,
         },
         CloseBags = {
             type = "toggle",
             order = 6,
-            name = "Close Bags",
-            desc = "Automatically close bags after inserting the Keystone",
+            name = L["Close Bags"],
+            desc = L["Close Bags Desc"],
             set = function(_, value) MPTSV.CloseBags = value end,
             get = function() return MPTSV.CloseBags end,
         },
         KeySlot = {
             type = "toggle",
             order = 7,
-            name = "Automatic Keyslot",
-            desc = "Automatically insert Keystone when interacting with the Keystone Interface",
+            name = L["Automatic Keyslot"],
+            desc = L["Automatic Keyslot Desc"],
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
         LowerKey = {
             type = "toggle",
             order = 8,
-            name = "Data from Lower Level",
-            desc = "Get Split Timers from one key level lower if no data for current level exists",
+            name = L["Data from Lower Level"],
+            desc = L["Data from Lower Level Desc"],
             set = function(_, value) MPTSV.LowerKey = value end,
             get = function() return MPTSV.LowerKey end,
         },
         MinimapIcon = {
             type = "toggle",
             order = 9,
-            name = "Hide Minimap Icon",
-            desc = "Hide the Minimap Icon",
+            name = L["Hide Minimap Icon"],
+            desc = L["Hide Minimap Icon Desc"],
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
@@ -261,7 +262,7 @@ local Position = {
 }
 local Background = {
     type = "group",
-    name = "Background",
+    name = L["Background"],
     order = 3,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
@@ -277,7 +278,7 @@ local Background = {
 
 local GeneralOptions = {
     type = "group",
-    name = "General Options",
+    name = L["General Options"],
     order = 1,
     args = {
         Preview = PreviewButton,
