@@ -200,7 +200,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
         self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, -spacing+self.KeyInfo.yOffset)
         F.KeyInfo:SetSize(self.KeyInfo.Width, self.KeyInfo.Height)
         self:ApplyTextSettings(F.KeyInfo.KeyLevel, self.KeyLevel, preview and "+30" or "+"..self.level)
-        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, preview and "Halls of Valor" or self:GetDungeonName(self.cmap), false, F.KeyInfo)
+        self:ApplyTextSettings(F.KeyInfo.DungeonName, self.DungeonName, preview and L["Halls of Valor"] or self:GetDungeonName(self.cmap), false, F.KeyInfo)
         self:ApplyTextSettings(F.KeyInfo.AffixIcons, self.AffixIcons, AffixDisplay, false, F.KeyInfo)
         if self.DeathCounter.enabled then
             if self.DeathCounter.ShowTimer then
@@ -229,7 +229,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon:EnableMouse(true)
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
-                local text = "Time lost: "..timelost
+                local text = string.format(L["Time lost: %s"], timelost)
                 local list = {}
                 self.PlayerDeaths = self.PlayerDeaths or {}
                 for unit, deaths in pairs(self.PlayerDeaths) do
@@ -415,7 +415,7 @@ function MPT:UpdateBosses(Start, count, preview)
         for i=1, 5 do
             EJ_SelectInstance(721)
             local name = EJ_GetEncounterInfoByIndex(i, 721)
-            name = self:Utf8Sub(name, 1, 20) or "Boss "..i
+            name = self:Utf8Sub(name, 1, 20) or string.format(L["Boss %s"], i)
             killtime = killtime+math.random(240, 420)
             local time = self:FormatTime(killtime, true)
             local frame = self:CreateBossFrame(i)
@@ -495,7 +495,7 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                 end
                 if self.cmap == 556 and i == 3 then name = criteria.description end -- Using Blizzard's name for "Quarry camps liberated" since there is no other translated version to use
-                if self.cmap == 227 and num == 3 then name = "Opera Hall" end -- figure out a way for localized name if the dungeon returns at some point
+                if self.cmap == 227 and num == 3 then name = L["Opera Hall"] end -- figure out a way for localized name if the dungeon returns at some point
                 if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then   
                     name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
                     self.MaxBossFrame = i       
@@ -740,7 +740,7 @@ function MPT:UpdatePBInfo(preview)
     if preview or (pb and pb.finish) then
         local finishtime = preview and math.random(1500000, 2000000) or pb.finish
         local date = self:GetDateFormat(preview and {11, 10, 2025, 17, 30} or pb.date)
-        local text = string.format("PB: +%s %s %s", preview and 29 or self.level, self:FormatTime(finishtime/1000), date)
+        local text = string.format(L["PB: +%s %s %s"], preview and 29 or self.level, self:FormatTime(finishtime/1000), date)
         local parent = (self.PBInfo.AnchoredTo == "MainFrame" and F) or (self.PBInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.PBInfo.AnchoredTo]
         self:ApplyTextSettings(F.ForcesBar.PBInfo, self.PBInfo, text, false, parent)
     end
