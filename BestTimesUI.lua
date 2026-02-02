@@ -77,10 +77,10 @@ function MPT:CreateEditPanel()
         F.RunEditPanel.BossTimeEdits = {}
         for i = 1, 5 do
             local yOffset = -10 - ((i-1)*38)
-            F.RunEditPanel.BossLabels[i] = self:CreateLabel(F.RunEditPanel, "TOPLEFT", F.RunEditPanel.ForcesEdit, "BOTTOMLEFT", -5, yOffset, "Boss "..i.." Name:")
+            F.RunEditPanel.BossLabels[i] = self:CreateLabel(F.RunEditPanel, "TOPLEFT", F.RunEditPanel.ForcesEdit, "BOTTOMLEFT", -5, yOffset, L["Boss %s Name:"]:format(i))
             F.RunEditPanel.BossEdits[i] = self:CreateEditBox(F.RunEditPanel, "TOPLEFT", F.RunEditPanel.BossLabels[i], "BOTTOMLEFT", 5, -2, 120, 20)
             F.RunEditPanel.BossTimeEdits[i] = self:CreateEditBox(F.RunEditPanel, "LEFT", F.RunEditPanel.BossEdits[i], "RIGHT", 10, 0, 60, 20)
-            F.RunEditPanel.BossTimeLabels[i] = self:CreateLabel(F.RunEditPanel, "BOTTOMLEFT", F.RunEditPanel.BossTimeEdits[i], "TOPLEFT", -5, 0, "Time:")
+            F.RunEditPanel.BossTimeLabels[i] = self:CreateLabel(F.RunEditPanel, "BOTTOMLEFT", F.RunEditPanel.BossTimeEdits[i], "TOPLEFT", -5, 0, L["Time:"])
         end
 
         -- Save Button
@@ -93,7 +93,7 @@ function MPT:CreateEditPanel()
                 local name = F.RunEditPanel.BossEdits[i]:GetText()
                 local bosstime = F.RunEditPanel.BossTimeEdits[i]:GetText()
                 if bosstime and bosstime ~= "" then
-                    BossNames[i] = name and name ~= "" and name or (bosstime and bosstime ~= "" and "Boss "..i) or nil -- add placeholder bossname if it's not given
+                    BossNames[i] = name and name ~= "" and name or (bosstime and bosstime ~= "" and L["Boss %s"]:format(i)) or nil -- add placeholder bossname if it's not given
                     BossTimes[i] = bosstime and bosstime ~= "" and self:StrToTime(bosstime) or nil                
                     if not BossTimes[i] then
                         print(L["Invalid time format for Boss "]..i..L[". For Timers you are expected to supply a string in the format mm:ss"])
@@ -334,7 +334,7 @@ function MPT:CreatePBFrame()
         F.DeleteButton:Hide()
         self:AddMouseoverTooltip(F.DeleteButton, L["Delete the selected run from your saved best times. This does not delete it from the Total Stats. It is simply for comparison purposes."])
 
-        F.TotalStatsButton = self:CreateButton(140, 40, F, true, false, {1, 1, 0.3, 0.7}, nil, "Expressway", 13, {1, 1, 1, 1}, "Show Stats")
+        F.TotalStatsButton = self:CreateButton(140, 40, F, true, false, {1, 1, 0.3, 0.7}, nil, "Expressway", 13, {1, 1, 1, 1}, L["Show Stats"])
         self:SetPoint(F.TotalStatsButton, "BOTTOM", F.DungeonButtonFrame, "BOTTOM", 0, 10)
         F.TotalStatsButton:SetScript("OnClick", function(s)
             if self.SelectedDungeonButton then
@@ -360,7 +360,7 @@ function MPT:CreatePBFrame()
         local version = "v"..C_AddOns.GetAddOnMetadata("MPlusTimer", "Version")
         --@debug@
         if version == "v@project-version@" then
-            version = "Dev Build"
+            version = L["Dev Build"]
         end
         --@end-debug@
         self:CreateText(F, "Title", {
@@ -574,7 +574,7 @@ function MPT:ShowCharacterFrames(seasonID)
     local first = true
     local history = MPTSV.History and MPTSV.History[seasonID]
     if history then
-        num = self:AddCharacterButton({name = "Total"}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
+        num = self:AddCharacterButton({name = L["Total"]}, num, seasonID, nil, {r = 0, g = 0.7, b = 0, a = 0.9}) -- Total Stats Button
         local GUID = UnitGUID("player")
         num = self:AddCharacterButton(history[GUID], num, seasonID, GUID)
         self.SelectedCharacter = GUID
@@ -667,7 +667,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             text = string.format(L["Dungeon: %s\nTime: %s\n"], self:GetDungeonName(cmap), self:FormatTime(pbdata.finish/1000))
             for i=1, #(pbdata["BossNames"] or {}) do
                 if pbdata["BossNames"] and pbdata["BossNames"][i] and pbdata[i] then
-                    text = text..string.format("%s: %s\n", pbdata["BossNames"][i] or L["Unknown"], self:FormatTime(pbdata[i]))
+            text = text..string.format("%s: %s\n", pbdata["BossNames"][i] or L["Unknown"], self:FormatTime(pbdata[i]))
                 end
             end
             local date = self:GetDateFormat(pbdata.date)
@@ -681,7 +681,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             end)
         end
         if completedruns > 0 or depletedruns > 0 or abandonedruns > 0 then
-            local runtext = completedruns + depletedruns == 1 and "Run" or "Runs"
+            local runtext = completedruns + depletedruns == 1 and L["Run"] or L["Runs"]
             text = text..string.format(L["Total: |cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)"], completedruns + depletedruns, runtext, completedruns, depletedruns, abandonedruns)
         end
         if text ~= "" then
@@ -724,7 +724,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                 if data and (data.intime > 0 or data.depleted > 0) then
                     local name = self:Utf8Sub(self:GetDungeonName(cmap), 1, 15)
                     text = text..string.format("|cFF3399FF%s|r:\n", name)
-                    local runtext = data.intime + data.depleted == 1 and "Run" or "Runs"
+                    local runtext = data.intime + data.depleted == 1 and L["Run"] or L["Runs"]
                     text2 = text2..string.format(L["|cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)"],
                     data.intime + data.depleted, runtext, data.intime, data.depleted, data.abandoned)
                     local bestkey = data.fastestrun and self:FormatTime(data.fastestrun/1000)
@@ -769,7 +769,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                 local depleted = depletedruns[cmap] or 0
                 local abandoned = abandonedruns[cmap] or 0
                 text = text..string.format("|cFF3399FF%s|r:\n", name)
-                local runtext = completed + depleted == 1 and "Run" or "Runs"
+                local runtext = completed + depleted == 1 and L["Run"] or L["Runs"]
                 text2 = text2..string.format(L["|cFFFFFF4D%s|r %s (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)"],
                 completed + depleted, runtext, completed, depleted, abandoned)
                 local bestkey = fastestrun[cmap] and self:FormatTime(fastestrun[cmap]/1000)
@@ -804,4 +804,3 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
         F.PBDataText2:SetWidth(F.PBDataFrame:GetWidth()-155)
     end
 end
-
