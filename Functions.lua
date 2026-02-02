@@ -335,7 +335,7 @@ function MPT:Profiling(key, start)
     elseif self.ProfilingTimes and self.ProfilingTimes[key] then
         local duration = debugprofilestop() - self.ProfilingTimes[key]
         local color = duration > 1 and "|cFFFF0000" or "|cFFFFFFFF"
-        print("MPT: "..color.."The profiling for "..key.." took "..duration.." ms.|r")
+        print(L["MPT Profiling Output"]:format(color, key, duration))
         self.ProfilingTimes[key] = nil
     end
 end
