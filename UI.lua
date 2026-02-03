@@ -125,8 +125,12 @@ function MPT:CreateColor(order, name, desc, key, update)
     t.order = order
     t.type = "color"
     t.hasAlpha = true
-    t.name = L[name] or name
-    t.desc = L[desc] or desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, update) end
     t.get = function() return unpack(self:GetSV(key)) end
     return t
@@ -144,8 +148,12 @@ function MPT:CreateDropDown(order, values, name, desc, key, update)
     end
     
     t.type = "select"
-    t.name = L[name] or name
-    t.desc = L[desc] or desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -155,8 +163,12 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     local t = {}
     t.order = order
     t.type = "range"
-    t.name = L[name] or name
-    t.desc = L[desc] or desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.min = min
     t.max = max
     t.step = step
@@ -208,7 +220,7 @@ local MainOptions = {
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(3, L["Update Interval"], L["Update Interval Desc"], 0.1, 3, 0.1, L["UpdateRate"]),        
+        UpdateRate = MPT:CreateRange(3, "Update Interval", "Update Interval Desc", 0.1, 3, 0.1, "UpdateRate"),        
         Gap = MPT:CreateSpace(4),
         AutoGossip = {
             type = "toggle",
@@ -282,7 +294,7 @@ local GeneralOptions = {
     order = 1,
     args = {
         Preview = PreviewButton,
-        FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Frame Strata Desc", "FrameStrata", true),
         Gap = MPT:CreateSpace(3),
         Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
         AllFonts = {
