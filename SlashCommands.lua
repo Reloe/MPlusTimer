@@ -1,15 +1,15 @@
 local _, MPT = ...
-
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
 function MPT.UI:SlashCommand(msg)
     if msg == "debug" then
         if MPTSV.debug then
             MPTSV.debug = false
             MPTGlobal = nil
-            print("Disabled debug mode for MPlusTimer")
+            print(L["Disabled debug mode for MPlusTimer"])
         else
             MPTSV.debug = true
             MPTGlobal = MPT
-            print("Enabled debug mode for MPlusTimer, which allows accessing all local functions")
+            print(L["Enabled debug mode for MPlusTimer, which allows accessing all local functions"])
         end
     elseif msg == "preview" then
         if not MPT.IsPreview then -- not currently in preview

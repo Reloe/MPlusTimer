@@ -1,4 +1,5 @@
 local _, MPT = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
 local Serialize = LibStub("AceSerializer-3.0")
 local Compress = LibStub("LibDeflate")
 
@@ -13,7 +14,7 @@ function MPTAPI:ImportProfile(string, key, mainProfile) -- global import functio
             MPT:CreateImportedProfile(data, name, mainProfile)
             return true
         else
-            print("Failed to import profile into MPlusTimer")
+            print (L["Failed to import profile into MPlusTimer"])
             return false
         end
     end
@@ -181,8 +182,7 @@ function MPT:SetSV(key, value, update)
                 MPTref = MPTref[key[i]]
             end
             if self:HasAnchorLoop(key[1], value) then
-                print("Cannot anchor to this element, it would create a loop. You need to first change the Anchor of", value, "before you can set it as anchor target.")
-                return
+                print(L["Cannot anchor to this element, it would create a loop. You need to first change the Anchor of"], value,  L["before you can set it as anchor target."])                return
             end
             ref[key[#key]] = value
             MPTref[key[#key]] = value

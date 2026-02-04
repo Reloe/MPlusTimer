@@ -1,5 +1,5 @@
 local _, MPT = ...
-
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
 local LDB = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
 local LDBIcon = LibStub("LibDBIcon-1.0", true)
 local AceConfigdialog = LibStub("AceConfigDialog-3.0")
@@ -22,7 +22,7 @@ function MPT:CreateMiniMapButton()
         end,
         OnTooltipShow = function(tooltip)
             tooltip:AddLine("MPlusTimer", 0, 1, 1)
-            tooltip:AddLine("|cFFCFCFCFLeft click|r: Show/Hide Options Window\n|cFFCFCFCFRight click|r: View Best Times")
+            tooltip:AddLine(L["MINIMAP_TOOLTIP"]:format(L["Left click"], L["Right click"]))
         end
     })
     if (databroker and not LDBIcon:IsRegistered("MPlusTimer")) then
@@ -32,9 +32,9 @@ function MPT:CreateMiniMapButton()
 end
 
 StaticPopupDialogs["MPT_RESET_PROFILE"] = {
-    text = "Are you sure you want to reset the current profile to the default settings?",
-    button1 = "Yes",
-    button2 = "No",
+    text = L["Are you sure you want to reset the current profile to the default settings?"],
+    button1 = L["Yes"],
+    button2 = L["No"],
     OnAccept = function()
         MPT:ResetProfile()
     end
@@ -113,8 +113,8 @@ function MPT:CreateToggle(order, name, desc, key, update)
     local t = {}
     t.order = order
     t.type = "toggle"
-    t.name = name
-    t.desc = desc
+    t.name = L[name] or name  -- Nutzt Lokalisierung
+    t.desc = L[desc] or desc  -- Nutzt Lokalisierung
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -125,8 +125,12 @@ function MPT:CreateColor(order, name, desc, key, update)
     t.order = order
     t.type = "color"
     t.hasAlpha = true
-    t.name = name
-    t.desc = desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, update) end
     t.get = function() return unpack(self:GetSV(key)) end
     return t
@@ -144,8 +148,12 @@ function MPT:CreateDropDown(order, values, name, desc, key, update)
     end
     
     t.type = "select"
-    t.name = name
-    t.desc = desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -155,8 +163,12 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     local t = {}
     t.order = order
     t.type = "range"
-    t.name = name
-    t.desc = desc
+    t.name = rawget(L, name) or name
+    if desc == "" or desc == nil then
+        t.desc = desc
+    else
+        t.desc = rawget(L, desc) or desc
+    end
     t.min = min
     t.max = max
     t.step = step
@@ -164,6 +176,7 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     t.get = function() return self:GetSV(key) end
     return t
 end
+
 
 function MPT:CreateSpace(order)
     local t = {}
@@ -178,8 +191,8 @@ end
 local PreviewButton = {
     type = "execute", 
     order = 1,
-    name = "Preview/Unlock",
-    desc = "Show a preview of the Display, this also unlocks the Frame so you can move it around",
+    name = L["Preview/Unlock"],
+    desc = L["Preview/Unlock Desc"],
     func = function() 
         if not MPT.IsPreview then -- not currently in preview
             MPT:Init(true) -- Frame is set to movable in here as well
@@ -195,57 +208,57 @@ local PreviewButton = {
 
 local MainOptions = {
     type = "group",
-    name = "Non-Display Settings",
+    name = L["Non-Display Settings"],
     args = {
         Preview = PreviewButton,
         ViewBestTimes = {
             type = "execute",
             order = 2,
-            name = "View Best Times",
-            desc = "View your stored Best Times",
+            name = L["View Best Times"],
+            desc = L["View Best Times Desc"],
             func = function() 
                 MPT:ShowPBFrame()
             end,         
         },
-        UpdateRate = MPT:CreateRange(3, "Update Interval", "How often the timer updates", 0.1, 3, 0.1, "UpdateRate"),        
+        UpdateRate = MPT:CreateRange(3, "Update Interval", "Update Interval Desc", 0.1, 3, 0.1, "UpdateRate"),        
         Gap = MPT:CreateSpace(4),
         AutoGossip = {
             type = "toggle",
             order = 5,
-            name = "Auto Accept Gossip",
-            desc = "Automatically accept various gossip options when interacting with NPC's. Holding down CTRL will prevent this behaviour.",
+            name = L["Auto Accept Gossip"],
+            desc = L["Auto Accept Gossip Desc"],
             set = function(_, value) MPTSV.AutoGossip = value end,
             get = function() return MPTSV.AutoGossip end,
         },
         CloseBags = {
             type = "toggle",
             order = 6,
-            name = "Close Bags",
-            desc = "Automatically close bags after inserting the Keystone",
+            name = L["Close Bags"],
+            desc = L["Close Bags Desc"],
             set = function(_, value) MPTSV.CloseBags = value end,
             get = function() return MPTSV.CloseBags end,
         },
         KeySlot = {
             type = "toggle",
             order = 7,
-            name = "Automatic Keyslot",
-            desc = "Automatically insert Keystone when interacting with the Keystone Interface",
+            name = L["Automatic Keyslot"],
+            desc = L["Automatic Keyslot Desc"],
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
         LowerKey = {
             type = "toggle",
             order = 8,
-            name = "Data from Lower Level",
-            desc = "Get Split Timers from one key level lower if no data for current level exists",
+            name = L["Data from Lower Level"],
+            desc = L["Data from Lower Level Desc"],
             set = function(_, value) MPTSV.LowerKey = value end,
             get = function() return MPTSV.LowerKey end,
         },
         MinimapIcon = {
             type = "toggle",
             order = 9,
-            name = "Hide Minimap Icon",
-            desc = "Hide the Minimap Icon",
+            name = L["Hide Minimap Icon"],
+            desc = L["Hide Minimap Icon Desc"],
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
@@ -253,7 +266,7 @@ local MainOptions = {
 }
 local Position = {
     type = "group",
-    name = "Frame Position",
+    name = L["Frame Position"],
     order = 2,
     args = {
               
@@ -261,7 +274,7 @@ local Position = {
 }
 local Background = {
     type = "group",
-    name = "Background",
+    name = L["Background"],
     order = 3,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
@@ -277,18 +290,18 @@ local Background = {
 
 local GeneralOptions = {
     type = "group",
-    name = "General Options",
+    name = L["General Options"],
     order = 1,
     args = {
         Preview = PreviewButton,
-        FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Strata of the entire Display. High is the default because this makes it appear above the options window.", "FrameStrata", true),
+        FrameStrata = MPT:CreateDropDown(2, {["BACKGROUND"] = "BACKGROUND", ["LOW"] = "LOW", ["MEDIUM"] = "MEDIUM", ["HIGH"] = "HIGH", ["DIALOG"] = "DIALOG", ["FULLSCREEN"] = "FULLSCREEN", ["FULLSCREEN_DIALOG"] = "FULLSCREEN_DIALOG", ["TOOLTIP"] = "TOOLTIP"}, "Frame Strata", "Frame Strata Desc", "FrameStrata", true),
         Gap = MPT:CreateSpace(3),
         Scale = MPT:CreateRange(4, "Group Scale", "Scale of the entire Display", 0.1, 3, 0.01, "Scale", true),
         AllFonts = {
             type = "select",
             order = 5,
-            name = "Change All Fonts",
-            desc = "Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI",
+            name = L["Change All Fonts"],
+            desc = L["Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI"],
             values = function() return MPT:GetAllFonts() end, 
             set = function(_, value)
                 MPT:SetSV({"KeyLevel", "Font"}, value, false)
@@ -316,8 +329,8 @@ local GeneralOptions = {
         AllTextures = {
             type = "select",
             order = 8,
-            name = "Change All Textures",
-            desc = "Changes all bar textures at once",
+            name = L["Change All Textures"],
+            desc = L["Changes all bar textures at once"],
             values = function() return MPT:GetAllTextures() end,
             set = function(_, value)
                 MPT:SetSV({"TimerBar", "Texture"}, value, false)
@@ -330,7 +343,7 @@ local GeneralOptions = {
         Desc = {
             type = "header",
             order = 9,
-            name = "Main Frame Positioning",
+            name = L["Main Frame Positioning"],
         },
         Anchor = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
         relativeTo = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
@@ -341,7 +354,7 @@ local GeneralOptions = {
 }
 local General = {
     type = "group",
-    name = "General",
+    name = L["General"],
     childGroups = "tab",
     order = 1,
     args = {
@@ -353,10 +366,10 @@ local General = {
 
 local KeyInfoBar = {
     type = "group",
-    name = "Key Info Bar",
+    name = L["Key Info Bar"],
     order = 2,
     args = {
-        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Key Info Bar is anchored to", {"KeyInfo", "AnchoredTo"}, true),
+        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["TimerBar"] = L["Timer Bar"], ["Bosses"] = L["Bosses"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the Key Info Bar is anchored to", {"KeyInfo", "AnchoredTo"}, true),
         Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"KeyInfo", "Anchor"}, true),
         RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"KeyInfo", "RelativeTo"}, true),
         Width = MPT:CreateRange(4, "Width", "Width of the Key Info Bar", 50, 1000, 1, {"KeyInfo", "Width"}, true),
@@ -366,16 +379,16 @@ local KeyInfoBar = {
         yOffset = MPT:CreateRange(8, "Y Offset", "Y Offset of the Key Info Bar", -300, 300, 0.1, {"KeyInfo", "yOffset"}, true),
     }
 }
-local KeyLevel = MPT:CreateTextSetting("Key Level", "KeyLevel", 2, true)
-local DungeonName = MPT:CreateTextSetting("Dungeon Name", "DungeonName", 3, true)
+local KeyLevel = MPT:CreateTextSetting(L["Key Level"], "KeyLevel", 2, true)
+local DungeonName = MPT:CreateTextSetting(L["Dungeon Name"], "DungeonName", 3, true)
 DungeonName.args.Shorten = MPT:CreateRange(11, "Shorten", "Shorten Dungeon Name after X Characters", 5, 30, 1, {"DungeonName", "Shorten"}, true)
-local Affixes = MPT:CreateTextSetting("Affixes", "AffixIcons", 4, true)
-local Deaths = MPT:CreateTextSetting("Deaths", "DeathCounter", 5, true)
+local Affixes = MPT:CreateTextSetting(L["Affixes"], "AffixIcons", 4, true)
+local Deaths = MPT:CreateTextSetting(L["Deaths"], "DeathCounter", 5, true)
 Deaths.args.ShowTime = MPT:CreateToggle(11, "Show Time of Deaths", "Show the total time lost from deaths", {"DeathCounter", "ShowTimer"}, true)
 Deaths.args.DeathBrackets = MPT:CreateToggle(12, "Square Brackets", "Show Death Count in Square Brackets instead of Round Brackets", {"DeathCounter", "SquareBrackets"}, true)
 local DeathIcon = {
     type = "group",
-    name = "Death Icon",
+    name = L["Death Icon"],
     order = 6,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"DeathCounter", "Iconenabled"}, true),
@@ -386,7 +399,7 @@ local DeathIcon = {
     }
 }
 local KeyInfo = {
-    name = "Key Info Bar",
+    name = L["Key Info Bar"],
     type = "group",
     order = 2,
     childGroups = "tab",
@@ -400,16 +413,16 @@ local KeyInfo = {
     },
 }
 
-local TimerStatusBar = MPT:CreateStatusBarSettings("Timer Bar", "TimerBar", 1)
-TimerStatusBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Timer Bar is anchored to", {"TimerBar", "AnchoredTo"}, true)
+local TimerStatusBar = MPT:CreateStatusBarSettings(L["Timer Bar"], "TimerBar", 1)
+TimerStatusBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["KeyInfo"] = L["Key Info Bar"], ["Bosses"] = L["Bosses"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the Timer Bar is anchored to", {"TimerBar", "AnchoredTo"}, true)
 TimerStatusBar.args.Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"TimerBar", "Anchor"}, true)
 TimerStatusBar.args.RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"TimerBar", "RelativeTo"}, true)
 TimerStatusBar.args.OneChestColor = MPT:CreateColor(13, "One Chest Color", "Color of the Timer Bar when you are in the one chest range", {"TimerBar", "Color", 2})
 TimerStatusBar.args.TwoChestColor = MPT:CreateColor(14, "Two Chest Color", "Color of the Timer Bar when you are in the two chest range", {"TimerBar", "Color", 3})
 TimerStatusBar.args.ThreeChestColor = MPT:CreateColor(15, "Three Chest Color", "Color of the Timer Bar when you are in the three chest range", {"TimerBar", "Color", 4})
 TimerStatusBar.args.DepleteColor = MPT:CreateColor(16, "Deplete Color", "Color of the Timer Bar when the timer is depleted", {"TimerBar", "Color", 1})
-TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(17, {[1] = "Relevant Chest Timer", [2] = "All Chest Timers", [3] = "No Chest Timer"}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
-local TimerText = MPT:CreateTextSetting("Main Timer", "TimerText", 2, true)
+TimerStatusBar.args.ChestTimerDisplay = MPT:CreateDropDown(17, {[1] = L["Relevant Chest Timer"], [2] = L["All Chest Timers"], [3] = L["No Chest Timer"]}, "Chest Timer Display", "Which Chest Timers are to be displayed", {"TimerBar", "ChestTimerDisplay"}, true)
+local TimerText = MPT:CreateTextSetting(L["Main Timer"], "TimerText", 2, true)
 TimerText.args.Decimals = MPT:CreateDropDown(11, {[0] = "0", [1] = "1", [2] = "2", [3] = "3"}, "Final Time Decimals", "Number of decimal places on the Final Timer", {"TimerText", "Decimals"}, true)
 TimerText.args.SuccessColor = MPT:CreateColor(12, "Intime Color", "Color of the Timer Text on timing the key", {"TimerText", "SuccessColor"}, true)
 TimerText.args.FailColor = MPT:CreateColor(13, "Deplete Color", "Color of the Timer Text on deplete", {"TimerText", "FailColor"}, true)
@@ -417,18 +430,18 @@ TimerText.args.Space = MPT:CreateToggle(14, "Add Spacing", "Adds a space before 
 
 
            
-local ChestTimer1 = MPT:CreateTextSetting("Chest Timer 1", "ChestTimer1", 1, true)
+local ChestTimer1 = MPT:CreateTextSetting(L["Chest Timer 1"], "ChestTimer1", 1, true)
 ChestTimer1.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
 ChestTimer1.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
-local ChestTimer2 = MPT:CreateTextSetting("Chest Timer 2", "ChestTimer2", 2, true)
+local ChestTimer2 = MPT:CreateTextSetting(L["Chest Timer 2"], "ChestTimer2", 2, true)
 ChestTimer2.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 2 Chest Timer when ahead of the timer", {"ChestTimer2", "AheadColor"}, true)
 ChestTimer2.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 2 Chest Timer when behind the timer", {"ChestTimer2", "BehindColor"}, true)
-local ChestTimer3 = MPT:CreateTextSetting("Chest Timer 3", "ChestTimer3", 3, true)
+local ChestTimer3 = MPT:CreateTextSetting(L["Chest Timer 3"], "ChestTimer3", 3, true)
 ChestTimer3.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 3 Chest Timer when ahead of the timer", {"ChestTimer3", "AheadColor"}, true)
 ChestTimer3.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 3 Chest Timer when behind the timer", {"ChestTimer3", "BehindColor"}, true)
 local ChestTimer = {
     type = "group",
-    name = "Chest Timer",
+    name = L["Chest Timer"],
     childGroups = "tab",
     order = 3,
     args = {
@@ -437,7 +450,7 @@ local ChestTimer = {
         ChestTimer3 = ChestTimer3,
     }
 }
-local ComparisonTimer = MPT:CreateTextSetting("Comparison Timer", "ComparisonTimer", 4)
+local ComparisonTimer = MPT:CreateTextSetting(L["Comparison Timer"], "ComparisonTimer", 4)
 ComparisonTimer.args.Gap = MPT:CreateSpace(11)
 ComparisonTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Comparison Timer when a new PB was achieved", {"ComparisonTimer", "SuccessColor"}, true)
 ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color of the Comparison Timer on slower Runs", {"ComparisonTimer", "FailColor"}, true)
@@ -465,7 +478,7 @@ local Tick2 = {
 
 local Ticks = {
     type = "group",
-    name = "Ticks",
+    name = L["Ticks"],
     childGroups = "tab",
     order = 5,
     args = {
@@ -474,7 +487,7 @@ local Ticks = {
     },
 }
 local TimerBar = {
-    name = "Timer Bar",
+    name = L["Timer Bar"],
     type = "group",
     order = 3,
     childGroups = "tab",
@@ -489,10 +502,10 @@ local TimerBar = {
 
 local BossesBar = {
     type = "group",
-    name = "Bosses Bar",
+    name = L["Bosses Bar"],
     order = 1,
     args = {
-        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the Bosses Bar is anchored to", {"Bosses", "AnchoredTo"}, true),
+        AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["KeyInfo"] = L["Key Info Bar"], ["TimerBar"] = L["Timer Bar"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the Bosses Bar is anchored to", {"Bosses", "AnchoredTo"}, true),
         Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Bosses", "Anchor"}, true),
         RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Bosses", "RelativeTo"}, true),
         Width = MPT:CreateRange(4, "Bosses Bar Width", "Width of the Bosses Bar", 50, 1000, 1, {"Bosses", "Width"}, true),
@@ -502,14 +515,14 @@ local BossesBar = {
         YOffset = MPT:CreateRange(8, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -300, 300, 0.1, {"Bosses", "yOffset"}, true),
     }
 }   
-local BossName = MPT:CreateTextSetting("Boss Name", "BossName", 2, true)
+local BossName = MPT:CreateTextSetting(L["Boss Name"], "BossName", 2, true)
 BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 5, 40, 1, {"BossName", "MaxLength"}, true)
 BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
-local BossSplit = MPT:CreateTextSetting("Boss Split", "BossSplit", 3, true)
+local BossSplit = MPT:CreateTextSetting(L["Boss Split"], "BossSplit", 3, true)
 BossSplit.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Split if the timer is faster than the previous best", {"BossSplit", "SuccessColor"}, true)
 BossSplit.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Split if the timer is slower than the previous best", {"BossSplit", "FailColor"}, true)
 BossSplit.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Split if the timer is equal to the previous best", {"BossSplit", "EqualColor"}, true)
-local BossTimer = MPT:CreateTextSetting("Boss Timer", "BossTimer", 4, true)
+local BossTimer = MPT:CreateTextSetting(L["Boss Timer"], "BossTimer", 4, true)
 BossTimer.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Boss Timer if the timer is faster than the previous best", {"BossTimer", "SuccessColor"}, true)
 BossTimer.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Boss Timer if the timer is slower than the previous best", {"BossTimer", "FailColor"}, true)
 BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Boss Timer if the timer is equal to the previous best", {"BossTimer", "EqualColor"}, true)
@@ -517,7 +530,7 @@ BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Bos
 
 local Bosses = {
     type = "group",
-    name = "Bosses",
+    name = L["Bosses"],
     order = 4,
     childGroups = "tab",
     args = {
@@ -528,8 +541,8 @@ local Bosses = {
     }
 }
 
-local ForcesBar = MPT:CreateStatusBarSettings("Forces Bar", "ForcesBar", 1)
-ForcesBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses"}, "Anchored To", "What the Forces Bar is anchored to", {"ForcesBar", "AnchoredTo"}, true)
+local ForcesBar = MPT:CreateStatusBarSettings(L["Forces Bar"], "ForcesBar", 1)
+ForcesBar.args.AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["KeyInfo"] = L["Key Info Bar"], ["TimerBar"] = L["Timer Bar"], ["Bosses"] = L["Bosses"]}, "Anchored To", "What the Forces Bar is anchored to", {"ForcesBar", "AnchoredTo"}, true)
 ForcesBar.args.Anchor = MPT:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"ForcesBar", "Anchor"}, true)
 ForcesBar.args.RelativeTo = MPT:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"ForcesBar", "RelativeTo"}, true)
 ForcesBar.args.Zero = MPT:CreateColor(13, "0-20 Color", "Color of the Forces Bar from 0 to 20%", {"ForcesBar", "Color", 1}, true)
@@ -538,20 +551,20 @@ ForcesBar.args.Forty = MPT:CreateColor(15, "41-60 Color", "Color of the Forces B
 ForcesBar.args.Sixty = MPT:CreateColor(16, "61-80 Color", "Color of the Forces Bar from 61 to 80%", {"ForcesBar", "Color", 4}, true)
 ForcesBar.args.Eighty = MPT:CreateColor(17, "81-99 Color", "Color of the Forces Bar from 81 to 99%", {"ForcesBar", "Color", 5}, true)
 ForcesBar.args.Completion = MPT:CreateColor(18, "100% Color", "Color of the Forces Bar at 100%", {"ForcesBar", "CompletionColor"}, true)
-local PercentText = MPT:CreateTextSetting("Percent Text", "PercentCount", 2, true)
+local PercentText = MPT:CreateTextSetting(L["Percent Text"], "PercentCount", 2, true)
 PercentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Percent instead of current Percent", {"PercentCount", "remaining"}, true)
-local CurrentText = MPT:CreateTextSetting("Count Text", "RealCount", 3, true)
+local CurrentText = MPT:CreateTextSetting(L["Count Text"], "RealCount", 3, true)
 CurrentText.args.remaining = MPT:CreateToggle(11, "Show Remaining", "Show Remaining Count instead of current Count", {"RealCount", "remaining"}, true)
 CurrentText.args.total = MPT:CreateToggle(12, "Show Total", "Show Total Count", {"RealCount", "total"}, true)
-local ForcesSplits = MPT:CreateTextSetting("Split Text", "ForcesSplits", 4, false)
+local ForcesSplits = MPT:CreateTextSetting(L["Split Text"], "ForcesSplits", 4, false)
 ForcesSplits.args.Gap = MPT:CreateSpace(11)
 ForcesSplits.args.SuccessColor = MPT:CreateColor(12, "Success Color", "Color of the Split if the timer is faster than the previous best", {"ForcesSplits", "SuccessColor"}, true)
 ForcesSplits.args.FailColor = MPT:CreateColor(13, "Fail Color", "Color of the Split if the timer is slower than the previous best", {"ForcesSplits", "FailColor"}, true)
 ForcesSplits.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Split if the timer is equal to the previous best", {"ForcesSplits", "EqualColor"}, true)
-local ForcesCompletion = MPT:CreateTextSetting("Completion Time", "ForcesCompletion", 5, true)
+local ForcesCompletion = MPT:CreateTextSetting(L["Completion Time"], "ForcesCompletion", 5, true)
 local CurrentPullBar = {
     type = "group",
-    name = "Current Pull",
+    name = L["Current Pull"],
     order = 6,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Current Pull Bar", {"CurrentPullBar", "enabled"}, true),
@@ -574,7 +587,7 @@ local CurrentPullBar = {
 }
 local EnemyForces = {
     type = "group",
-    name = "Enemy Forces",
+    name = L["Enemy Forces"],
     order = 5,
     childGroups = "tab",
     args = {
@@ -586,17 +599,17 @@ local EnemyForces = {
         ForcesSplits = ForcesSplits,
     }
 }
-local PBInfo = MPT:CreateTextSetting("PB Info", "PBInfo", 6, true)
+local PBInfo = MPT:CreateTextSetting(L["PB Info"], "PBInfo", 6, true)
 PBInfo.args.Format = MPT:CreateDropDown(11, {[1] = "DD/MM/YY", [2] = "MM/DD/YY"}, "Date Format", "Format in which the date is displayed", {"PBInfo", "Format"}, true)
-PBInfo.args.AnchoredTo = MPT:CreateDropDown(12, {["MainFrame"] = "Main Frame", ["KeyInfo"] = "KeyInfo Bar", ["TimerBar"] = "Timer Bar", ["Bosses"] = "Bosses", ["ForcesBar"] = "Forces Bar"}, "Anchored To", "What the PB Info is anchored to", {"PBInfo", "AnchoredTo"}, true)
+PBInfo.args.AnchoredTo = MPT:CreateDropDown(12, {["MainFrame"] = L["Main Frame"], ["KeyInfo"] = L["Key Info Bar"], ["TimerBar"] = L["Timer Bar"], ["Bosses"] = L["Bosses"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the PB Info is anchored to", {"PBInfo", "AnchoredTo"}, true)
 
 
 
 
 local MainProfile = {
     type = "select",
-    name = "Main Profile",
-    desc = "Select a Main Profile, which will automatically load on any new character",
+    name = L["Main Profile"],
+    desc = L["Select a Main Profile, which will automatically load on any new character"],
     order = 4,
     values = function()
         local profiles = {}
@@ -612,8 +625,8 @@ local MainProfile = {
 }
 local NewProfile = {
     type = "input",
-    name = "New Profile",
-    desc = "Create a new profile with the entered name",
+    name = L["New Profile"],
+    desc = L["Create a new profile with the entered name"],
     order = 5,
     set = function(_, value) MPT:CreateProfile(value) end,
     get = function() return "" end,
@@ -621,8 +634,8 @@ local NewProfile = {
 
 local ActiveProfile = {
     type = "select",
-    name = "Active Profile",
-    desc = "Select Active Profile",
+    name = L["Active Profile"],
+    desc = L["Select Active Profile"],
     order = 6,
     values = function()
         local profiles = {}
@@ -636,8 +649,8 @@ local ActiveProfile = {
 }
 local CopyProfile = {
     type = "select",
-    name = "Copy from Profile",
-    desc = "Copy settings from the selected profile into the current profile",
+    name = L["Copy from Profile"],
+    desc = L["Copy settings from the selected profile into the current profile"],
     order = 7,
     values = function()
         local profiles = {}
@@ -651,8 +664,8 @@ local CopyProfile = {
 }
 local DeleteProfile = {
     type = "select",
-    name = "Delete Profile",
-    desc = "Delete the selected profile - You cannot delete the default profile.",
+    name = L["Delete Profile"],
+    desc = L["Delete the selected profile - You cannot delete the default profile."],
     order = 10,
     values = function()
         local profiles = {}
@@ -669,23 +682,23 @@ local DeleteProfile = {
 
 local profiles = {
     type = "group",
-    name = "Profiles",
+    name = L["Profiles"],
     order = 6,
     args = {
         Description = {
             type = "description",
             order = 1,
-            name = "You can change the Active Profile here as well as setting a Main Profile, which will automatically load on any new character.",
+            name = L["You can change the Active Profile here as well as setting a Main Profile, which will automatically load on any new character."],
         },
         ResetDescription = {
             type = "description",
             order = 2,
-            name = "Reset your current active profile to the default settings. THIS CANNOT BE UNDONE",
+            name = L["Reset your current active profile to the default settings. THIS CANNOT BE UNDONE"],
         },
         Reset = {
             type = "execute",
             order = 3,
-            name = "Reset Current Profile",
+            name = L["Reset Current Profile"],
             func = function() StaticPopup_Show("MPT_RESET_PROFILE") end,
         },
         MainProfile = MainProfile,
@@ -701,8 +714,8 @@ local profiles = {
         ExportProfile = {
             type = "input",
             order = 8,
-            name = "Export Profile",
-            desc = "Export your current profile to a string",
+            name = L["Export Profile"],
+            desc = L["Export your current profile to a string"],
             get = function() return MPTAPI:GetExportString() end,
             set = function() end,
             width = "full",
@@ -711,8 +724,8 @@ local profiles = {
         ImportProfile = {
             type = "input",
             order = 9,
-            name = "Import Profile",
-            desc = "Import a profile from a string",
+            name = L["Import Profile"],
+            desc = L["Import a profile from a string"],
             set = function(_, value) MPTAPI:ImportProfile(value) end,
             get = function() return "" end,
             width = "full",
@@ -723,7 +736,7 @@ local profiles = {
 }
 
 local settings = {
-	name = "Display Settings",
+	name = L["Display Settings"],
     childGroups = "tab",
 	type = "group",
 	args = {
@@ -742,8 +755,8 @@ function MPT.UI:OnInitialize()
     AceConfig:RegisterOptionsTable("MPTSettings", settings)
     AceConfig:RegisterOptionsTable("MPTProfiles", profiles)
 	self.optionsFrame = AceConfigdialog:AddToBlizOptions("MPlusTimer", "MPlusTimer")
-    self.settingsFrame = AceConfigdialog:AddToBlizOptions("MPTSettings", "Display Settings", "MPlusTimer")
-    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", "Profiles", "MPlusTimer")
+    self.settingsFrame = AceConfigdialog:AddToBlizOptions("MPTSettings", L["Display Settings"], "MPlusTimer")
+    self.profilesFrame = AceConfigdialog:AddToBlizOptions("MPTProfiles", L["Profiles"], "MPlusTimer")
 	self:RegisterChatCommand("mpt", "SlashCommand")
 	self:RegisterChatCommand("mplustimer", "SlashCommand")
 end
