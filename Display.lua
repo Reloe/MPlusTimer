@@ -19,8 +19,8 @@ function MPT:Init(preview)
     self:SetKeyInfo(true)
     self.opened = false
     self.QuarryTime = false
-    self.IsPreview = preview   
-    self.PreviousMaxBossFrame = 0 
+    self.IsPreview = preview
+    self.PreviousMaxBossFrame = 0
     local time = C_ChallengeMode.GetChallengeCompletionInfo().time
     if time == 0 then -- prevent setting this to false on completion
         self.done = false
@@ -36,8 +36,8 @@ function MPT:SetKeyInfo(init)
 end
 
 function MPT:UpdateAllStates(preview)
-    self:UpdateMainFrame()        
-    self:UpdateBosses(true, (not preview) and 1, preview)       
+    self:UpdateMainFrame()
+    self:UpdateBosses(true, (not preview) and 1, preview)
     self:UpdateKeyInfo(true, false, preview)
     self:UpdateTimerBar(true, false, preview)
     self:UpdateEnemyForces(true, preview)
@@ -50,12 +50,12 @@ end
 function MPT:CreateStates(preview)
     if self.Frame then self.Frame:Hide() end
     if not self.Frame then
-        self.Frame = CreateFrame("Frame", nil, UIParent) -- Main Frame        
-        local F = self.Frame        
+        self.Frame = CreateFrame("Frame", nil, UIParent) -- Main Frame
+        local F = self.Frame
         -- Background Main Frame
         F.BG = F:CreateTexture(nil, "BACKGROUND")
         -- Background Border Main Frame
-        F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")           
+        F.BGBorder = CreateFrame("Frame", nil, F, "BackdropTemplate")
 
         -- Keystone Info
         self:CreateStatusBar(F, "KeyInfo", false, false)
@@ -83,7 +83,7 @@ function MPT:CreateStates(preview)
             F.TimerBar.Ticks[i]:Hide()
         end
 
-        -- Bosses            
+        -- Bosses
         F.Bosses = {}
 
         -- Enemy Forces
@@ -102,26 +102,26 @@ function MPT:CreateStates(preview)
             self:StartMoving()
         end)
         F:SetScript("OnDragStop", function(Frame)
-            Frame:StopMovingOrSizing()       
+            Frame:StopMovingOrSizing()
             local Anchor, _, relativeTo, xOffset, yOffset = Frame:GetPoint()
             xOffset = math.floor(xOffset * 10 + 0.5) / 10
             yOffset = math.floor(yOffset * 10 + 0.5) / 10
             self:SetSV({"Position", "xOffset"}, xOffset)
             self:SetSV({"Position", "yOffset"}, yOffset)
             self:SetSV({"Position", "Anchor"}, Anchor)
-            self:SetSV({"Position", "relativeTo"}, relativeTo)            
+            self:SetSV({"Position", "relativeTo"}, relativeTo)
             self:SetPoint(self.Frame, Anchor, UIParent, relativeTo, xOffset, yOffset)
         end)
 
-    end  
+    end
    self:UpdateAllStates(preview)
 end
 
 
 function MPT:UpdateMainFrame(BackgroundOnly)
     local F = self.Frame
-    -- Main Frame     
-    if BackgroundOnly then    
+    -- Main Frame
+    if BackgroundOnly then
         local spacing = self.Spacing*(self.MaxBossFrame-1)
         if self.KeyInfo.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
         if self.TimerBar.AnchoredTo ~= "MainFrame" then spacing = spacing+self.Spacing end
@@ -134,7 +134,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
             local w, h = F:GetWidth(), F:GetHeight()
             F.BG:SetSize(w+(self.Background.WidthOffset), h+(self.Background.HeightOffset))
             self:SetPoint(F.BG, "TOPLEFT", F, "TOPLEFT", self.Background.xOffset, self.Background.yOffset)
-            F.BG:SetColorTexture(unpack(self.Background.Color))  
+            F.BG:SetColorTexture(unpack(self.Background.Color))
             F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)
             F.BGBorder:SetAllPoints(F.BG)
             F.BGBorder:SetBackdrop({
@@ -148,7 +148,7 @@ function MPT:UpdateMainFrame(BackgroundOnly)
             F.BG:Hide()
             F.BGBorder:Hide()
         end
-    else        
+    else
         local maxSize = self.TimerBar.Height+self.ForcesBar.Height+self.KeyInfo.Height+(self.Bosses.Height*5)+(self.Spacing*7)
         F:SetSize(self.TimerBar.Width, maxSize)
         F:SetScale(self.Scale)
@@ -156,8 +156,8 @@ function MPT:UpdateMainFrame(BackgroundOnly)
         self:SetPoint(F, self.Position.Anchor, UIParent, self.Position.relativeTo, self.Position.xOffset, self.Position.yOffset)
         if self.Background.enabled then
             F.BG:SetAllPoints(F)
-            F.BG:SetColorTexture(unpack(self.Background.Color))    
-            F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)        
+            F.BG:SetColorTexture(unpack(self.Background.Color))
+            F.BGBorder:SetFrameLevel(F.KeyInfo:GetFrameLevel()+1)
             F.BGBorder:SetAllPoints(F)
             F.BGBorder:SetBackdrop({
                 edgeFile = "Interface\\Buttons\\WHITE8x8",
@@ -176,10 +176,10 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
     if Full then
         local AffixDisplay = ""
         local deathtext = (preview and "20") or C_ChallengeMode.GetDeathCount()
-        if preview then            
+        if preview then
             for i=1, 4 do
                 AffixDisplay = AffixDisplay.."\124T"..select(i, strsplit(" ", "236401 1035055 451169 1385910"))..":"..self.AffixIcons.FontSize..":"..self.AffixIcons.FontSize..":"..1-i..":0:64:64:6:60:6:60\124t"
-            end 
+            end
         else
             local icon = ""
             for _, v in pairs(self.affixes) do
@@ -194,7 +194,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                     AffixDisplay = AffixDisplay.."\124T"..select(i, strsplit(" ", icon))..":"..self.AffixIcons.FontSize..":"..self.AffixIcons.FontSize..":"..1-i..":0:64:64:6:60:6:60\124t"
                 end
             end
-        end        
+        end
         local parent = (self.KeyInfo.AnchoredTo == "MainFrame" and F) or (self.KeyInfo.AnchoredTo == "Bosses" and F["Bosses"..self.MaxBossFrame]) or F[self.KeyInfo.AnchoredTo]
         local spacing = parent == F and 0 or self.Spacing
         self:SetPoint(F.KeyInfo, self.KeyInfo.Anchor, parent, self.KeyInfo.RelativeTo, self.KeyInfo.xOffset, -spacing+self.KeyInfo.yOffset)
@@ -216,15 +216,15 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                     deathtext = deathtext.." "..bracket1.."+"..mintext..sectext..bracket2
                 end
             end
-            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo) 
+            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo)
         else
-            F.KeyInfo.DeathCounter:Hide() 
+            F.KeyInfo.DeathCounter:Hide()
         end
         if self.DeathCounter.Iconenabled then
             local icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
             self:SetPoint(F.KeyInfo.Icon, self.DeathCounter.IconAnchor, F.KeyInfo, self.DeathCounter.IconRelativeTo, self.DeathCounter.IconxOffset, self.DeathCounter.IconyOffset)
             F.KeyInfo.Icon:SetSize(self.KeyInfo.Height, self.KeyInfo.Height)
-            F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)     
+            F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)
             F.KeyInfo.Icon.Texture:SetTexture(icon)
             F.KeyInfo.Icon:EnableMouse(true)
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
@@ -237,20 +237,20 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                     local name = NSAPI and NSAPI:Shorten(unit, 8) or color:WrapTextInColorCode(UnitName(unit))
                     table.insert(list, {name, deaths})
                 end
-                table.sort(list, 
+                table.sort(list,
                     function(a, b)
                         if a[2] == b[2] then -- sort by name if deathcount is equal
                             return a[1] > b[1]
                         else -- otherwise sort by death count
-                            return a[2] > b[2] 
-                        end            
+                            return a[2] > b[2]
+                        end
                 end)
                 for _, v in ipairs(list) do
                     text = text.."\n"..v[1].." "..v[2]
                 end
                 GameTooltip:SetOwner(Frame, "ANCHOR_CURSOR")
                 GameTooltip:SetText(text)
-                GameTooltip:Show()                
+                GameTooltip:Show()
             end)
             F.KeyInfo.Icon:SetScript("OnLeave", function(self)
                 GameTooltip:Hide()
@@ -275,9 +275,9 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                     deathtext = deathtext.." "..bracket1.."+"..mintext..sectext..bracket2
                 end
             end
-            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo) 
+            self:ApplyTextSettings(F.KeyInfo.DeathCounter , self.DeathCounter, deathtext, false, F.KeyInfo)
         else
-            F.KeyInfo.DeathCounter:Hide() 
+            F.KeyInfo.DeathCounter:Hide()
         end
     end
 end
@@ -332,7 +332,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
             before = self:UpdatePB(time, self.forcesTime, self.cmap, self.level, date, self.BossTimes, self.BossNames)
         end
         self.timer = preview and self.timer or time/1000
-        local diff = before and (time-before)/1000        
+        local diff = before and (time-before)/1000
         if not preview then F.TimerBar:SetStatusBarColor(unpack(self.TimerBar.Color[chest+1])) end
         self:DisplayTimerElements(chest, true, preview, diff)
     end
@@ -348,7 +348,7 @@ function MPT:UpdateTimerBar(Start, Completion, preview)
         end
     end
 end
-    
+
 function MPT:DisplayTimerElements(chest, completion, preview, diff)
     local F = self.Frame
     local displayed = 0
@@ -367,7 +367,7 @@ function MPT:DisplayTimerElements(chest, completion, preview, diff)
         local ComparisonTime = preview and math.random(-200, 200) or diff or 0 -- math.random(-200, 200)
         local ComparisonColor = (ComparisonTime < 0 and self.ComparisonTimer.SuccessColor) or (ComparisonTime > 0 and self.ComparisonTimer.FailColor) or self.ComparisonTimer.EqualColor
         local prefix = ""
-        if ComparisonTime < 0 then 
+        if ComparisonTime < 0 then
             ComparisonTime = ComparisonTime*-1
             prefix = "-"
         elseif ComparisonTime > 0 then
@@ -449,13 +449,13 @@ function MPT:UpdateBosses(Start, count, preview)
             end
         end
         if instanceID and instanceID ~= 0 then
-            if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then C_AddOns.LoadAddOn("Blizzard_EncounterJournal") end        
+            if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then C_AddOns.LoadAddOn("Blizzard_EncounterJournal") end
             for i=1, 20 do
                 local name = EJ_GetEncounterInfoByIndex(i, instanceID)
                 if name and name ~= "nil" then
                     self.BossNames[i] = name
                 elseif i < select(3, C_Scenario.GetStepInfo()) and not self.opened then
-                    EncounterJournal_OpenJournal(23, instanceID) 
+                    EncounterJournal_OpenJournal(23, instanceID)
                     EJ_SelectInstance(instanceID)
                     HideUIPanel(EncounterJournal)
                     local name = EJ_GetEncounterInfoByIndex(i, instanceID)
@@ -472,7 +472,7 @@ function MPT:UpdateBosses(Start, count, preview)
             C_Timer.After(2, function()
                     self:UpdateBosses(true, count+1)
             end)
-        end 
+        end
         self:HideBossFrames()
         self.MaxBossFrame = 0
         if max > 0 then
@@ -481,9 +481,9 @@ function MPT:UpdateBosses(Start, count, preview)
             local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
             for i=1, max do
                 -- manually offset which bossname we want for megadungeons
-                local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i                
+                local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
                 -- Looking for 3rd Boss in 4th Objective for Pit of Saron
-                num = (self.cmap == 556 and i == 4 and 3) or num 
+                num = (self.cmap == 556 and i == 4 and 3) or num
                 -- limit how many bosses to show for some of the lower parts of megadungeons
                 local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
                 local name = self.BossNames[num]
@@ -496,9 +496,9 @@ function MPT:UpdateBosses(Start, count, preview)
                 end
                 if self.cmap == 556 and i == 3 then name = criteria.description end -- Using Blizzard's name for "Quarry camps liberated" since there is no other translated version to use
                 if self.cmap == 227 and num == 3 then name = L["Opera Hall"] end -- figure out a way for localized name if the dungeon returns at some point
-                if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then   
-                    name = self:Utf8Sub(name, 1, self.BossName.MaxLength)     
-                    self.MaxBossFrame = i       
+                if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then
+                    name = self:Utf8Sub(name, 1, self.BossName.MaxLength)
+                    self.MaxBossFrame = i
                     local completed = criteria.completed
                     local defeated = criteria.elapsed
                     local frame = self:CreateBossFrame(i)
@@ -535,17 +535,17 @@ function MPT:UpdateBosses(Start, count, preview)
                     else
                         frame["BossSplit"..i]:SetText("")
                     end
-                    if completed then 
-                        self.BossSplitted[i] = true 
+                    if completed then
+                        self.BossSplitted[i] = true
                         self.BossTimes[i] = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
                     end
                     frame:Show()
-                end                
+                end
             end
-            if self.MaxBossFrame == 0 then 
+            if self.MaxBossFrame == 0 then
                 local frame = self:CreateBossFrame(1)
                 frame:Show()
-                self.MaxBossFrame = 1 
+                self.MaxBossFrame = 1
             end
             if self.MaxBossFrame ~= self.PreviousMaxBossFrame then -- re-anchor other elements if they are anchored to Bosses
                 if self.KeyInfo.AnchoredTo == "Bosses" then self:UpdateKeyInfo(true, true) end
@@ -554,18 +554,18 @@ function MPT:UpdateBosses(Start, count, preview)
                 self:UpdateMainFrame(true)
             end
             self.PreviousMaxBossFrame = self.MaxBossFrame
-        end   
+        end
     elseif not self.IsPreview then
         self.BossTimes = self.BossTimes or {}
         local max = select(3, C_Scenario.GetStepInfo())
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
         local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
         for i=1, max do
-            local criteria = C_ScenarioInfo.GetCriteriaInfo(i)            
+            local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
             if criteria.completed and not self.BossSplitted[i] then
                 local frame = self:CreateBossFrame(i)
                 local defeated = criteria.elapsed
-                frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))          
+                frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))
                 local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                 local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
                 self.BossTimes[i] = time
@@ -644,7 +644,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
             if self.RealCount.afterPull then
                 local afterpull = self.RealCount.remaining and (total-(current+currentPull)) or (current+currentPull)
                 remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s "..bracket1.."%s"..bracket2, remainingText, afterpull) or remainingText
-            else                
+            else
                 local prefix = self.RealCount.remaining and "-" or "+"
                 remainingText = self.RealCount.pullcount and currentPull and currentPull > 0 and string.format("%s "..bracket1.."%s%s"..bracket2, remainingText, prefix, currentPull) or remainingText
             end
@@ -662,9 +662,9 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         self:ApplyTextSettings(F.ForcesBarBorder.RealCount, self.RealCount, remainingText)
         F.ForcesBar:Show()
         if self.CurrentPullBar.enabled and currentPull and currentPull > 0 and currentPullPercent and currentPullPercent > 0 and current < total then
-            local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()        
+            local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()
             F.ForcesBar.CurrentPullBar:SetSize(self.ForcesBar.Width-xOffset, self.ForcesBar.Height)
-            F.ForcesBar.CurrentPullBar:ClearAllPoints()    
+            F.ForcesBar.CurrentPullBar:ClearAllPoints()
             self:SetPoint(F.ForcesBar.CurrentPullBar, "LEFT", F.ForcesBar, "LEFT", xOffset, 0)
             F.ForcesBar.CurrentPullBar:SetStatusBarTexture(self.LSM:Fetch("statusbar", self.CurrentPullBar.Texture))
             F.ForcesBar.CurrentPullBar:SetMinMaxValues(0, total-current) -- set max to remaining forces
@@ -675,7 +675,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         else
             F.ForcesBar.CurrentPullBar:Hide()
         end
-        if preview then            
+        if preview then
             local diff = math.random(-200, 200)
             local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
             local prefix = (diff == 0 and "+-0") or (diff < 0 and "-") or "+"
@@ -708,12 +708,12 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
             if not self.done then
                 self.forcesTime = cur or 0
                 local completionText = cur and self:FormatTime(cur) or ""
-                self:ApplyTextSettings(F.ForcesBarBorder.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)  
+                self:ApplyTextSettings(F.ForcesBarBorder.Completion, self.ForcesCompletion, completionText, self.ForcesCompletion.Color)
             end
             self.done = true
             F.ForcesBar:SetStatusBarColor(unpack(self.ForcesBar.CompletionColor))
             F.ForcesBar:SetMinMaxValues(0, 1)
-            F.ForcesBar:SetValue(1)          
+            F.ForcesBar:SetValue(1)
             F.ForcesBarBorder.PercentCount:Hide()
             F.ForcesBarBorder.RealCount:Hide()
             F.ForcesBar.CurrentPullBar:Hide()
@@ -732,7 +732,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
     end
 end
 
-function MPT:UpdatePBInfo(preview)    
+function MPT:UpdatePBInfo(preview)
     local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
     local F = self.Frame
     F.ForcesBar.PBInfo:Hide()
@@ -789,7 +789,7 @@ function MPT:UpdateCurrentPull()
         else
             currentText = rawValue ~= 0 and string.format("%s "..bracket1.."%s"..bracket2, currentText, self.RealCount.remaining and "-" or "+", rawValue) or currentText
         end
-        
+
         self:ApplyTextSettings(F.ForcesBarBorder.RealCount, self.RealCount, currentText, color)
     end
     if self.PercentCount.enabled and self.PercentCount.pullcount and current < total then
@@ -809,9 +809,9 @@ function MPT:UpdateCurrentPull()
         self:ApplyTextSettings(F.ForcesBarBorder.PercentCount, self.PercentCount, percentText, color)
     end
     if self.CurrentPullBar.enabled and rawValue and rawValue > 0 and current < total then
-            local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()        
+            local xOffset = (F.ForcesBar:GetValue()/total)*F.ForcesBar:GetWidth()
             F.ForcesBar.CurrentPullBar:SetSize(self.ForcesBar.Width-xOffset, self.ForcesBar.Height)
-            F.ForcesBar.CurrentPullBar:ClearAllPoints()    
+            F.ForcesBar.CurrentPullBar:ClearAllPoints()
             self:SetPoint(F.ForcesBar.CurrentPullBar, "LEFT", F.ForcesBar, "LEFT", xOffset, 0)
             F.ForcesBar.CurrentPullBar:SetStatusBarTexture(self.LSM:Fetch("statusbar", self.CurrentPullBar.Texture))
             F.ForcesBar.CurrentPullBar:SetMinMaxValues(0, total-current) -- set max to remaining forces

@@ -34,7 +34,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [76] = {246, L["Scholomance"]},
     [77] = {311, L["Scarlet Halls"]},
     [78] = {316, L["Monastery"]},
-    
+
     -- WoD
     [161] = {476, L["Skyreach"]},
     [163] = {385, L["Slag Mines"]},
@@ -44,7 +44,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [167] = {559, L["UBRS"]},
     [168] = {556, L["Everbloom"]},
     [169] = {558, L["Iron Docks"]},
-    
+
     -- Legion
     [197] = {716, L["Eye of Azshara"]},
     [198] = {762, L["Darkheart"]},
@@ -59,7 +59,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [233] = {900, L["Cathedral"]},
     [234] = {860, L["Kara: Upper"]},
     [239] = {945, L["Seat"]},
-    
+
     -- BfA
     [244] = {968, L["Atal'Dazar"]},
     [245] = {1001, L["Freehold"]},
@@ -73,7 +73,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [353] = {1023, L["Boralus"]},
     [369] = {1178, L["Junkyard"]},
     [370] = {1178, L["Workshop"]},
-    
+
     -- Shadowlands
     [375] = {1184, L["Mists"]},
     [376] = {1182, L["Necrotic Wake"]},
@@ -86,7 +86,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [391] = {1194, L["Streets"]},
     [392] = {1194, L["Gambit"]},
     -- Dragonflight
-    
+
     [399] = {1202, L["Ruby Pools"]},
     [400] = {1198, L["Nokhud"]},
     [401] = {1203, L["Azure Vault"]},
@@ -97,9 +97,9 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [406] = {1204, L["Halls"]},
     [463] = {1209, L["DotI: Lower"]},
     [464] = {1209, L["DotI: Upper"]},
-    
+
     -- The War Within
-    
+
     [499] = {1267, L["Priory"]},
     [500] = {1268, L["The Rookery"]},
     [501] = {1269, L["Stonevault"]},
@@ -123,7 +123,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [0] = {1311, L["Den of Nalorakk"]},
     [0] = {1309, L["Blinding Vale"]},
     [0] = {1313, L["Voidscar Arena"]},
-    ]]    
+    ]]
 }
 
 MPT.DefaultProfile = {
@@ -223,7 +223,7 @@ MPT.DefaultProfile = {
         Anchor = "TOPLEFT",
         RelativeTo = "BOTTOMLEFT",
         AnchoredTo = "KeyInfo",
-        Splits = true,        
+        Splits = true,
         ChestTimerDisplay = 1, -- 1 == relevant timers. 2 == all timers. 3 = no timers
         Width = 330,
         Height = 24,
@@ -471,7 +471,7 @@ MPT.DefaultProfile = {
         BackgroundColor = {0, 0, 0, 0.5},
         BorderColor = {0, 0, 0, 1},
     },
-    
+
     PBInfo = {
         enabled = false,
         Anchor = "RIGHT",
@@ -505,50 +505,50 @@ MPT.AnchorTypes = {
 
 MPT.Gossips = {
     [196974] = {Name = L["Academy Crit Buff"], enabled = true, number = 1},
-    [196977] = {Name = L["Academy Haste Buff"], enabled = true, number = 1}, 
+    [196977] = {Name = L["Academy Haste Buff"], enabled = true, number = 1},
     [196978] = {Name = L["Academy Mastery Buff"], enabled = true, number = 1},
     [196981] = {Name = L["Academy Versatility Buff"], enabled = true, number = 1},
     [196979] = {Name = L["Academy Healing Taken Buff"], enabled = true, number = 1},
-        
+
     [97081] = {Name = L["HoV - King Bjorn"], enabled = true, number = 1},
-    [95843] = {Name = L["HoV - King Haldor"], enabled = true, number = 1}, 
+    [95843] = {Name = L["HoV - King Haldor"], enabled = true, number = 1},
     [97083] = {Name = L["HoV - King Ranulf"], enabled = true, number = 1},
     [97084] = {Name = L["HoV - King Tor"], enabled = true, number = 1},
     [95676] = {Name = L["HoV - Odyn"], enabled = true, number = 1},
 
     [194602] = {Name = L["Azure Vault 1st Book"], enabled = true, number = 1},
-    [194712] = {Name = L["Azure Vault 2nd Book"], enabled = true, number = 1}, 
+    [194712] = {Name = L["Azure Vault 2nd Book"], enabled = true, number = 1},
     [194713] = {Name = L["Azure Vault 3rd Book"], enabled = true, number = 1},
     [194714] = {Name = L["Azure Vault 4th Book"], enabled = true, number = 1},
-    [194715] = {Name = L["Azure Vault 5th Book"], enabled = true, number = 1},        
+    [194715] = {Name = L["Azure Vault 5th Book"], enabled = true, number = 1},
 
     [135978] = {Name = L["Freehold - Beer Event"], enabled = true, number = 1},
-    [130086] = {Name = L["Davey"], enabled = true, number = 1}, 
+    [130086] = {Name = L["Davey"], enabled = true, number = 1},
 
     [194675] = {Name = L["Brackenhide - Alchemy Cauldron"], enabled = true, number = 1},
 
     [194675] = {Name = L["Halls of Infusion - Eng Buff"], enabled = true, number = 1},
     [197654] = {Name = L["Halls of Infusion - Infused Mushroom"], enabled = true, number = 1},
-        
+
     [189219] = {Name = L["Neltharus - Qalashi Goulash"], enabled = true, number = 1},
-    [189786] = {Name = L["Neltharus - Blazing Aegis"], enabled = true, number = 1},        
+    [189786] = {Name = L["Neltharus - Blazing Aegis"], enabled = true, number = 1},
 
     [138761] = {Name = L["Waycrest Manor - Entrance Teleport"], enabled = true, number = 1},
-        
-    [105729] = {Name = L["Court of Stars - Lantern"], enabled = true, number = 1}, 
+
+    [105729] = {Name = L["Court of Stars - Lantern"], enabled = true, number = 1},
     [106468] = {Name = L["Court of Stars - Disguise"], enabled = true, number = 1},
     [107486] = {Name = L["Court of Stars - Clue"], enabled = true, number = 1},
-    [105157] = {Name = L["Court of Stars - Engineering Orb"], enabled = true, number = 1},        
-    [105117] = {Name = L["Court of Stars - Alchemy Flask"], enabled = true, number = 1}, 
+    [105157] = {Name = L["Court of Stars - Engineering Orb"], enabled = true, number = 1},
+    [105117] = {Name = L["Court of Stars - Alchemy Flask"], enabled = true, number = 1},
     [106018] = {Name = L["Court of Stars - Bazaar Goods"], enabled = true, number = 1},
     [106113] = {Name = L["Court of Stars - Nightborne Statue"], enabled = true, number = 1},
-    [105215] = {Name = L["Court of Stars - Discarded Junk"], enabled = true, number = 1},        
-    [106112] = {Name = L["Court of Stars - Wounded Civilian"], enabled = true, number = 1}, 
+    [105215] = {Name = L["Court of Stars - Discarded Junk"], enabled = true, number = 1},
+    [106112] = {Name = L["Court of Stars - Wounded Civilian"], enabled = true, number = 1},
     [105160] = {Name = L["Court of Stars - Fel Orb"], enabled = true, number = 1},
     [105831] = {Name = L["Court of Stars - Infernal Tome"], enabled = true, number = 1},
     [106024] = {Name = L["Court of Stars - Magical Lantern"], enabled = true, number = 1},
-    [105249] = {Name = L["Court of Stars - Refreshments"], enabled = true, number = 1},        
-    [106108] = {Name = L["Court of Stars - Rose Brew"], enabled = true, number = 1}, 
+    [105249] = {Name = L["Court of Stars - Refreshments"], enabled = true, number = 1},
+    [106108] = {Name = L["Court of Stars - Rose Brew"], enabled = true, number = 1},
     [105340] = {Name = L["Court of Stars - Umbral Bloom"], enabled = true, number = 1},
     [106110] = {Name = L["Court of Stars - Waterlogged Scroll"], enabled = true, number = 1},
 

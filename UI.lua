@@ -73,12 +73,12 @@ function MPT:CreateTextSetting(name, key, order, Color)
         name = name,
         order = order,
         args = {}
-    }    
+    }
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
     settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {key, "Anchor"}, true)
     settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {key, "RelativeTo"}, true)
     settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -200, 200, 1, {key, "xOffset"}, true)
-    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)    
+    settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)
     settings.args.Font = self:CreateDropDown(6, "fonts", "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
     settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
@@ -96,7 +96,7 @@ function MPT:CreateStatusBarSettings(name, key, order)
         name = name,
         order = order,
         args = {}
-    }    
+    }
     settings.args.Width = self:CreateRange(4, "Width", "Width of the Status Bar", 50, 1000, 1, {key, "Width"}, true)
     settings.args.Height = self:CreateRange(5, "Height", "Height of the Status Bar", 6, 100, 1, {key, "Height"}, true)
     settings.args.Texture = self:CreateDropDown(6, "textures", "Texture", "", {key, "Texture"}, true)
@@ -146,7 +146,7 @@ function MPT:CreateDropDown(order, values, name, desc, key, update)
     else
         t.values = values
     end
-    
+
     t.type = "select"
     t.name = rawget(L, name) or name
     if desc == "" or desc == nil then
@@ -189,11 +189,11 @@ end
 
 
 local PreviewButton = {
-    type = "execute", 
+    type = "execute",
     order = 1,
     name = L["Preview/Unlock"],
     desc = L["Preview/Unlock Desc"],
-    func = function() 
+    func = function()
         if not MPT.IsPreview then -- not currently in preview
             MPT:Init(true) -- Frame is set to movable in here as well
         elseif C_ChallengeMode.IsChallengeModeActive() then -- in preview and currently in m+ so we display real states
@@ -202,7 +202,7 @@ local PreviewButton = {
         elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
             MPT:MoveFrame(false)
             MPT:ShowFrame(false)
-        end 
+        end
     end,
 }
 
@@ -216,11 +216,11 @@ local MainOptions = {
             order = 2,
             name = L["View Best Times"],
             desc = L["View Best Times Desc"],
-            func = function() 
+            func = function()
                 MPT:ShowPBFrame()
-            end,         
+            end,
         },
-        UpdateRate = MPT:CreateRange(3, "Update Interval", "Update Interval Desc", 0.1, 3, 0.1, "UpdateRate"),        
+        UpdateRate = MPT:CreateRange(3, "Update Interval", "Update Interval Desc", 0.1, 3, 0.1, "UpdateRate"),
         Gap = MPT:CreateSpace(4),
         AutoGossip = {
             type = "toggle",
@@ -269,7 +269,7 @@ local Position = {
     name = L["Frame Position"],
     order = 2,
     args = {
-              
+
     }
 }
 local Background = {
@@ -302,7 +302,7 @@ local GeneralOptions = {
             order = 5,
             name = L["Change All Fonts"],
             desc = L["Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI"],
-            values = function() return MPT:GetAllFonts() end, 
+            values = function() return MPT:GetAllFonts() end,
             set = function(_, value)
                 MPT:SetSV({"KeyLevel", "Font"}, value, false)
                 MPT:SetSV({"DungeonName", "Font"}, value, false)
@@ -320,7 +320,7 @@ local GeneralOptions = {
                 MPT:SetSV({"ForcesSplits", "Font"}, value, false)
                 MPT:SetSV({"ForcesCompletion", "Font"}, value, false)
                 MPT:SetSV({"PBInfo", "Font"}, value, false)
-                MPT:UpdateDisplay()                
+                MPT:UpdateDisplay()
             end,
             get = function() return "" end,
         },
@@ -336,7 +336,7 @@ local GeneralOptions = {
                 MPT:SetSV({"TimerBar", "Texture"}, value, false)
                 MPT:SetSV({"ForcesBar", "Texture"}, value, false)
                 MPT:SetSV({"CurrentPullBar", "Texture"}, value, false)
-                MPT:UpdateDisplay()                
+                MPT:UpdateDisplay()
             end,
             get = function() return "" end,
         },
@@ -349,8 +349,8 @@ local GeneralOptions = {
         relativeTo = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
         Gap = MPT:CreateSpace(12),
         xOffset = MPT:CreateRange(13, "X Offset", "X Offset", -4000, 4000, 0.1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(14, "Y Offset", "Y Offset", -4000, 4000, 0.1, {"Position", "yOffset"}, true),  
-    } 
+        yOffset = MPT:CreateRange(14, "Y Offset", "Y Offset", -4000, 4000, 0.1, {"Position", "yOffset"}, true),
+    }
 }
 local General = {
     type = "group",
@@ -429,7 +429,7 @@ TimerText.args.FailColor = MPT:CreateColor(13, "Deplete Color", "Color of the Ti
 TimerText.args.Space = MPT:CreateToggle(14, "Add Spacing", "Adds a space before and after the '/' for readability", {"TimerText", "Space"}, true)
 
 
-           
+
 local ChestTimer1 = MPT:CreateTextSetting(L["Chest Timer 1"], "ChestTimer1", 1, true)
 ChestTimer1.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 1 Chest Timer when ahead of the timer", {"ChestTimer1", "AheadColor"}, true)
 ChestTimer1.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 1 Chest Timer when behind the timer", {"ChestTimer1", "BehindColor"}, true)
@@ -514,7 +514,7 @@ local BossesBar = {
         XOffset = MPT:CreateRange(7, "Bosses Bar X Offset", "X Offset of the Bosses Bar", -300, 300, 0.1, {"Bosses", "xOffset"}, true),
         YOffset = MPT:CreateRange(8, "Bosses Bar Y Offset", "Y Offset of the Bosses Bar", -300, 300, 0.1, {"Bosses", "yOffset"}, true),
     }
-}   
+}
 local BossName = MPT:CreateTextSetting(L["Boss Name"], "BossName", 2, true)
 BossName.args.MaxLength = MPT:CreateRange(11, "Max Length", "Maximum Length of the Boss Name", 5, 40, 1, {"BossName", "MaxLength"}, true)
 BossName.args.CompletionColor = MPT:CreateColor(12, "Completion Color", "Color of the Boss Name after the boss was defeated", {"BossName", "CompletionColor"}, true)
@@ -617,8 +617,8 @@ local MainProfile = {
             profiles[profile.name] = profile.name
         end
         return profiles
-    end,            
-    set = function(_, value) 
+    end,
+    set = function(_, value)
         MPT:SetMainProfile(value)
      end,
     get = function() return MPTSV.MainProfile end,
@@ -746,7 +746,7 @@ local settings = {
         Bosses = Bosses,
         EnemyForces = EnemyForces,
         PBInfo = PBInfo,
-    },    
+    },
 }
 
 function MPT.UI:OnInitialize()

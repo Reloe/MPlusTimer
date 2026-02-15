@@ -40,7 +40,7 @@ function MPT:CreateImportedProfile(data, name, mainProfile)
         else
             data.name = name -- ensure the profile key has the same name as stored in the profile table
             MPTSV.Profiles[name] = data
-            self:LoadProfile(name)            
+            self:LoadProfile(name)
             if mainProfile then
                 MPT:SetMainProfile(name)
             end
@@ -87,10 +87,10 @@ function MPT:CopyProfile(name)
     end
 end
 
-function MPT:LoadProfile(name)    
+function MPT:LoadProfile(name)
     if not MPTSV.Profiles then MPTSV.Profiles = {} end
     if not MPTSV.ProfileKey then MPTSV.ProfileKey = {} end
-    
+
     local CharName, Realm = UnitFullName("player")
     if not Realm then
         Realm = GetNormalizedRealmName()
@@ -105,7 +105,7 @@ function MPT:LoadProfile(name)
         MPTSV.ProfileKey[ProfileKey] = name
         self:UpdateDisplay()
     elseif MPTSV.ProfileKey[ProfileKey] and MPTSV.Profiles[MPTSV.ProfileKey[ProfileKey]] then -- load saved profile if no profile name was provided/the requested profile doesn't exist
-        if MPTSV.MainProfile and MPTSV.ProfileKey[ProfileKey] == "default" then 
+        if MPTSV.MainProfile and MPTSV.ProfileKey[ProfileKey] == "default" then
             -- load main profile if character was using default profile before but user now has a main profile
             self:LoadProfile(MPTSV.MainProfile)
         else
@@ -162,7 +162,7 @@ end
 
 function MPT:GetSV(key)
     local ref = self
-    if type(key) == "table" and ref then           
+    if type(key) == "table" and ref then
         for i=1, #key do
             ref = ref[key[i]]
         end
@@ -205,7 +205,7 @@ function MPT:CreateProfile(name)
     if not MPTSV.ProfileKey then MPTSV.ProfileKey = {} end
     if MPTSV.Profiles[name] then -- if profile with that name already exists we load it instead.
         self:LoadProfile(name)
-        return 
+        return
     end
     local data = CopyTable(self.DefaultProfile)
     data.Version = self:GetVersion()

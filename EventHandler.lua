@@ -1,5 +1,5 @@
 local _, MPT = ...
-local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer") 
+local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("CHALLENGE_MODE_KEYSTONE_SLOTTED")
@@ -73,7 +73,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         if self.HideTracker and not self.Hooked then
             self.Hooked = true
             local frame = C_AddOns.IsAddOnLoaded("!KalielsTracker") and _G["!KalielsTrackerFrame"] or ObjectiveTrackerFrame
-            hooksecurefunc(frame, "Show", function() 
+            hooksecurefunc(frame, "Show", function()
                 if IsInInstance() and (C_ChallengeMode.IsChallengeModeActive() or C_ChallengeMode.GetChallengeCompletionInfo().time ~= 0) then frame:Hide() end
             end)
         end
@@ -83,7 +83,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         else
             self:ShowFrame(false)
             self:ToggleEventRegister(false)
-        end        
+        end
     elseif e == "CHALLENGE_MODE_DEATH_COUNT_UPDATED" then
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
@@ -113,17 +113,17 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
 
     elseif e == "PLAYER_LOGIN" then
         if not MPTSV then -- first load of the addon
-            MPTSV = {}            
+            MPTSV = {}
             MPTSV.LowerKey = true
             MPTSV.CloseBags = true
             MPTSV.KeySlot = true
             MPTSV.MinimapIcon = {hide = true}
             MPTSV.BestTime = {}
-            self:CreateProfile("default") 
+            self:CreateProfile("default")
         else
             self:ModernizeProfile(false, true)
             self:LoadProfile()
-        end        
+        end
         if MPTSV.AutoGossip == nil then MPTSV.AutoGossip = true end
         if MPTSV.debug then
             MPTGlobal = MPT
@@ -135,8 +135,8 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         if issecretvalue(G) then return end -- likely to be an enemy
         local unit = UnitTokenFromGUID(G)
         if UnitIsPlayer(unit) and not UnitIsFeignDeath(unit) then -- only count non-pets and ignore feign death
-            self.PlayerDeaths = self.PlayerDeaths or {}          
-            local name = UnitName(unit)  
+            self.PlayerDeaths = self.PlayerDeaths or {}
+            local name = UnitName(unit)
             self.PlayerDeaths[name] = self.PlayerDeaths[name] and self.PlayerDeaths[name]+1 or 1
         end
     elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then

@@ -94,7 +94,7 @@ function MPT:CreateEditPanel()
                 local bosstime = F.RunEditPanel.BossTimeEdits[i]:GetText()
                 if bosstime and bosstime ~= "" then
                     BossNames[i] = name and name ~= "" and name or (bosstime and bosstime ~= "" and L["Boss %s"]:format(i)) or nil -- add placeholder bossname if it's not given
-                    BossTimes[i] = bosstime and bosstime ~= "" and self:StrToTime(bosstime) or nil                
+                    BossTimes[i] = bosstime and bosstime ~= "" and self:StrToTime(bosstime) or nil
                     if not BossTimes[i] then
                         print(L["Invalid time format for Boss "]..i..L[". For Timers you are expected to supply a string in the format mm:ss"])
                         return
@@ -106,11 +106,11 @@ function MPT:CreateEditPanel()
             local level = F.RunEditPanel.LevelEdit:GetNumber()
             if (not time) or (not forces) then
                 print(L["Invalid time format. For Timers you are expected to supply a string in the format mm:ss"])
-                return 
+                return
             end
             if level == 0 or next(BossTimes) == nil then
                 print(L["You must fill in at least Level, Completion Time, Enemy Forces Time and one Boss Timer."])
-                return 
+                return
             end
             time = time
             self:AddRun(UIDropDownMenu_GetSelectedValue(F.RunEditPanel.DungeonDropdown), level,
@@ -126,7 +126,7 @@ function MPT:CreateEditPanel()
         F.RunEditPanel.CancelButton:SetScript("OnClick", function(s)
             F.RunEditPanel:Hide()
         end)
-        
+
         F.RunEditPanel:EnableKeyboard(false)
         self:EnableEditBoxKeyboard(F.RunEditPanel.LevelEdit)
         self:EnableEditBoxKeyboard(F.RunEditPanel.CompletionEdit)
@@ -140,7 +140,7 @@ end
 
 function MPT:ShowEditPanel(seasonID, cmap)
     local F = self.BestTimeFrame
-    if not F or not F.RunEditPanel then return end    
+    if not F or not F.RunEditPanel then return end
     F.RunEditPanel:Show()
     local dungeons = {}
     for i, cmap in ipairs(self.SeasonData[seasonID].Dungeons) do
@@ -196,7 +196,7 @@ function MPT:EnableEditBoxKeyboard(editbox)
     end)
 end
 
-function MPT:CreatePBFrame()               
+function MPT:CreatePBFrame()
     if not self.PBInfoFrame then
         -- Main Frame
         self.BestTimeFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
@@ -228,7 +228,7 @@ function MPT:CreatePBFrame()
         self.SelectedDungeonButton = nil
         self.SelectedLevelButton = nil
 
-        F:SetResizable(true)        
+        F:SetResizable(true)
         F.Handle = self:CreateButton(20, 20, F)
         self:SetPoint(F.Handle, "BOTTOMRIGHT", F, "BOTTOMRIGHT", -2, 2)
         F.Handle:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
@@ -344,7 +344,7 @@ function MPT:CreatePBFrame()
             self:ShowCharacterFrames(self.SelectedSeason)
         end)
         self:AddMouseoverTooltip(F.TotalStatsButton, L["Show your Stats for the selected Season"])
-                
+
         -- Scale Slider
         F.ScaleSlider = CreateFrame("Slider", nil, F, "OptionsSliderTemplate")
         F.ScaleSlider:SetMinMaxValues(0.5, 2)
@@ -394,7 +394,7 @@ function MPT:HidePBButtons(level)
             self.SelectedLevelButton.Border:Hide()
             self.SelectedLevel = nil
             if self.SelectedLevelButton.BorderFrame then self.SelectedLevelButton.BorderFrame:Hide() end
-        end  
+        end
     end
     if level >= 2 then -- Clicking on Dungeon Button
         for k, v in pairs(F.LevelButtons or {}) do
@@ -404,16 +404,16 @@ function MPT:HidePBButtons(level)
             self.SelectedLevelButton.Border:Hide()
             self.SelectedLevel = nil
             if self.SelectedLevelButton.BorderFrame then self.SelectedLevelButton.BorderFrame:Hide() end
-        end  
+        end
         if self.SelectedDungeonButton then
             self.SelectedDungeonButton.Border:Hide()
             self.SelectedDungeon = nil
-        end   
+        end
     end
     if level >= 3 then -- Showing Dungeon Buttons
         for k, v in pairs(F.DungeonButtons or {}) do
             v:Hide()
-        end     
+        end
     end
     if level >= 4 then -- Clicking on Season Button
         if self.SelectedSeasonButton then
@@ -424,7 +424,7 @@ function MPT:HidePBButtons(level)
     if level >= 5 then -- Frame opening
         for k, v in pairs(F.SeasonButtons or {}) do
             v:Hide()
-        end        
+        end
     end
 end
 
@@ -486,7 +486,7 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
     if not F then return end
     if F and seasonID then
         local num = 1
-        self:HidePBButtons(3)   
+        self:HidePBButtons(3)
         if not MPTSV.BestTime then MPTSV.BestTime = {} end
         for i, cmap in pairs(self.SeasonData[seasonID].Dungeons) do
             local parent = num == 1 and F.DungeonButtonFrame or F.DungeonButtons[num-1]
@@ -507,7 +507,7 @@ function MPT:ShowDungeonFrames(seasonID) -- Showing Dungeon Buttons
             btn.Text:SetText(name)
             btn:Show()
             num = num+1
-        end        
+        end
     end
 end
 
@@ -551,7 +551,7 @@ function MPT:ShowLevelFrames(cmap, seasonID) -- Showing Level Buttons
                     self.SelectedLevel = level
                     self:ShowPBDataFrame(seasonID, cmap, level)
                     btn.Border:Show()
-                end 
+                end
                 btn.Text:SetText(level)
             else
                 btn:SetScript("OnClick", function(s)
@@ -601,7 +601,7 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
         })
         btn.BorderFrame:SetBackdropBorderColor(1, 1, 1, 1)
         btn.BorderFrame:Hide()
-        F.LevelButtons[num] = btn        
+        F.LevelButtons[num] = btn
     end
     self:SetPoint(btn, "TOP", F.LevelContent, "TOP", -5, num == 1 and -5 or ((num-1)*-45)-5)
     local color = color or self:GetClassColor(data.class)
@@ -621,7 +621,7 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
             btn.BorderFrame:SetBackdropBorderColor(1, 0, 0, 1) -- use red border for priests
         end
         btn.BorderFrame:Show()
-    end)        
+    end)
     local text = data.name
     if data.realm and data.realm ~= GetNormalizedRealmName() then
         text = text.."\n"..data.realm
@@ -637,8 +637,8 @@ function MPT:AddCharacterButton(data, num, seasonID, G, color)
         end
         btn.BorderFrame:Show()
     end
-    num = num+1  
-    return num   
+    num = num+1
+    return num
 end
 
 
@@ -672,7 +672,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             end
             local date = self:GetDateFormat(pbdata.date)
             if date == "" then date = L["No Date - Imported or manually Added Run"] else date = L["Date: "]..date end
-            text = text..string.format(L["Enemy Forces: %s\n%s\n"], self:FormatTime(pbdata.forces), date)       
+            text = text..string.format(L["Enemy Forces: %s\n%s\n"], self:FormatTime(pbdata.forces), date)
             F.DeleteButton:Show()
             self:AddMouseoverTooltip(F.DeleteButton, L["Delete the currently selected run from your saved best times.\nIt does not remove it from your total run history."])
             F.DeleteButton.Text:SetText(L["Delete Run"])
@@ -737,8 +737,8 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                     totaldepletedkeys = totaldepletedkeys + data.depleted
                     totalabandoned = totalabandoned + data.abandoned
                 end
-            end    
-            
+            end
+
             F.DeleteButton.Text:SetText(L["Delete Character"])
             F.DeleteButton:SetScript("OnClick", function(s)
                 StaticPopup_Show("MPT_DELETE_CHARACTER")
@@ -763,7 +763,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                         totaldepletedkeys = totaldepletedkeys + data.depleted
                         totalabandoned = totalabandoned + data.abandoned
                     end
-                end                
+                end
                 local name = self:Utf8Sub(self:GetDungeonName(cmap), 1, 15)
                 local completed = completedruns[cmap] or 0
                 local depleted = depletedruns[cmap] or 0
@@ -779,7 +779,7 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
                     text2 = text2.."\n"
                 end
             end
-        end        
+        end
         text = string.format(L["Total Run Stats: |cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)\n"], totalcompletedkeys+totaldepletedkeys, totalcompletedkeys, totaldepletedkeys, totalabandoned)..text
         if not F.PBDataText then
             F.PBDataText = F.PBDataFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")

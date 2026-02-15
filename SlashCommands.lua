@@ -19,7 +19,7 @@ function MPT.UI:SlashCommand(msg)
             MPT:MoveFrame(false)
         elseif MPT.Frame and MPT.Frame:IsShown() then -- in preview but not in m+ so we hide the frame
             MPT:ShowFrame(false)
-        end 
+        end
     elseif msg == "best" then
         MPT:ShowPBFrame()
     else
