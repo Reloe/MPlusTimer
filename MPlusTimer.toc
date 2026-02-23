@@ -29,6 +29,7 @@ Libs\LibDBIcon-1.0\lib.xml
 Locales\enUS.lua
 Locales\deDE.lua
 Locales\ruRU.lua
+Locales\koKR.lua
 
 MPlusTimer.lua
 Functions.lua
