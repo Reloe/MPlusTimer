@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("MPlusTimer", "koKR", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("MPlusTimer", "koKR")
 
 if not L then return end
 
