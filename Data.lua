@@ -553,4 +553,7 @@ MPT.Gossips = {
     [106110] = {Name = L["Court of Stars - Waterlogged Scroll"], enabled = true, number = 1},
 
     [252789] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+
+    [263940] = {Name = L["Murder Row - Disguise"], enabled = true, number = 1},
+    [235841] = {Name = L["Murder Row - Job"], enabled = true, number = 1},
 }
