@@ -148,6 +148,8 @@ L["Court of Stars - Rose Brew"] = "Квартал Звёзд: Отвар из з
 L["Court of Stars - Umbral Bloom"] = "Квартал Звёзд: Теневой цветок"
 L["Court of Stars - Waterlogged Scroll"] = "Квартал Звёзд: Промокший свиток"
 L["Pit of Saron - Quarry camps liberation"] = "Яма: Путь в цитадель"
+L["Murder Row - Disguise"] = "Закоулок душегубов: Маскировка"
+L["Murder Row - Job"] = "Закоулок душегубов: Работа"
 
 L["Are you sure you want to delete this run?"] = "Вы уверены, что хотите удалить это прохождение?"
 L["Yes"] = "Да"
