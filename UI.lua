@@ -457,7 +457,7 @@ ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color 
 ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor"}, true)
 local Tick1 = {
     type = "group",
-    name = "2 Chest Tick",
+    name = L["2 Chest Tick"],
     order = 1,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable 2 Chest Tick", {"Tick1", "enabled"}, true),
@@ -467,7 +467,7 @@ local Tick1 = {
 }
 local Tick2 = {
     type = "group",
-    name = "3 Chest Tick",
+    name = L["3 Chest Tick"],
     order = 2,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable 3 Chest Tick", {"Tick2", "enabled"}, true),

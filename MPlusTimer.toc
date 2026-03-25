@@ -30,6 +30,7 @@ Locales\enUS.lua
 Locales\deDE.lua
 Locales\ruRU.lua
 Locales\koKR.lua
+Locales\zhCN.lua
 
 MPlusTimer.lua
 Functions.lua
