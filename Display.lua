@@ -227,8 +227,8 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)
             F.KeyInfo.Icon.Texture:SetTexture(icon)
             F.KeyInfo.Icon:EnableMouse(true)
+            --[[
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
-                if 1 then return end -- disable for now
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
                 local text = string.format(L["Time lost: %s"], timelost)
                 local list = {}
@@ -255,7 +255,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             end)
             F.KeyInfo.Icon:SetScript("OnLeave", function(self)
                 GameTooltip:Hide()
-            end)
+            end)]]
             F.KeyInfo.Icon:Show()
         else
             F.KeyInfo.Icon:Hide()
