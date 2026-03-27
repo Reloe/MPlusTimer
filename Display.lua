@@ -227,7 +227,6 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             F.KeyInfo.Icon.Texture:SetAllPoints(F.KeyInfo.Icon)
             F.KeyInfo.Icon.Texture:SetTexture(icon)
             F.KeyInfo.Icon:EnableMouse(true)
-            --[[
             F.KeyInfo.Icon:SetScript("OnEnter", function(Frame)
                 local timelost = self:FormatTime(select(2,C_ChallengeMode.GetDeathCount())) or "0:00"
                 local text = string.format(L["Time lost: %s"], timelost)
@@ -255,7 +254,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
             end)
             F.KeyInfo.Icon:SetScript("OnLeave", function(self)
                 GameTooltip:Hide()
-            end)]]
+            end)
             F.KeyInfo.Icon:Show()
         else
             F.KeyInfo.Icon:Hide()
@@ -451,19 +450,11 @@ function MPT:UpdateBosses(Start, count, preview)
         end
         if instanceID and instanceID ~= 0 then
             if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then C_AddOns.LoadAddOn("Blizzard_EncounterJournal") end
+            EJ_SelectInstance(instanceID)
             for i=1, 20 do
                 local name = EJ_GetEncounterInfoByIndex(i, instanceID)
                 if name and name ~= "nil" then
                     self.BossNames[i] = name
-                elseif i < select(3, C_Scenario.GetStepInfo()) and not self.opened then
-                    EncounterJournal_OpenJournal(23, instanceID)
-                    EJ_SelectInstance(instanceID)
-                    HideUIPanel(EncounterJournal)
-                    local name = EJ_GetEncounterInfoByIndex(i, instanceID)
-                    if name then
-                        self.BossNames[i] = name
-                        self.opened = true
-                    end
                 else
                     break
                 end
