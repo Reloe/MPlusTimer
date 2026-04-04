@@ -54,6 +54,12 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         C_MythicPlus.RequestMapInfo()
         local seasonID = C_MythicPlus.GetCurrentSeason()
         if seasonID > 0 and (login or reload or delayed) then
+            if not MPTSV.HasPitFixed then
+                MPTSV.HasPitFixed = true
+                if MPTSV.BestTime and MPTSV.BestTime[17] then
+                    MPTSV.BestTime[17][556] = nil
+                end
+            end
             if not MPTSV.BestTime then MPTSV.BestTime = {} end
             if not MPTSV.History then MPTSV.History = {} end
             if not MPTSV.BestTime[seasonID] then MPTSV.BestTime[seasonID] = {} end

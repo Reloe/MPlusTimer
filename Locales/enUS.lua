@@ -473,3 +473,5 @@ L["Run"] = true
 L["Runs"] = true
 L["Enemy Forces: %s\n%s\n"] = true
 L["MPlusTimer "] = true
+
+L["Quarry Camps Liberated"] = true

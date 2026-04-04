@@ -454,6 +454,13 @@ function MPT:UpdateBosses(Start, count, preview)
             for i=1, 20 do
                 local name = EJ_GetEncounterInfoByIndex(i, instanceID)
                 if name and name ~= "nil" then
+                    if self.cmap == 556 then
+                        if i == 3 then
+                            self.BossNames[3] = L["Quarry Camps Liberated"]
+                            self.BossNames[4] = name
+                            break
+                        end
+                    end
                     self.BossNames[i] = name
                 else
                     break
@@ -513,6 +520,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     elseif completed then
                         local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated or 0
+                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual completion
                         local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     end
@@ -529,7 +537,11 @@ function MPT:UpdateBosses(Start, count, preview)
                     end
                     if completed then
                         self.BossSplitted[i] = true
-                        self.BossTimes[i] = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
+                        if self.cmap == 556 and i == 3 then
+                            self.BossTimes[i] = self.QuarryTime or select(2, GetWorldElapsedTime(1))
+                        else
+                            self.BossTimes[i] = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
+                        end
                     end
                     frame:Show()
                 end
@@ -560,11 +572,11 @@ function MPT:UpdateBosses(Start, count, preview)
                 frame["BossName"..i]:SetTextColor(unpack(self.BossName.CompletionColor))
                 local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                 local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated
-                self.BossTimes[i] = time
                 if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry returns info about 1/6 instead of 6/6 so gotta store the value on completion.
                     time = self.QuarryTime or select(2, GetWorldElapsedTime(1))
                     self.QuarryTime = time
                 end
+                self.BossTimes[i] = time
                 if pb and pb[i] then
                     timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
                 end
