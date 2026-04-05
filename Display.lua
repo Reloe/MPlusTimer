@@ -408,7 +408,6 @@ function MPT:UpdateBosses(Start, count, preview)
     local F = self.Frame
     if preview then
         local killtime = 0
-        self:MuteJournalSounds()
         self.BossNames = {}
         self.MaxBossFrame = 5
         self:HideBossFrames()
@@ -440,33 +439,7 @@ function MPT:UpdateBosses(Start, count, preview)
         self.BossNames = {}
         local max = select(3, C_Scenario.GetStepInfo())
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end -- if last criteria is enemy forces
-        self:MuteJournalSounds()
         local mapID = C_Map.GetBestMapForUnit("player")
-        local instanceID = (mapID and EJ_GetInstanceForMap(mapID)) or 0
-        if instanceID == 0 or instanceID == nil then
-            if self.cmap and self.maptoID[self.cmap] then
-                instanceID = self.maptoID[self.cmap][1]
-            end
-        end
-        if instanceID and instanceID ~= 0 then
-            if not C_AddOns.IsAddOnLoaded("Blizzard_EncounterJournal") then C_AddOns.LoadAddOn("Blizzard_EncounterJournal") end
-            EJ_SelectInstance(instanceID)
-            for i=1, 20 do
-                local name = EJ_GetEncounterInfoByIndex(i, instanceID)
-                if name and name ~= "nil" then
-                    if self.cmap == 556 then
-                        if i == 3 then
-                            self.BossNames[3] = L["Quarry Camps Liberated"]
-                            self.BossNames[4] = name
-                            break
-                        end
-                    end
-                    self.BossNames[i] = name
-                else
-                    break
-                end
-            end
-        end
         if count <= 4 then -- check again in 2 seconds a few times to make sure data is correct
             C_Timer.After(2, function()
                     self:UpdateBosses(true, count+1)
@@ -481,20 +454,12 @@ function MPT:UpdateBosses(Start, count, preview)
             for i=1, max do
                 -- manually offset which bossname we want for megadungeons
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
-                -- Looking for 3rd Boss in 4th Objective for Pit of Saron
-                num = (self.cmap == 556 and i == 4 and 3) or num
                 -- limit how many bosses to show for some of the lower parts of megadungeons
                 local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
-                local name = self.BossNames[num]
                 local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
-                for j = 1, #(self.BossNames) do
-                    if self.BossNames[j] and string.find(criteria.description, self.BossNames[j]) then
-                        name = self.BossNames[j]
-                        break
-                    end
-                end
-                if self.cmap == 556 and i == 3 then name = criteria.description end -- Using Blizzard's name for "Quarry camps liberated" since there is no other translated version to use
-                if self.cmap == 227 and num == 3 then name = L["Opera Hall"] end -- figure out a way for localized name if the dungeon returns at some point
+                local name = criteria.description and criteria.description:match("^(.+)%s+%S+$") or criteria.description
+                self.BossNames[i] = name
+                if self.cmap == 227 and num == 3 then name = L["Opera Hall"] end
                 if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then
                     name = self:Utf8Sub(name, 1, self.BossName.MaxLength)
                     self.MaxBossFrame = i
@@ -515,12 +480,10 @@ function MPT:UpdateBosses(Start, count, preview)
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, BossColor)
                     elseif pb2 and pb2[i] then
                         local time = completed and (self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated) or pb2[i]
-                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual completion
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     elseif completed then
                         local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated or 0
-                        if self.cmap == 556 and i == 3 then time = select(2, GetWorldElapsedTime(1)) end -- This one doesn't give info about the actual completion
                         local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
                         self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
                     end

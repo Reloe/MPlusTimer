@@ -12,24 +12,6 @@ local SoundsToMute = {
     [567460] = true,
 }
 
-function MPT:MuteJournalSounds()
-    local sounds = {}
-    for k, _ in pairs(SoundsToMute) do
-        sounds[k] = select(2, PlaySoundFile(k))
-        if sounds[k] then
-            StopSound(sounds[k])
-            MuteSoundFile(k)
-        end
-    end
-    C_Timer.After(1, function()
-            for k, _ in pairs(SoundsToMute) do
-                if sounds[k] then
-                    UnmuteSoundFile(k)
-                end
-            end 
-    end)
-end
-
 function MPT:PopupIsShown()
     for index = 1, 10 do
         local frame = _G["StaticPopup"..index]
