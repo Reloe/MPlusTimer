@@ -473,3 +473,5 @@ L["Run"] = "Прохождение"
 L["Runs"] = "Прохождения"
 L["Enemy Forces: %s\n%s\n"] = "Силы противника: %s\n%s\n"
 L["MPlusTimer "] = "MPlusTimer "
+
+L["Quarry Camps Liberated"] = "Освобождённые лагеря карьера"
