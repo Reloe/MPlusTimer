@@ -449,8 +449,8 @@ function MPT:UpdateBosses(Start, count, preview)
         self.MaxBossFrame = 0
         if max > 0 then
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
-            local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
-            local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+            local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
+            local pb2 = self.BossTimer.enabled and self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
             for i=1, max do
                 -- manually offset which bossname we want for megadungeons
                 local num = (self.cmap == 370 and i+4) or (self.cmap == 392 and i+5) or (self.cmap == 227 and i+2) or (self.cmap == 234 and i+6) or (self.cmap == 464 and i+4) or i
@@ -526,7 +526,7 @@ function MPT:UpdateBosses(Start, count, preview)
         self.BossTimes = self.BossTimes or {}
         local max = select(3, C_Scenario.GetStepInfo())
         if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
-        local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+        local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
         for i=1, max do
             local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
             if criteria.completed and not self.BossSplitted[i] then
@@ -664,7 +664,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
         (percent < 100 and self.ForcesBar.Color[5]) or self.ForcesBar.CompletionColor
         if percent >= 100 or criteria.completed then
             local cur = criteria.elapsed and select(2, GetWorldElapsedTime(1)) - criteria.elapsed
-            local pb = self.ForcesSplits.enabled and self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+            local pb = self.ForcesSplits.enabled and self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
             if pb and pb["forces"] and not self.done then
                 local diff = cur - pb["forces"]
                 local color = (diff == 0 and self.ForcesSplits.EqualColor) or (diff < 0 and self.ForcesSplits.SuccessColor) or self.ForcesSplits.FailColor
@@ -700,7 +700,7 @@ function MPT:UpdateEnemyForces(Start, preview, completion)
 end
 
 function MPT:UpdatePBInfo(preview)
-    local pb = self:GetPB(self.cmap, self.level, self.seasonID, self.LowerKey)
+    local pb = self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
     local F = self.Frame
     F.ForcesBar.PBInfo:Hide()
     if preview or (pb and pb.finish) then
