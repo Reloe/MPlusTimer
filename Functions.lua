@@ -198,7 +198,7 @@ function MPT:FormatTime(time, round)
             timeSec = ("0%d"):format(timeSec)
         elseif timeSec == 0 then
             timeSec = ("00")
-        end        
+        end
         if timeHour ~= 0 then
             return ("%s:%s:%s"):format(timeHour, timeMin, timeSec)
         else
