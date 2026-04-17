@@ -26,6 +26,9 @@ function MPT:Init(preview)
         self.done = false
         self:CreateStates(preview)
     end
+    if not preview then
+        self:CountOnTooltip()
+    end
 end
 
 function MPT:SetKeyInfo(init)

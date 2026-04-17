@@ -33,7 +33,6 @@ function MPT:ToggleEventRegister(On)
         f:UnregisterEvent("UNIT_DIED")
     end
 end
-
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
     if e == "INSTANCE_ABANDON_VOTE_FINISHED" and C_ChallengeMode.IsChallengeModeActive() then
         local success = ...

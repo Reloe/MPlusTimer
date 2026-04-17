@@ -127,6 +127,7 @@ function MPT:ModernizeProfile(profile, generic)
         if MPTSV.CloseBags == nil then MPTSV.CloseBags = true end
         if MPTSV.KeySlot == nil then MPTSV.KeySlot = true end
         if MPTSV.MinimapIcon == nil then MPTSV.MinimapIcon = {hide = true} end
+        if MPTSV.GameTooltip == nil then MPTSV.GameTooltip = "Off" end
     elseif profile and self:GetVersion() > profile.Version then
         if profile.Version < 2 then
             profile.TimerText.Decimals = 1

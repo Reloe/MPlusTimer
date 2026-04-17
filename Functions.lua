@@ -292,7 +292,7 @@ function MPT:Utf8Sub(str, startChar, endChar)
             endIndex = currentIndex - 1
             break
         end
-        
+
         local c = string.byte(str, currentIndex)
         if c < 0x80 then
             currentIndex = currentIndex + 1
@@ -320,4 +320,18 @@ function MPT:Profiling(key, start)
         print(L["MPT Profiling Output"]:format(color, key, duration))
         self.ProfilingTimes[key] = nil
     end
+end
+
+function MPT:CountOnTooltip()
+    local function OnTooltipSetUnit()
+        if select(3, GetInstanceInfo()) == 8 and MPTSV.GameTooltip ~= "Off" and C_ScenarioInfo.GetUnitCriteriaProgressValues then
+            local count, _, perc = C_ScenarioInfo.GetUnitCriteriaProgressValues("mouseover")
+            local format = (MPTSV.GameTooltip == "CountOnly" and "%d") or (MPTSV.GameTooltip == "PercentOnly" and "%s%%") or "%d (%s%%)"
+            local arg1 = MPTSV.GameTooltip == "PercentOnly" and perc or count
+            local arg2 = MPTSV.GameTooltip == "Both" and perc
+            local string = string.format(" - "..format, arg1, arg2)
+            GameTooltip:AppendText(string)
+        end
+    end
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
 end
