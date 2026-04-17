@@ -28,6 +28,9 @@ function MPT:ToggleEventRegister(On)
                 self:EventHandler("FRAME_UPDATE")
             end)
         end
+        f:RegisterEvent("UNIT_DIED")
+    else
+        f:UnregisterEvent("UNIT_DIED")
     end
 end
 
