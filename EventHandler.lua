@@ -149,6 +149,26 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         end
     elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then
         if UnitExists("npc") and not IsControlKeyDown() then
+            local title = C_GossipInfo.GetOptions()
+            local num = 1
+            if title[num] and title[num].gossipOptionID then
+                local popupWasShown = self:PopupIsShown()
+                C_GossipInfo.SelectOption(title[num].gossipOptionID)
+                local popupIsShown = self:PopupIsShown()
+                if popupIsShown then
+                    if not popupWasShown then
+                        StaticPopup1Button1:Click()
+                    end
+                end
+                C_Timer.After(0.3, function()
+                        C_GossipInfo.CloseGossip()
+                end)
+            end
+        end
+    end
+    --[[
+    elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then
+        if UnitExists("npc") and not IsControlKeyDown() then
             local GUID = UnitGUID("npc")
             if issecretvalue(GUID) then return end
             local id = select(6, strsplit("-", GUID))
@@ -171,5 +191,5 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
                 end
             end
         end
-    end
+    end]]
 end
