@@ -559,3 +559,21 @@ MPT.Gossips = {
     [263940] = {Name = L["Murder Row - Disguise"], enabled = true, number = 1},
     [235841] = {Name = L["Murder Row - Job"], enabled = true, number = 1},
 }
+
+MPT.GossipIDs = { -- gossip id's instead of npcid's. Not all have been converted yet.
+    [107065] = {Name = L["Academy Crit Buff"], enabled = true, number = 1},
+    [107081] = {Name = L["Academy Haste Buff"], enabled = true, number = 1},
+    [107082] = {Name = L["Academy Mastery Buff"], enabled = true, number = 1},
+    [107088] = {Name = L["Academy Versatility Buff"], enabled = true, number = 1},
+    [107083] = {Name = L["Academy Healing Taken Buff"], enabled = true, number = 1},
+
+    [136624] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+    [136271] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+    [136316] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+    [136280] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+    [136301] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+    [138618] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
+
+    [263940] = {Name = L["Murder Row - Disguise"], enabled = true, number = 1},
+    [235841] = {Name = L["Murder Row - Job"], enabled = true, number = 1},
+}
