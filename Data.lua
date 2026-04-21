@@ -493,6 +493,8 @@ MPT.DefaultProfile = {
         Texture = "Details Flat",
         Color = {0, 1, 0, 1},
     },
+
+    GameTooltip = "Off",
 }
 
 MPT.AnchorTypes = {

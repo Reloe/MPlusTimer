@@ -174,6 +174,7 @@ function MPT:GetSV(key)
 end
 
 function MPT:SetSV(key, value, update)
+    print(key, value, update)
     if key and MPTSV.Profiles[self.ActiveProfile] then
         if type(key) == "table" then
             local ref = MPTSV.Profiles[self.ActiveProfile]

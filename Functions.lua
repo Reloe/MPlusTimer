@@ -324,11 +324,11 @@ end
 
 function MPT:CountOnTooltip()
     local function OnTooltipSetUnit()
-        if select(3, GetInstanceInfo()) == 8 and MPTSV.GameTooltip ~= "Off" and C_ScenarioInfo.GetUnitCriteriaProgressValues then
+        if select(3, GetInstanceInfo()) == 8 and self.GameTooltip ~= "Off" and C_ScenarioInfo.GetUnitCriteriaProgressValues then
             local count, _, perc = C_ScenarioInfo.GetUnitCriteriaProgressValues("mouseover")
-            local format = (MPTSV.GameTooltip == "CountOnly" and "%d") or (MPTSV.GameTooltip == "PercentOnly" and "%s%%") or "%d (%s%%)"
-            local arg1 = MPTSV.GameTooltip == "PercentOnly" and perc or count
-            local arg2 = MPTSV.GameTooltip == "Both" and perc
+            local format = (self.GameTooltip == "CountOnly" and "%d") or (self.GameTooltip == "PercentageOnly" and "%s%%") or "%d (%s%%)"
+            local arg1 = self.GameTooltip == "PercentageOnly" and perc or count
+            local arg2 = self.GameTooltip == "Both" and perc or ""
             local string = string.format(" - "..format, arg1, arg2)
             GameTooltip:AppendText(string)
         end
