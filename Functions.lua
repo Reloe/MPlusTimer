@@ -333,5 +333,8 @@ function MPT:CountOnTooltip()
             GameTooltip:AppendText(string)
         end
     end
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
+    if not self.TooltipInit then
+        self.TooltipInit = true
+        TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, OnTooltipSetUnit)
+    end
 end
