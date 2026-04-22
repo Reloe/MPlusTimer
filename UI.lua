@@ -81,7 +81,7 @@ function MPT:CreateTextSetting(name, key, order, Color)
     settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)
     settings.args.Font = self:CreateDropDown(6, "fonts", "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
-    settings.args.Outline = self:CreateDropDown(8, {["NONE"] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
+    settings.args.Outline = self:CreateDropDown(8, {[""] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
     if Color then settings.args.Color = self:CreateColor(9, "Color", "", {key, "Color"}, true) end
     settings.args.ShadowGap = self:CreateSpace(20)
     settings.args.ShadowXOffset = self:CreateRange(21, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)

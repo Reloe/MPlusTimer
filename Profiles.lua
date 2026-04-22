@@ -119,7 +119,7 @@ function MPT:LoadProfile(name)
 end
 
 function MPT:GetVersion()
-    return 3
+    return 4
 end
 
 function MPT:ModernizeProfile(profile, generic)
@@ -155,6 +155,25 @@ function MPT:ModernizeProfile(profile, generic)
             profile.DeathCounter.SquareBrackets = true
             profile.TimerText.Space = true
             profile.Version = 3
+        end
+        if profile.Version < 4 then
+            if profile.KeyLevel.Outline and profile.KeyLevel.Outline == "NONE" then profile.KeyLevel.Outline = "" end
+            if profile.DungeonName.Outline and profile.DungeonName.Outline == "NONE" then profile.DungeonName.Outline = "" end
+            if profile.AffixIcons.Outline and profile.AffixIcons.Outline == "NONE" then profile.AffixIcons.Outline = "" end
+            if profile.DeathCounter.Outline and profile.DeathCounter.Outline == "NONE" then profile.DeathCounter.Outline = "" end
+            if profile.ComparisonTimer.Outline and profile.ComparisonTimer.Outline == "NONE" then profile.ComparisonTimer.Outline = "" end
+            if profile.ChestTimer1.Outline and profile.ChestTimer1.Outline == "NONE" then profile.ChestTimer1.Outline = "" end
+            if profile.ChestTimer2.Outline and profile.ChestTimer2.Outline == "NONE" then profile.ChestTimer2.Outline = "" end
+            if profile.ChestTimer3.Outline and profile.ChestTimer3.Outline == "NONE" then profile.ChestTimer3.Outline = "" end
+            if profile.BossName.Outline and profile.BossName.Outline == "NONE" then profile.BossName.Outline = "" end
+            if profile.BossTimer.Outline and profile.BossTimer.Outline == "NONE" then profile.BossTimer.Outline = "" end
+            if profile.BossSplit.Outline and profile.BossSplit.Outline == "NONE" then profile.BossSplit.Outline = "" end
+            if profile.PercentCount.Outline and profile.PercentCount.Outline == "NONE" then profile.PercentCount.Outline = "" end
+            if profile.RealCount.Outline and profile.RealCount.Outline == "NONE" then profile.RealCount.Outline = "" end
+            if profile.ForcesSplits.Outline and profile.ForcesSplits.Outline == "NONE" then profile.ForcesSplits.Outline = "" end
+            if profile.ForcesCompletion.Outline and profile.ForcesCompletion.Outline == "NONE" then profile.ForcesCompletion.Outline = "" end
+            if profile.PBInfo.Outline and profile.PBInfo.Outline == "NONE" then profile.PBInfo.Outline = "" end
+            profile.Version = 4
         end
 
         self.Version = self:GetVersion()

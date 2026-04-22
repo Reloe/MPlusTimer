@@ -79,7 +79,7 @@ function MPT:ApplyTextSettings(frame, settings, text, Color, parent, num)
     end
 end
 
-function MPT:CreateText(parent, name, settings, num)    
+function MPT:CreateText(parent, name, settings, num)
     parent[name] = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     if settings.xOffset and type(settings.xOffset) == "table" then
         settings.xOffset = settings.xOffset[num] or 0
@@ -93,14 +93,14 @@ function MPT:CreateText(parent, name, settings, num)
 end
 
 function MPT:CreateStatusBar(parent, name, Backdrop, border)
-    parent[name] = CreateFrame("StatusBar", nil, parent, "BackdropTemplate")        
-    if Backdrop then 
-        parent[name]:SetBackdrop({ 
-            bgFile = "Interface\\Buttons\\WHITE8x8", 
+    parent[name] = CreateFrame("StatusBar", nil, parent, "BackdropTemplate")
+    if Backdrop then
+        parent[name]:SetBackdrop({
+            bgFile = "Interface\\Buttons\\WHITE8x8",
             tileSize = 0,
-        }) 
+        })
     end
-    if border then 
+    if border then
         parent[name.."Border"] = CreateFrame("Frame", nil, parent[name], "BackdropTemplate")
     end
 end
@@ -128,7 +128,7 @@ function MPT:AddBackDrop(parent, edgeSize, color)
     })
     parent:SetBackdropBorderColor(unpack(color or {1, 1, 1, 1}))
 end
-        
+
 function MPT:CreateButton(width, height, parent, Background, Border, BGColor, BorderColor, font, fontSize, fontColor, text)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(width, height)
