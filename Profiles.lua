@@ -119,7 +119,7 @@ function MPT:LoadProfile(name)
 end
 
 function MPT:GetVersion()
-    return 4
+    return 5
 end
 
 function MPT:ModernizeProfile(profile, generic)
@@ -156,11 +156,12 @@ function MPT:ModernizeProfile(profile, generic)
             profile.TimerText.Space = true
             profile.Version = 3
         end
-        if profile.Version < 4 then
+        if profile.Version < 5 then
             if profile.KeyLevel.Outline and profile.KeyLevel.Outline == "NONE" then profile.KeyLevel.Outline = "" end
             if profile.DungeonName.Outline and profile.DungeonName.Outline == "NONE" then profile.DungeonName.Outline = "" end
             if profile.AffixIcons.Outline and profile.AffixIcons.Outline == "NONE" then profile.AffixIcons.Outline = "" end
             if profile.DeathCounter.Outline and profile.DeathCounter.Outline == "NONE" then profile.DeathCounter.Outline = "" end
+            if profile.TimerText.Outline and profile.TimerText.Outline == "NONE" then profile.TimerText.Outline = "" end
             if profile.ComparisonTimer.Outline and profile.ComparisonTimer.Outline == "NONE" then profile.ComparisonTimer.Outline = "" end
             if profile.ChestTimer1.Outline and profile.ChestTimer1.Outline == "NONE" then profile.ChestTimer1.Outline = "" end
             if profile.ChestTimer2.Outline and profile.ChestTimer2.Outline == "NONE" then profile.ChestTimer2.Outline = "" end
