@@ -110,6 +110,13 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:UpdateEnemyForces(false, false, false)
     elseif e == "SCENARIO_POI_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         self:UpdateEnemyForces(false, false, false)
+        if not self.Timer then -- fallback if the timer somehow stopped
+            self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
+                self.Timer = nil
+                self:EventHandler("FRAME_UPDATE")
+            end)
+            self:UpdateTimerBar()
+        end
     elseif e == "FRAME_UPDATE" and C_ChallengeMode.IsChallengeModeActive() then
         if not self.Timer then
             self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
