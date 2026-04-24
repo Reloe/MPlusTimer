@@ -240,6 +240,12 @@ L["Background"] = true
 L["Enable Background"] = true
 L["Width Offset"] = true
 L["Height Offset"] = true
+L["Count on Tooltip"] = true
+L["Show Mob Count/Perc on the Game-Tooltip when mouseovering it."] = true
+L["Both"] = true
+L["Count Only"] = true
+L["Off"] = true
+L["Percentage Only"] = true
 
 -- Key Info & Text Settings
 L["Key Info Bar"] = true

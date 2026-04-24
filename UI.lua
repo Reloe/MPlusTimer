@@ -262,7 +262,7 @@ local MainOptions = {
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
-        GameTooltip =  MPT:CreateDropDown(10, {["Off"] = "Off", ["CountOnly"] = "Count Only", ["PercentageOnly"] = "Percentage Only", ["Both"] = "Both"}, "Count on Tooltip", "Show Mob Count/Perc on the Game-Tooltip when mouseovering it.", "GameTooltip", true),
+        GameTooltip =  MPT:CreateDropDown(10, {["Off"] = L["Off"], ["CountOnly"] = L["Count Only"], ["PercentageOnly"] = L["Percentage Only"], ["Both"] = L["Both"]}, "Count on Tooltip", "Show Mob Count/Perc on the Game-Tooltip when mouseovering it.", "GameTooltip", true),
     }
 }
 local Position = {
