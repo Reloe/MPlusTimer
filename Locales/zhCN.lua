@@ -238,6 +238,12 @@ L["Data from Lower Level Desc"] = "如果当前层数没有历史数据，则使
 L["Hide Minimap Icon"] = "隐藏小地图图标"
 L["Hide Minimap Icon Desc"] = "隐藏小地图图标"
 L["MINIMAP_TOOLTIP"] = "%s: 显示选项窗口\n%s: 查看最佳时间"
+L["Count on Tooltip"] = "鼠标提示小怪进度"
+L["Show Mob Count/Perc on the Game-Tooltip when mouseovering it."] = "在鼠标提示中显示小怪提供的进度数量/百分比。"
+L["Both"] = "全部"
+L["Count Only"] = "只显示进度数量"
+L["Off"] = "关闭"
+L["Percentage Only"] = "只显示进度百分比"
 
 -- Display Settings
 L["Display Settings"] = "显示设置"
