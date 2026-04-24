@@ -240,6 +240,12 @@ L["Background"] = "Фон"
 L["Enable Background"] = "Включить фон"
 L["Width Offset"] = "Смещение по ширине"
 L["Height Offset"] = "Смещение по высоте"
+L["Count on Tooltip"] = "Счёт на подсказке"
+L["Show Mob Count/Perc on the Game-Tooltip when mouseovering it."] = "Показывать количество / процент мобов во всплывающей подсказке игры при наведении курсора."
+L["Both"] = "Оба варианта"
+L["Count Only"] = "Только количество"
+L["Off"] = "Выкл."
+L["Percentage Only"] = "Только процент"
 
 -- Key Info & Text Settings
 L["Key Info Bar"] = "Панель информации о ключе"
