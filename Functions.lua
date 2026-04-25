@@ -237,7 +237,7 @@ function MPT:GetDateFormat(date)
 end
 
 function MPT:MoveFrame(Unlock)
-    if Unlock then        
+    if Unlock then
         if not self.Frame then self:Init(true) end
         self:ShowFrame(true)
         self.Frame:SetMovable(true)
@@ -254,7 +254,7 @@ end
 
 function MPT:ShowFrame(Show)
     if Show then
-        if self.Frame then 
+        if self.Frame then
             self.Frame:Show()
         end
     elseif self.Frame then
@@ -324,7 +324,7 @@ end
 
 function MPT:CountOnTooltip()
     local function OnTooltipSetUnit()
-        if select(3, GetInstanceInfo()) == 8 and self.GameTooltip ~= "Off" and C_ScenarioInfo.GetUnitCriteriaProgressValues then
+        if select(3, GetInstanceInfo()) == 8 and self.GameTooltip ~= "Off" and C_ScenarioInfo.GetUnitCriteriaProgressValues and UnitIsEnemy("mouseover") then
             local count, _, perc = C_ScenarioInfo.GetUnitCriteriaProgressValues("mouseover")
             local format = (self.GameTooltip == "CountOnly" and "%d") or (self.GameTooltip == "PercentageOnly" and "%s%%") or "%d (%s%%)"
             local arg1 = self.GameTooltip == "PercentageOnly" and perc or count
