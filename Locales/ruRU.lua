@@ -483,3 +483,13 @@ L["Enemy Forces: %s\n%s\n"] = "Силы противника: %s\n%s\n"
 L["MPlusTimer "] = "MPlusTimer "
 
 L["Quarry Camps Liberated"] = "Освобождённые лагеря карьера"
+
+-- Language override
+L["Addon Language"] = "Язык аддона"
+L["Choose the language used by the addon. Preview will only update after disabling&enabling it again."] = "Выберите язык, используемый аддоном. Предварительный просмотр обновится только после отключения и повторного включения MPlusTimer."
+L["Automatic"] = "Автоматически"
+L["English (enUS)"] = "Английский"
+L["German (deDE)"] = "Немецкий"
+L["Korean (koKR)"] = "Корейский"
+L["Russian (ruRU)"] = "Русский"
+L["Chinese Simplified (zhCN)"] = "Китайский упрощенный"
