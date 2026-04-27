@@ -119,7 +119,7 @@ function MPT:LoadProfile(name)
 end
 
 function MPT:GetVersion()
-    return 5
+    return 6
 end
 
 function MPT:ModernizeProfile(profile, generic)
@@ -175,6 +175,10 @@ function MPT:ModernizeProfile(profile, generic)
             if profile.ForcesCompletion.Outline and profile.ForcesCompletion.Outline == "NONE" then profile.ForcesCompletion.Outline = "" end
             if profile.PBInfo.Outline and profile.PBInfo.Outline == "NONE" then profile.PBInfo.Outline = "" end
             profile.Version = 4
+        end
+        if profile.Version < 6 then
+            if profile.Language == nil then profile.Language = "Auto" end
+            profile.Version = 5
         end
 
         self.Version = self:GetVersion()

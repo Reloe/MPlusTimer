@@ -70,7 +70,7 @@ end
 function MPT:CreateTextSetting(name, key, order, Color)
     local settings = {
         type = "group",
-        name = name,
+        name = function() return L[name] or name end,
         order = order,
         args = {}
     }
@@ -93,7 +93,7 @@ end
 function MPT:CreateStatusBarSettings(name, key, order)
     local settings = {
         type = "group",
-        name = name,
+        name = function() return L[name] or name end,
         order = order,
         args = {}
     }
@@ -113,8 +113,8 @@ function MPT:CreateToggle(order, name, desc, key, update)
     local t = {}
     t.order = order
     t.type = "toggle"
-    t.name = L[name] or name  -- Nutzt Lokalisierung
-    t.desc = L[desc] or desc  -- Nutzt Lokalisierung
+    t.name = function() return L[name] or name end
+    t.desc = function() return L[desc] or desc end
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -125,12 +125,8 @@ function MPT:CreateColor(order, name, desc, key, update)
     t.order = order
     t.type = "color"
     t.hasAlpha = true
-    t.name = rawget(L, name) or name
-    if desc == "" or desc == nil then
-        t.desc = desc
-    else
-        t.desc = rawget(L, desc) or desc
-    end
+    t.name = function() local v = rawget(L, name); return (v == nil or v == true) and name or v end
+    t.desc = function() if desc == "" or desc == nil then return desc else local v = rawget(L, desc); return (v == nil or v == true) and desc or v end end
     t.set = function(_, r, g, b, a) self:SetSV(key, {r, g, b, a}, update) end
     t.get = function() return unpack(self:GetSV(key)) end
     return t
@@ -148,12 +144,8 @@ function MPT:CreateDropDown(order, values, name, desc, key, update)
     end
 
     t.type = "select"
-    t.name = rawget(L, name) or name
-    if desc == "" or desc == nil then
-        t.desc = desc
-    else
-        t.desc = rawget(L, desc) or desc
-    end
+    t.name = function() local v = rawget(L, name); return (v == nil or v == true) and name or v end
+    t.desc = function() if desc == "" or desc == nil then return desc else local v = rawget(L, desc); return (v == nil or v == true) and desc or v end end
     t.set = function(_, value) self:SetSV(key, value, update) end
     t.get = function() return self:GetSV(key) end
     return t
@@ -163,12 +155,8 @@ function MPT:CreateRange(order, name, desc, min, max, step, key, update)
     local t = {}
     t.order = order
     t.type = "range"
-    t.name = rawget(L, name) or name
-    if desc == "" or desc == nil then
-        t.desc = desc
-    else
-        t.desc = rawget(L, desc) or desc
-    end
+    t.name = function() local v = rawget(L, name); return (v == nil or v == true) and name or v end
+    t.desc = function() if desc == "" or desc == nil then return desc else local v = rawget(L, desc); return (v == nil or v == true) and desc or v end end
     t.min = min
     t.max = max
     t.step = step
@@ -191,8 +179,8 @@ end
 local PreviewButton = {
     type = "execute",
     order = 1,
-    name = L["Preview/Unlock"],
-    desc = L["Preview/Unlock Desc"],
+    name = function() return L["Preview/Unlock"] end,
+    desc = function() return L["Preview/Unlock Desc"] end,
     func = function()
         if not MPT.IsPreview then -- not currently in preview
             MPT:Init(true) -- Frame is set to movable in here as well
@@ -208,14 +196,14 @@ local PreviewButton = {
 
 local MainOptions = {
     type = "group",
-    name = L["Non-Display Settings"],
+    name = function() return L["Non-Display Settings"] end,
     args = {
         Preview = PreviewButton,
         ViewBestTimes = {
             type = "execute",
             order = 2,
-            name = L["View Best Times"],
-            desc = L["View Best Times Desc"],
+            name = function() return L["View Best Times"] end,
+            desc = function() return L["View Best Times Desc"] end,
             func = function()
                 MPT:ShowPBFrame()
             end,
@@ -225,49 +213,70 @@ local MainOptions = {
         AutoGossip = {
             type = "toggle",
             order = 5,
-            name = L["Auto Accept Gossip"],
-            desc = L["Auto Accept Gossip Desc"],
+            name = function() return L["Auto Accept Gossip"] end,
+            desc = function() return L["Auto Accept Gossip Desc"] end,
             set = function(_, value) MPTSV.AutoGossip = value end,
             get = function() return MPTSV.AutoGossip end,
         },
         CloseBags = {
             type = "toggle",
             order = 6,
-            name = L["Close Bags"],
-            desc = L["Close Bags Desc"],
+            name = function() return L["Close Bags"] end,
+            desc = function() return L["Close Bags Desc"] end,
             set = function(_, value) MPTSV.CloseBags = value end,
             get = function() return MPTSV.CloseBags end,
         },
         KeySlot = {
             type = "toggle",
             order = 7,
-            name = L["Automatic Keyslot"],
-            desc = L["Automatic Keyslot Desc"],
+            name = function() return L["Automatic Keyslot"] end,
+            desc = function() return L["Automatic Keyslot Desc"] end,
             set = function(_, value) MPTSV.KeySlot = value end,
             get = function() return MPTSV.KeySlot end,
         },
         LowerKey = {
             type = "toggle",
             order = 8,
-            name = L["Data from Lower Level"],
-            desc = L["Data from Lower Level Desc"],
+            name = function() return L["Data from Lower Level"] end,
+            desc = function() return L["Data from Lower Level Desc"] end,
             set = function(_, value) MPTSV.LowerKey = value end,
             get = function() return MPTSV.LowerKey end,
         },
         MinimapIcon = {
             type = "toggle",
             order = 9,
-            name = L["Hide Minimap Icon"],
-            desc = L["Hide Minimap Icon Desc"],
+            name = function() return L["Hide Minimap Icon"] end,
+            desc = function() return L["Hide Minimap Icon Desc"] end,
             set = function(_, value) MPTSV.MinimapIcon.hide = value LDBIcon:Refresh("MPlusTimer", MPTSV.MinimapIcon) end,
             get = function() return MPTSV.MinimapIcon.hide end,
         },
         GameTooltip =  MPT:CreateDropDown(10, {["Off"] = L["Off"], ["CountOnly"] = L["Count Only"], ["PercentageOnly"] = L["Percentage Only"], ["Both"] = L["Both"]}, "Count on Tooltip", "Show Mob Count/Perc on the Game-Tooltip when mouseovering it.", "GameTooltip", true),
+        Language = {
+            type = "select",
+            order = 11,
+            name = function() return L["Addon Language"] end,
+            desc = function() return L["Choose the language used by the addon. Preview will only update after disabling&enabling it again."]  end,
+            values = function()
+                return {
+                    ["Auto"]  = L["Automatic"],
+                    ["enUS"]  = L["English (enUS)"],
+                    ["deDE"]  = L["German (deDE)"],
+                    ["koKR"]  = L["Korean (koKR)"],
+                    ["ruRU"]  = L["Russian (ruRU)"],
+                    ["zhCN"]  = L["Chinese Simplified (zhCN)"],
+                }
+            end,
+            set = function(_, value)
+                MPT:SetSV("Language", value, false)
+                MPT:ApplyLocaleOverride()
+            end,
+            get = function() return MPT:GetSV("Language") or "Auto" end,
+        },
     }
 }
 local Position = {
     type = "group",
-    name = L["Frame Position"],
+    name = function() return L["Frame Position"] end,
     order = 2,
     args = {
 
@@ -275,7 +284,7 @@ local Position = {
 }
 local Background = {
     type = "group",
-    name = L["Background"],
+    name = function() return L["Background"] end,
     order = 3,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Background", {"Background", "enabled"}, true),
@@ -291,7 +300,7 @@ local Background = {
 
 local GeneralOptions = {
     type = "group",
-    name = L["General Options"],
+    name = function() return L["General Options"] end,
     order = 1,
     args = {
         Preview = PreviewButton,
@@ -301,8 +310,8 @@ local GeneralOptions = {
         AllFonts = {
             type = "select",
             order = 5,
-            name = L["Change All Fonts"],
-            desc = L["Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI"],
+            name = function() return L["Change All Fonts"] end,
+            desc = function() return L["Changes all fonts used in the main display of the addon at once - doesn't apply to settings / best times UI"] end,
             values = function() return MPT:GetAllFonts() end,
             set = function(_, value)
                 MPT:SetSV({"KeyLevel", "Font"}, value, false)
@@ -330,8 +339,8 @@ local GeneralOptions = {
         AllTextures = {
             type = "select",
             order = 8,
-            name = L["Change All Textures"],
-            desc = L["Changes all bar textures at once"],
+            name = function() return L["Change All Textures"] end,
+            desc = function() return L["Changes all bar textures at once"] end,
             values = function() return MPT:GetAllTextures() end,
             set = function(_, value)
                 MPT:SetSV({"TimerBar", "Texture"}, value, false)
@@ -344,7 +353,7 @@ local GeneralOptions = {
         Desc = {
             type = "header",
             order = 9,
-            name = L["Main Frame Positioning"],
+            name = function() return L["Main Frame Positioning"] end,
         },
         Anchor = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
         relativeTo = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
@@ -355,7 +364,7 @@ local GeneralOptions = {
 }
 local General = {
     type = "group",
-    name = L["General"],
+    name = function() return L["General"] end,
     childGroups = "tab",
     order = 1,
     args = {
@@ -367,7 +376,7 @@ local General = {
 
 local KeyInfoBar = {
     type = "group",
-    name = L["Key Info Bar"],
+    name = function() return L["Key Info Bar"] end,
     order = 2,
     args = {
         AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["TimerBar"] = L["Timer Bar"], ["Bosses"] = L["Bosses"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the Key Info Bar is anchored to", {"KeyInfo", "AnchoredTo"}, true),
@@ -389,7 +398,7 @@ Deaths.args.ShowTime = MPT:CreateToggle(11, "Show Time of Deaths", "Show the tot
 Deaths.args.DeathBrackets = MPT:CreateToggle(12, "Square Brackets", "Show Death Count in Square Brackets instead of Round Brackets", {"DeathCounter", "SquareBrackets"}, true)
 local DeathIcon = {
     type = "group",
-    name = L["Death Icon"],
+    name = function() return L["Death Icon"] end,
     order = 6,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Death Icon", {"DeathCounter", "Iconenabled"}, true),
@@ -400,7 +409,7 @@ local DeathIcon = {
     }
 }
 local KeyInfo = {
-    name = L["Key Info Bar"],
+    name = function() return L["Key Info Bar"] end,
     type = "group",
     order = 2,
     childGroups = "tab",
@@ -442,7 +451,7 @@ ChestTimer3.args.AheadColor = MPT:CreateColor(11, "Ahead Color", "Color of the 3
 ChestTimer3.args.BehindColor = MPT:CreateColor(12, "Behind Color", "Color of the 3 Chest Timer when behind the timer", {"ChestTimer3", "BehindColor"}, true)
 local ChestTimer = {
     type = "group",
-    name = L["Chest Timer"],
+    name = function() return L["Chest Timer"] end,
     childGroups = "tab",
     order = 3,
     args = {
@@ -458,7 +467,7 @@ ComparisonTimer.args.FailureColor = MPT:CreateColor(13, "Failure Color", "Color 
 ComparisonTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Comparison Timer +-0 runs", {"ComparisonTimer", "EqualColor"}, true)
 local Tick1 = {
     type = "group",
-    name = L["2 Chest Tick"],
+    name = function() return L["2 Chest Tick"] end,
     order = 1,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable 2 Chest Tick", {"Tick1", "enabled"}, true),
@@ -468,7 +477,7 @@ local Tick1 = {
 }
 local Tick2 = {
     type = "group",
-    name = L["3 Chest Tick"],
+    name = function() return L["3 Chest Tick"] end,
     order = 2,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable 3 Chest Tick", {"Tick2", "enabled"}, true),
@@ -479,7 +488,7 @@ local Tick2 = {
 
 local Ticks = {
     type = "group",
-    name = L["Ticks"],
+    name = function() return L["Ticks"] end,
     childGroups = "tab",
     order = 5,
     args = {
@@ -488,7 +497,7 @@ local Ticks = {
     },
 }
 local TimerBar = {
-    name = L["Timer Bar"],
+    name = function() return L["Timer Bar"] end,
     type = "group",
     order = 3,
     childGroups = "tab",
@@ -503,7 +512,7 @@ local TimerBar = {
 
 local BossesBar = {
     type = "group",
-    name = L["Bosses Bar"],
+    name = function() return L["Bosses Bar"] end,
     order = 1,
     args = {
         AnchoredTo = MPT:CreateDropDown(1, {["MainFrame"] = L["Main Frame"], ["KeyInfo"] = L["Key Info Bar"], ["TimerBar"] = L["Timer Bar"], ["ForcesBar"] = L["Forces Bar"]}, "Anchored To", "What the Bosses Bar is anchored to", {"Bosses", "AnchoredTo"}, true),
@@ -531,7 +540,7 @@ BossTimer.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the Bos
 
 local Bosses = {
     type = "group",
-    name = L["Bosses"],
+    name = function() return L["Bosses"] end,
     order = 4,
     childGroups = "tab",
     args = {
@@ -565,7 +574,7 @@ ForcesSplits.args.EqualColor = MPT:CreateColor(14, "Equal Color", "Color of the 
 local ForcesCompletion = MPT:CreateTextSetting(L["Completion Time"], "ForcesCompletion", 5, true)
 local CurrentPullBar = {
     type = "group",
-    name = L["Current Pull"],
+    name = function() return L["Current Pull"] end,
     order = 6,
     args = {
         enabled = MPT:CreateToggle(1, "Enable", "Enable Current Pull Bar", {"CurrentPullBar", "enabled"}, true),
@@ -588,7 +597,7 @@ local CurrentPullBar = {
 }
 local EnemyForces = {
     type = "group",
-    name = L["Enemy Forces"],
+    name = function() return L["Enemy Forces"] end,
     order = 5,
     childGroups = "tab",
     args = {
@@ -609,8 +618,8 @@ PBInfo.args.AnchoredTo = MPT:CreateDropDown(12, {["MainFrame"] = L["Main Frame"]
 
 local MainProfile = {
     type = "select",
-    name = L["Main Profile"],
-    desc = L["Select a Main Profile, which will automatically load on any new character"],
+    name = function() return L["Main Profile"] end,
+    desc = function() return L["Select a Main Profile, which will automatically load on any new character"] end,
     order = 4,
     values = function()
         local profiles = {}
@@ -626,8 +635,8 @@ local MainProfile = {
 }
 local NewProfile = {
     type = "input",
-    name = L["New Profile"],
-    desc = L["Create a new profile with the entered name"],
+    name = function() return L["New Profile"] end,
+    desc = function() return L["Create a new profile with the entered name"] end,
     order = 5,
     set = function(_, value) MPT:CreateProfile(value) end,
     get = function() return "" end,
@@ -635,8 +644,8 @@ local NewProfile = {
 
 local ActiveProfile = {
     type = "select",
-    name = L["Active Profile"],
-    desc = L["Select Active Profile"],
+    name = function() return L["Active Profile"] end,
+    desc = function() return L["Select Active Profile"] end,
     order = 6,
     values = function()
         local profiles = {}
@@ -650,8 +659,8 @@ local ActiveProfile = {
 }
 local CopyProfile = {
     type = "select",
-    name = L["Copy from Profile"],
-    desc = L["Copy settings from the selected profile into the current profile"],
+    name = function() return L["Copy from Profile"] end,
+    desc = function() return L["Copy settings from the selected profile into the current profile"] end,
     order = 7,
     values = function()
         local profiles = {}
@@ -665,8 +674,8 @@ local CopyProfile = {
 }
 local DeleteProfile = {
     type = "select",
-    name = L["Delete Profile"],
-    desc = L["Delete the selected profile - You cannot delete the default profile."],
+    name = function() return L["Delete Profile"] end,
+    desc = function() return L["Delete the selected profile - You cannot delete the default profile."] end,
     order = 10,
     values = function()
         local profiles = {}
@@ -683,23 +692,23 @@ local DeleteProfile = {
 
 local profiles = {
     type = "group",
-    name = L["Profiles"],
+    name = function() return L["Profiles"] end,
     order = 6,
     args = {
         Description = {
             type = "description",
             order = 1,
-            name = L["You can change the Active Profile here as well as setting a Main Profile, which will automatically load on any new character."],
+            name = function() return L["You can change the Active Profile here as well as setting a Main Profile, which will automatically load on any new character."] end,
         },
         ResetDescription = {
             type = "description",
             order = 2,
-            name = L["Reset your current active profile to the default settings. THIS CANNOT BE UNDONE"],
+            name = function() return L["Reset your current active profile to the default settings. THIS CANNOT BE UNDONE"] end,
         },
         Reset = {
             type = "execute",
             order = 3,
-            name = L["Reset Current Profile"],
+            name = function() return L["Reset Current Profile"] end,
             func = function() StaticPopup_Show("MPT_RESET_PROFILE") end,
         },
         MainProfile = MainProfile,
@@ -715,8 +724,8 @@ local profiles = {
         ExportProfile = {
             type = "input",
             order = 8,
-            name = L["Export Profile"],
-            desc = L["Export your current profile to a string"],
+            name = function() return L["Export Profile"] end,
+            desc = function() return L["Export your current profile to a string"] end,
             get = function() return MPTAPI:GetExportString() end,
             set = function() end,
             width = "full",
@@ -725,8 +734,8 @@ local profiles = {
         ImportProfile = {
             type = "input",
             order = 9,
-            name = L["Import Profile"],
-            desc = L["Import a profile from a string"],
+            name = function() return L["Import Profile"] end,
+            desc = function() return L["Import a profile from a string"] end,
             set = function(_, value) MPTAPI:ImportProfile(value) end,
             get = function() return "" end,
             width = "full",
@@ -737,7 +746,7 @@ local profiles = {
 }
 
 local settings = {
-	name = L["Display Settings"],
+	name = function() return L["Display Settings"] end,
     childGroups = "tab",
 	type = "group",
 	args = {

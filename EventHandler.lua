@@ -139,6 +139,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:ModernizeProfile(false, true)
             self:LoadProfile()
         end
+        self:ApplyLocaleOverride()
         if MPTSV.AutoGossip == nil then MPTSV.AutoGossip = true end
         if MPTSV.debug then
             MPTGlobal = MPT

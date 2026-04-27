@@ -129,6 +129,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
 MPT.DefaultProfile = {
     Version = MPT:GetVersion(),
     name = L["default"],
+    Language = "Auto",
     Spacing = 3,
     UpdateRate = 0.2,
     Scale = 1,

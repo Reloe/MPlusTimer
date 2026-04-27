@@ -1,6 +1,52 @@
 local _, MPT = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer") --
 
+-- Snapshot of the original locale strings before any override is applied.
+local _localeSnapshot = nil
+
+-- Applies a user-selected language override by mutating the AceLocale table in-place.
+function MPT:ApplyLocaleOverride()
+    local lang = self.Language
+    local aceL = LibStub("AceLocale-3.0"):GetLocale("MPlusTimer")
+
+    -- Build a snapshot of the original (client) locale the first time we run.
+    if not _localeSnapshot then
+        _localeSnapshot = {}
+        -- Collect every key that any locale file defines so we know what to snapshot.
+        for _, rawTable in pairs(MPT.RawLocales or {}) do
+            for k in pairs(rawTable) do
+                if _localeSnapshot[k] == nil then
+                    local v = rawget(aceL, k)
+                    _localeSnapshot[k] = (v == nil or v == true) and k or v
+                end
+            end
+        end
+    end
+
+    if not lang or lang == "Auto" then
+        -- Restore the original client locale strings.
+        for k, v in pairs(_localeSnapshot) do
+            rawset(aceL, k, v)
+        end
+        return
+    end
+
+    if lang == "enUS" then
+        for _, rawTable in pairs(MPT.RawLocales or {}) do
+            for k in pairs(rawTable) do
+                rawset(aceL, k, k)
+            end
+        end
+    else
+        local rawTable = MPT.RawLocales and MPT.RawLocales[lang]
+        if rawTable then
+            for k, v in pairs(rawTable) do
+                rawset(aceL, k, v)
+            end
+        end
+    end
+end
+
 local SoundsToMute = {
     [567457] = true,
     [567507] = true,
