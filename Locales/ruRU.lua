@@ -482,6 +482,16 @@ T["MPlusTimer "] = "MPlusTimer "
 
 T["Quarry Camps Liberated"] = "Освобождённые лагеря карьера"
 
+-- Language override
+L["Addon Language"] = "Язык аддона"
+L["Choose the language used by the addon. Preview will only update after disabling&enabling it again."] = "Выберите язык, используемый аддоном. Предварительный просмотр обновится только после отключения и повторного включения MPlusTimer."
+L["Automatic"] = "Автоматический"
+L["English (enUS)"] = "Английский"
+L["German (deDE)"] = "Немецкий"
+L["Korean (koKR)"] = "Корейский"
+L["Russian (ruRU)"] = "Русский"
+L["Chinese Simplified (zhCN)"] = "Китайский упрощенный"
+
 -- Register with AceLocale on matching clients
 local L = LibStub("AceLocale-3.0"):NewLocale("MPlusTimer", "ruRU")
 if L then for k, v in pairs(T) do L[k] = v end end
