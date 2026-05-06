@@ -174,11 +174,11 @@ function MPT:ModernizeProfile(profile, generic)
             if profile.ForcesSplits.Outline and profile.ForcesSplits.Outline == "NONE" then profile.ForcesSplits.Outline = "" end
             if profile.ForcesCompletion.Outline and profile.ForcesCompletion.Outline == "NONE" then profile.ForcesCompletion.Outline = "" end
             if profile.PBInfo.Outline and profile.PBInfo.Outline == "NONE" then profile.PBInfo.Outline = "" end
-            profile.Version = 4
+            profile.Version = 5
         end
         if profile.Version < 6 then
             if profile.Language == nil then profile.Language = "Auto" end
-            profile.Version = 5
+            profile.Version = 6
         end
 
         self.Version = self:GetVersion()
