@@ -450,6 +450,7 @@ function MPT:UpdateBosses(Start, count, preview)
         end
         self:HideBossFrames()
         self.MaxBossFrame = 0
+        local locale = GetLocale()
         if max > 0 then
             if C_ScenarioInfo.GetCriteriaInfo(max) and C_ScenarioInfo.GetCriteriaInfo(max).isWeightedProgress then max = max-1 end
             local pb = self.BossSplit.enabled and self:GetPB(self.cmap, self.level, self.seasonID, MPTSV.LowerKey)
@@ -460,7 +461,12 @@ function MPT:UpdateBosses(Start, count, preview)
                 -- limit how many bosses to show for some of the lower parts of megadungeons
                 local maxbosses = (self.cmap == 391 and 5) or (self.cmap == 463 and 4) or (self.cmap == 227 and 3) or (self.cmap == 369 and 4)
                 local criteria = C_ScenarioInfo.GetCriteriaInfo(i)
-                local name = criteria.description and criteria.description:match("^(.+)%s+%S+$") or criteria.description
+                local name
+                if locale == "itIT" and self.cmap == 402 then -- somehow academy only needs an exception for italian
+                    name = criteria.description and criteria.description:match("^%S+%s+(.+)$") or criteria.description
+                else
+                    name = criteria.description and criteria.description:match("^(.+)%s+%S+$") or criteria.description
+                end
                 self.BossNames[i] = name
                 if self.cmap == 227 and num == 3 then name = L["Opera Hall"] end
                 if name and name ~= "" and ((not maxbosses) or i <= maxbosses) then
