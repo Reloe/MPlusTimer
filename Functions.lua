@@ -372,6 +372,7 @@ function MPT:CountOnTooltip()
     local function OnTooltipSetUnit()
         if select(3, GetInstanceInfo()) == 8 and MPTSV.GameTooltip ~= "Off" and UnitExists("mouseover") and UnitIsEnemy("mouseover", "player") then
             local count, _, perc = C_ScenarioInfo.GetUnitCriteriaProgressValues("mouseover")
+            if (not count) or (not perc) then return end
             local format = (MPTSV.GameTooltip == "CountOnly" and "%d") or (MPTSV.GameTooltip == "PercentageOnly" and "%s%%") or "%d (%s%%)"
             local arg1 = MPTSV.GameTooltip == "PercentageOnly" and perc or count
             local arg2 = MPTSV.GameTooltip == "Both" and perc or ""
