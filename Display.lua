@@ -237,7 +237,7 @@ function MPT:UpdateKeyInfo(Full, Deaths, preview)
                 self.PlayerDeaths = self.PlayerDeaths or {}
                 for unit, deaths in pairs(self.PlayerDeaths) do
                     local color = GetClassColorObj(select(2, UnitClass(unit)))
-                    local name = NSAPI and NSAPI:Shorten(unit, 8) or color:WrapTextInColorCode(UnitName(unit))
+                    local name = NSAPI and (not issecretvalue(name)) and NSAPI:Shorten(unit, 8) or color:WrapTextInColorCode(UnitName(unit))
                     table.insert(list, {name, deaths})
                 end
                 table.sort(list,
