@@ -107,6 +107,7 @@ L["Murder Row"] = "Закоулок душегубов"
 L["Den of Nalorakk"] = "Берлога Налоракка"
 L["Blinding Vale"] = "Слепящая долина"
 L["Voidscar Arena"] = "Арена Шрама Бездны"
+L["Altar of Fangs"] = "Алтарь Клыков"
 L["Opera Hall"] = "Каражан: Оперный зал"
 
 -- Gossips / Events
