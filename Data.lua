@@ -4,7 +4,7 @@ MPT.SeasonData = {
     [15] = {name =L["TWW S3"], Dungeons = {503, 505, 499, 525, 542, 378, 391, 392}},
     -- idk why there is a gap here but on Beta S1 is 17
     [17] = {name = L["Midnight S1"], Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
-    [18] = {name = L["Midnight S2"], Dungeons = {}},
+    [18] = {name = L["Midnight S2"], Dungeons = {249, 250, 399, 584, 585, 586, 587, 588, }},
     [19] = {name = L["Midnight S3"], Dungeons = {}},
     [20] = {name = L["TLT S1"], Dungeons = {}},
     [21] = {name = L["TLT S2"], Dungeons = {}},
@@ -117,13 +117,11 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [558] = {1300, L["Magisters' Terrace"]},
     [559] = {1316, L["Nexus-Point"]},
     [560] = {1315, L["Maisara Caverns"]},
-
-    --[[
-    [0] = {1304, L["Murder Row"]},
-    [0] = {1311, L["Den of Nalorakk"]},
-    [0] = {1309, L["Blinding Vale"]},
-    [0] = {1313, L["Voidscar Arena"]},
-    ]]
+    [587] = {1304, L["Murder Row"]},
+    [586] = {1311, L["Den of Nalorakk"]},
+    [584] = {1309, L["Blinding Vale"]},
+    [585] = {1313, L["Voidscar Arena"]},
+    [588] = {1322, L["Altar of Fangs"]},
 }
 
 MPT.DefaultProfile = {

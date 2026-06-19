@@ -77,7 +77,7 @@ L["Spires"] = true
 L["Theater"] = true
 L["Streets"] = true
 L["Gambit"] = true
-L["Ruby Pools"] = true
+L["Ruby Pools"] = "Ruby Life Pools"
 L["Nokhud"] = true
 L["Azure Vault"] = true
 L["Academy"] = true
@@ -105,6 +105,7 @@ L["Murder Row"] = true
 L["Den of Nalorakk"] = true
 L["Blinding Vale"] = true
 L["Voidscar Arena"] = true
+L["Altar of Fangs"] = true
 L["Opera Hall"] = true
 
 -- Gossips / Events
