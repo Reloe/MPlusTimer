@@ -4,7 +4,7 @@ MPT.SeasonData = {
     [15] = {name =L["TWW S3"], Dungeons = {503, 505, 499, 525, 542, 378, 391, 392}},
     -- idk why there is a gap here but on Beta S1 is 17
     [17] = {name = L["Midnight S1"], Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
-    [18] = {name = L["Midnight S2"], Dungeons = {249, 250, 399, 584, 585, 586, 587, 588, }},
+    [18] = {name = L["Midnight S2"], Dungeons = {249, 250, 399, 584, 585, 586, 587, 588}},
     [19] = {name = L["Midnight S3"], Dungeons = {}},
     [20] = {name = L["TLT S1"], Dungeons = {}},
     [21] = {name = L["TLT S2"], Dungeons = {}},
