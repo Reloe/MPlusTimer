@@ -33,6 +33,24 @@ function MPT:ToggleEventRegister(On)
         f:UnregisterEvent("UNIT_DIED")
     end
 end
+
+local function StorePlayerGUIDs()
+    MPT.PlayerGUIDs = {}
+
+    local playerGUID = UnitGUID("player")
+    if playerGUID then
+        MPT.PlayerGUIDs.player = playerGUID
+    end
+
+    for i = 1, 4 do
+        local unit = "party"..i
+        local GUID = UnitGUID(unit)
+        if GUID then
+            MPT.PlayerGUIDs[unit] = GUID
+        end
+    end
+end
+
 function MPT:EventHandler(e, ...) -- internal checks whether the event comes from addon comms. We don't want to allow blizzard events to be fired manually
     if e == "INSTANCE_ABANDON_VOTE_FINISHED" and C_ChallengeMode.IsChallengeModeActive() then
         local success = ...
@@ -86,6 +104,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             end)
         end
         if C_ChallengeMode.IsChallengeModeActive() then
+            StorePlayerGUIDs()
             self:Init(false)
             self:ToggleEventRegister(true)
         else
@@ -96,6 +115,7 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
         self:UpdateKeyInfo(false, true)
     elseif e == "CHALLENGE_MODE_START" then
         self.PlayerDeaths = {}
+        StorePlayerGUIDs()
         self:Init()
         self:ToggleEventRegister(true)
     elseif e == "CHALLENGE_MODE_COMPLETED" then
@@ -149,11 +169,15 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
     elseif e == "UNIT_DIED" then
         local G = ...
         if issecretvalue(G) then return end -- likely to be an enemy
-        local unit = UnitTokenFromGUID(G)
-        if UnitIsPlayer(unit) and not UnitIsFeignDeath(unit) then -- only count non-pets and ignore feign death
-            self.PlayerDeaths = self.PlayerDeaths or {}
-            local name = UnitName(unit)
-            self.PlayerDeaths[name] = self.PlayerDeaths[name] and self.PlayerDeaths[name]+1 or 1
+        if self.PlayerGUIDs then
+            for unit, GUID in pairs(self.PlayerGUIDs) do
+                if GUID == G and UnitIsPlayer(unit) and not UnitIsFeignDeath(unit) then -- only count non-pets and ignore feign death
+                    self.PlayerDeaths = self.PlayerDeaths or {}
+                    local name = UnitName(unit)
+                    self.PlayerDeaths[name] = self.PlayerDeaths[name] and self.PlayerDeaths[name]+1 or 1
+                    break
+                end
+            end
         end
     elseif e == "GOSSIP_SHOW" and C_ChallengeMode.IsChallengeModeActive() and MPTSV.AutoGossip then
         if UnitExists("npc") and not IsControlKeyDown() then
