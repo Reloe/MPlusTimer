@@ -151,6 +151,8 @@ L["Court of Stars - Waterlogged Scroll"] = true
 L["Pit of Saron - Quarry camps liberation"] = true
 L["Murder Row - Disguise"] = true
 L["Murder Row - Job"] = true
+L["Den of Nalorak - Ethereal Pyre 1"] = true
+L["Den of Nalorak - Ethereal Pyre 2"] = true
 
 L["Are you sure you want to delete this run?"] = true
 L["Yes"] = true
