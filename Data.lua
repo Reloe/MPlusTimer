@@ -573,6 +573,9 @@ MPT.GossipIDs = { -- gossip id's instead of npcid's. Not all have been converted
     [136301] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
     [138618] = {Name = L["Pit of Saron - Quarry camps liberation"], enabled = true, number = 1},
 
-    [263940] = {Name = L["Murder Row - Disguise"], enabled = true, number = 1},
-    [235841] = {Name = L["Murder Row - Job"], enabled = true, number = 1},
+    [131567] = {Name = L["Murder Row - Disguise"], enabled = true, number = 1},
+    [131502] = {Name = L["Murder Row - Job"], enabled = true, number = 1},
+
+    [135009] = {Name = L["Den of Nalorak - Ethereal Pyre 1"], enabled = true, number = 1},
+    [135010] = {Name = L["Den of Nalorak - Ethereal Pyre 2"], enabled = true, number = 1},
 }
