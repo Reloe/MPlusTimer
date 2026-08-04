@@ -111,6 +111,7 @@ L["Murder Row"] = "密谋小径"
 L["Den of Nalorakk"] = "纳洛拉克的巢穴"
 L["Blinding Vale"] = "夺目谷"
 L["Voidscar Arena"] = "虚空之痕竞技场"
+L["Altar of Fangs"] = "毒牙祭坛"
 L["Opera Hall"] = "歌剧院"
 
 -- Gossips / Events
@@ -156,6 +157,8 @@ L["Court of Stars - Waterlogged Scroll"] = "群星庭院 - 浸水卷轴"
 L["Pit of Saron - Quarry camps liberation"] = "萨隆矿坑 - 解放矿场营地"
 L["Murder Row - Disguise"] = "密谋小径 - 伪装"
 L["Murder Row - Job"] = "密谋小径 - 工作"
+L["Den of Nalorak - Ethereal Pyre 1"] = "纳洛拉克的巢穴 - 虚灵火堆1"
+L["Den of Nalorak - Ethereal Pyre 2"] = "纳洛拉克的巢穴 - 虚空火堆2"
 
 -- Komplexe Strings / Formate
 L["Total Run Stats: |cFFFFFF4D%s|r Runs (|cFF00FF00%s|r Intime, |cFFFF0000%s|r Depleted, |cFFFFAA00%s|r Abandoned)\n"] = "总记录统计：|cFFFFFF4D%s|r 次记录 (|cFF00FF00%s|r 限时, |cFFFF0000%s|r 超时, |cFFFFAA00%s|r 放弃)\n"
@@ -247,6 +250,15 @@ L["Both"] = "全部"
 L["Count Only"] = "只显示进度数量"
 L["Off"] = "关闭"
 L["Percentage Only"] = "只显示进度百分比"
+-- Language override
+L["Addon Language"] = "插件语言"
+L["Choose the language used by the addon. Preview will only update after disabling&enabling it again."] = "选择插件使用的语言。预览将只在禁用并重新启用后更新。"
+L["Automatic"] = "自动"
+L["English (enUS)"] = "英语"
+L["German (deDE)"] = "德语"
+L["Korean (koKR)"] = "韩语"
+L["Russian (ruRU)"] = "俄语"
+L["Chinese Simplified (zhCN)"] = "简体中文"
 
 -- Display Settings
 L["Display Settings"] = "显示设置"
