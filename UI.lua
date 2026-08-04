@@ -267,11 +267,11 @@ local MainOptions = {
             values = function()
                 return {
                     ["Auto"]  = L["Automatic"],
-                    ["enUS"]  = L["English (enUS)"],
-                    ["deDE"]  = L["German (deDE)"],
-                    ["koKR"]  = L["Korean (koKR)"],
-                    ["ruRU"]  = L["Russian (ruRU)"],
-                    ["zhCN"]  = L["Chinese Simplified (zhCN)"],
+                    ["enUS"]  = "English (enUS)",
+                    ["deDE"]  = "Deutsch (deDE)",
+                    ["koKR"]  = "한국어 (koKR)",
+                    ["ruRU"]  = "Русский (ruRU)",
+                    ["zhCN"]  = "简体中文 (zhCN)",
                 }
             end,
             set = function(_, value)
