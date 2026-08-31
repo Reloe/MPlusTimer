@@ -152,7 +152,7 @@ L["Court of Stars - Umbral Bloom"] = "별의 궁정 - 그림자 꽃"
 L["Court of Stars - Waterlogged Scroll"] = "별의 궁정 - 물에 젖은 두루마리"
 L["Pit of Saron - Quarry camps liberation"] = "사론의 구덩이 - 채석장 야영지 해방"
 L["Murder Row - Disguise"] = "죽음의 골목 - 변장"
-L["Murder Row - Job"] = "죽음의 골목 - 파티"
+L["Murder Row - Job"] = "죽음의 골목 - 근무"
 L["Den of Nalorak - Ethereal Pyre 1"] = "날로라크의 소굴 - 에테리얼 장작 1"
 L["Den of Nalorak - Ethereal Pyre 2"] = "날로라크의 소굴 - 에테리얼 장작 2"
 
