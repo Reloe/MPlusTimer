@@ -131,7 +131,7 @@ function MPT:CreateText(parent, name, settings, num)
         settings.xOffset = settings.xOffset[num] or 0
     end
     parent[name]:SetPoint(settings.Anchor or "CENTER", parent, settings.RelativeTo or "CENTER", settings.xOffset or 0, settings.yOffset or 0)
-    parent[name]:SetFont(settings.Font and self.LSM:Fetch("font", settings.Font) or self.LSM:Fetch("font", "Expressway"), settings.FontSize or 13, settings.Outline or "OUTLINE")
+    parent[name]:SetFont(settings.Font and self.LSM:Fetch("font", settings.Font) or self.LSM:Fetch("font", "Expressway"), settings.FontSize or 13, settings.Outline or "SLUG, OUTLINE")
     parent[name]:SetShadowColor(unpack(settings.ShadowColor or {0, 0, 0, 1}))
     parent[name]:SetShadowOffset(unpack(settings.ShadowOffset or {0, 0}))
     parent[name]:SetTextColor(unpack(settings.Color or {1, 1, 1, 1}))
@@ -197,7 +197,7 @@ function MPT:CreateLabel(parent, Anchor, RelativeFrame, RelativeTo, xOffset, yOf
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetPoint(Anchor, RelativeFrame, RelativeTo, xOffset, yOffset)
     label:SetText(text)
-    label:SetFont(self.LSM:Fetch("font", "Expressway"), 13, "OUTLINE")
+    label:SetFont(self.LSM:Fetch("font", "Expressway"), 13, "SLUG, OUTLINE")
     label:SetTextColor(1, 1, 1, 1)
     return label
 end

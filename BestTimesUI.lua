@@ -370,7 +370,7 @@ function MPT:CreatePBFrame()
             yOffset = -6,
             Font = "Expressway",
             FontSize = 12,
-            Outline = "OUTLINE",
+            Outline = "SLUG, OUTLINE",
             ShadowColor = {0,0,0,1},
             ShadowOffset = {1,-1},
             Color = {1, 1, 1, 1},
@@ -691,7 +691,7 @@ function MPT:ShowPBDataFrame(seasonID, cmap, level) -- Showing PB Data
             end
             F.PBDataText:SetText(text)
             F.PBDataText:SetJustifyH("LEFT")
-            F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+            F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "SLUG, OUTLINE")
             F.PBDataText:SetTextColor(1, 1, 1, 1)
             F.PBDataText:Show()
         end
@@ -792,12 +792,12 @@ function MPT:ShowTotalStatsFrame(seasonID, characteronly, GUID)
         F.PBDataText:SetText(text)
         F.PBDataText:Show()
         F.PBDataText:SetJustifyH("LEFT")
-        F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+        F.PBDataText:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "SLUG, OUTLINE")
         F.PBDataText:SetTextColor(1, 1, 1, 1)
         F.PBDataText2:SetText(text2)
         F.PBDataText2:Show()
         F.PBDataText2:SetJustifyH("LEFT")
-        F.PBDataText2:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "OUTLINE")
+        F.PBDataText2:SetFont(self.LSM:Fetch("font", "Expressway"), 20, "SLUG, OUTLINE")
         F.PBDataText2:SetTextColor(1, 1, 1, 1)
         F.PBDataText2:SetWordWrap(true)
         F.PBDataText2:SetNonSpaceWrap(true)
