@@ -143,14 +143,15 @@ function MPT:EventHandler(e, ...) -- internal checks whether the event comes fro
             self:UpdateTimerBar()
         end
     elseif e == "FRAME_UPDATE" and self.TimerEnabled then
-        if C_ChallengeMode.IsChallengeModeActive() then
-            self:UpdateTimerBar()
-        end
+        local challengeActive = C_ChallengeMode.IsChallengeModeActive()
         if not self.Timer then
             self.Timer = C_Timer.NewTimer(self.UpdateRate, function()
                 self.Timer = nil
                 self:EventHandler("FRAME_UPDATE")
             end)
+        end
+        if challengeActive then
+            self:UpdateTimerBar()
         end
 
     elseif e == "PLAYER_LOGIN" then
