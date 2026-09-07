@@ -49,6 +49,23 @@ function MPT:GetAllFonts()
     return fontTable
 end
 
+function MPT:GetAllOutlines()
+    return {
+        [""] = "None",
+        ["OUTLINE"] = "Outline",
+        ["THICKOUTLINE"] = "Thick Outline",
+        ["MONOCHROME"] = "Monochrome",
+        ["OUTLINE, MONOCHROME"] = "Outline + Monochrome",
+        ["THICKOUTLINE, MONOCHROME"] = "Thick Outline + Monochrome",
+        ["SLUG"] = "Slug",
+        ["SLUG, OUTLINE"] = "Slug + Outline",
+        ["SLUG, THICKOUTLINE"] = "Slug + Thick Outline",
+        ["SLUG, MONOCHROME"] = "Slug + Monochrome",
+        ["SLUG, OUTLINE, MONOCHROME"] = "Slug + Outline + Monochrome",
+        ["SLUG, THICKOUTLINE, MONOCHROME"] = "Slug + Thick Outline + Monochrome",
+    }
+end
+
 function MPT:GetAllTextures()
     local texturelist = MPT.LSM:List("statusbar")
     local textureTable = {}
@@ -81,7 +98,7 @@ function MPT:CreateTextSetting(name, key, order, Color)
     settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)
     settings.args.Font = self:CreateDropDown(6, "fonts", "Font", "", {key, "Font"}, true)
     settings.args.FontSize = self:CreateRange(7, "Font Size", "Size of the Font", 6, 40, 1, {key, "FontSize"}, true)
-    settings.args.Outline = self:CreateDropDown(8, {[""] = "None", ["OUTLINE"] = "Outline", ["THICKOUTLINE"] = "Thick Outline", ["MONOCHROME"] = "Monochrome"}, "Font Outline", "", {key, "Outline"}, true)
+    settings.args.Outline = self:CreateDropDown(8, self:GetAllOutlines(), "Font Outline", "", {key, "Outline"}, true)
     if Color then settings.args.Color = self:CreateColor(9, "Color", "", {key, "Color"}, true) end
     settings.args.ShadowGap = self:CreateSpace(20)
     settings.args.ShadowXOffset = self:CreateRange(21, "Shadow X Offset", "Shadow X Offset of the Text", -5, 5, 1, {key, "ShadowOffset", 1}, true)
@@ -342,11 +359,38 @@ local GeneralOptions = {
             end,
             get = function() return "" end,
         },
-        HideTracker = MPT:CreateToggle(6, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
-        Spacing = MPT:CreateRange(7, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
+        AllOutlines = {
+            type = "select",
+            order = 6,
+            name = function() return L["Change All Outlines"] end,
+            desc = function() return L["Change All Outlines Desc"] end,
+            values = function() return MPT:GetAllOutlines() end,
+            set = function(_, value)
+                MPT:SetSV({"KeyLevel", "Outline"}, value, false)
+                MPT:SetSV({"DungeonName", "Outline"}, value, false)
+                MPT:SetSV({"DeathCounter", "Outline"}, value, false)
+                MPT:SetSV({"TimerText", "Outline"}, value, false)
+                MPT:SetSV({"ChestTimer1", "Outline"}, value, false)
+                MPT:SetSV({"ChestTimer2", "Outline"}, value, false)
+                MPT:SetSV({"ChestTimer3", "Outline"}, value, false)
+                MPT:SetSV({"ComparisonTimer", "Outline"}, value, false)
+                MPT:SetSV({"BossName", "Outline"}, value, false)
+                MPT:SetSV({"BossSplit", "Outline"}, value, false)
+                MPT:SetSV({"BossTimer", "Outline"}, value, false)
+                MPT:SetSV({"PercentCount", "Outline"}, value, false)
+                MPT:SetSV({"RealCount", "Outline"}, value, false)
+                MPT:SetSV({"ForcesSplits", "Outline"}, value, false)
+                MPT:SetSV({"ForcesCompletion", "Outline"}, value, false)
+                MPT:SetSV({"PBInfo", "Outline"}, value, false)
+                MPT:UpdateDisplay()
+            end,
+            get = function() return "" end,
+        },
+        HideTracker = MPT:CreateToggle(7, "Hide Objective Tracker", "Hides Blizzard's Objective Tracker during an active M+", "HideTracker"),
+        Spacing = MPT:CreateRange(8, "Bar Spacing", "Spacing for each Bar", -5, 10, 1, "Spacing", true),
         AllTextures = {
             type = "select",
-            order = 8,
+            order = 9,
             name = function() return L["Change All Textures"] end,
             desc = function() return L["Changes all bar textures at once"] end,
             values = function() return MPT:GetAllTextures() end,
@@ -360,14 +404,14 @@ local GeneralOptions = {
         },
         Desc = {
             type = "header",
-            order = 9,
+            order = 10,
             name = function() return L["Main Frame Positioning"] end,
         },
-        Anchor = MPT:CreateDropDown(10, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
-        relativeTo = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
-        Gap = MPT:CreateSpace(12),
-        xOffset = MPT:CreateRange(13, "X Offset", "X Offset", -4000, 4000, 0.1, {"Position", "xOffset"}, true),
-        yOffset = MPT:CreateRange(14, "Y Offset", "Y Offset", -4000, 4000, 0.1, {"Position", "yOffset"}, true),
+        Anchor = MPT:CreateDropDown(11, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {"Position", "Anchor"}, true),
+        relativeTo = MPT:CreateDropDown(12, {["CENTER"] = "CENTER", ["TOP"] = "TOP", ["BOTTOM"] = "BOTTOM", ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {"Position", "relativeTo"}, true),
+        Gap = MPT:CreateSpace(13),
+        xOffset = MPT:CreateRange(14, "X Offset", "X Offset", -4000, 4000, 0.1, {"Position", "xOffset"}, true),
+        yOffset = MPT:CreateRange(15, "Y Offset", "Y Offset", -4000, 4000, 0.1, {"Position", "yOffset"}, true),
     }
 }
 local General = {
