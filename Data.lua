@@ -504,6 +504,21 @@ MPT.AnchorTypes = {
     ["ForcesBar"] = true,
 }
 
+MPT.TextAnchorTypes = {
+    ["BossName"] = true,
+    ["BossTimer"] = true,
+    ["BossSplit"] = true,
+}
+
+MPT.TextAnchorPoints = {
+    ["BossNameLeft"] = {Target = "BossName", Point = "LEFT"},
+    ["BossNameRight"] = {Target = "BossName", Point = "RIGHT"},
+    ["BossTimerLeft"] = {Target = "BossTimer", Point = "LEFT"},
+    ["BossTimerRight"] = {Target = "BossTimer", Point = "RIGHT"},
+    ["BossSplitLeft"] = {Target = "BossSplit", Point = "LEFT"},
+    ["BossSplitRight"] = {Target = "BossSplit", Point = "RIGHT"},
+}
+
 MPT.Gossips = {
     [196974] = {Name = L["Academy Crit Buff"], enabled = true, number = 1},
     [196977] = {Name = L["Academy Haste Buff"], enabled = true, number = 1},

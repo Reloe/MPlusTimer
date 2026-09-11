@@ -69,16 +69,30 @@ function MPT:PopupIsShown()
 end
 
 function MPT:HasAnchorLoop(key, value)
-    if key and value and self.AnchorTypes[value] and self.AnchorTypes[key] then
-        local current = value
-        while current and current ~= "MainFrame" do
-            if (self[current] and self[current].AnchoredTo == key) then
-                return true
-            elseif self[current] and self[current].AnchoredTo == "MainFrame" then
-                return false
-            else
-                current = self[current] and self[current].AnchoredTo
-            end
+    if not key or not value or (not self.AnchorTypes[key] and not self.TextAnchorTypes[key]) then
+        return false
+    end
+    local anchorPoint = self.TextAnchorPoints[value]
+    local target = anchorPoint and anchorPoint.Target or value
+    if not self.AnchorTypes[target] and not self.TextAnchorTypes[target] then
+        return false
+    end
+
+    local current = target
+    local visited = {}
+    while current and not visited[current] do
+        visited[current] = true
+        if current == key then
+            return true
+        end
+        if self.AnchorTypes[current] then
+            current = self[current] and self[current].AnchoredTo
+        elseif self.TextAnchorTypes[current] then
+            local relativeTo = self[current] and self[current].RelativeTo
+            local relativeTarget = self.TextAnchorPoints[relativeTo]
+            current = relativeTarget and relativeTarget.Target or (self.TextAnchorTypes[relativeTo] and relativeTo)
+        else
+            current = nil
         end
     end
     return false
@@ -108,8 +122,14 @@ function MPT:ApplyTextSettings(frame, settings, text, Color, parent, num)
             settings.xOffset = settings.xOffset[num] or 0
         end
         Color = Color or settings.Color
+        local relativeTo = settings.RelativeTo
+        local anchorPoint = self.TextAnchorPoints[relativeTo]
+        if num and anchorPoint then
+            parent = parent[anchorPoint.Target..num]
+            relativeTo = anchorPoint.Point
+        end
         frame:ClearAllPoints()
-        frame:SetPoint(settings.Anchor, parent, settings.RelativeTo, settings.xOffset, settings.yOffset)
+        frame:SetPoint(settings.Anchor, parent, relativeTo, settings.xOffset, settings.yOffset)
         frame:SetFont(self.LSM:Fetch("font", settings.Font), settings.FontSize, settings.Outline)
         frame:SetShadowColor(unpack(settings.ShadowColor))
         frame:SetShadowOffset(unpack(settings.ShadowOffset))
@@ -127,15 +147,20 @@ end
 
 function MPT:CreateText(parent, name, settings, num)
     parent[name] = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local textFrame = parent[name]
     if settings.xOffset and type(settings.xOffset) == "table" then
         settings.xOffset = settings.xOffset[num] or 0
     end
-    parent[name]:SetPoint(settings.Anchor or "CENTER", parent, settings.RelativeTo or "CENTER", settings.xOffset or 0, settings.yOffset or 0)
-    parent[name]:SetFont(settings.Font and self.LSM:Fetch("font", settings.Font) or self.LSM:Fetch("font", "Expressway"), settings.FontSize or 13, settings.Outline or "SLUG, OUTLINE")
-    parent[name]:SetShadowColor(unpack(settings.ShadowColor or {0, 0, 0, 1}))
-    parent[name]:SetShadowOffset(unpack(settings.ShadowOffset or {0, 0}))
-    parent[name]:SetTextColor(unpack(settings.Color or {1, 1, 1, 1}))
-    parent[name]:SetText(settings.text or "")
+    local relativeTo = settings.RelativeTo or "CENTER"
+    if self.TextAnchorPoints[relativeTo] then
+        relativeTo = settings.Anchor or "CENTER"
+    end
+    textFrame:SetPoint(settings.Anchor or "CENTER", parent, relativeTo, settings.xOffset or 0, settings.yOffset or 0)
+    textFrame:SetFont(settings.Font and self.LSM:Fetch("font", settings.Font) or self.LSM:Fetch("font", "Expressway"), settings.FontSize or 13, settings.Outline or "SLUG, OUTLINE")
+    textFrame:SetShadowColor(unpack(settings.ShadowColor or {0, 0, 0, 1}))
+    textFrame:SetShadowOffset(unpack(settings.ShadowOffset or {0, 0}))
+    textFrame:SetTextColor(unpack(settings.Color or {1, 1, 1, 1}))
+    textFrame:SetText(settings.text or "")
 end
 
 function MPT:CreateStatusBar(parent, name, Backdrop, border)
@@ -218,9 +243,9 @@ function MPT:CreateBossFrame(i)
     self:CreateStatusBar(F, "Bosses"..i, false, false)
     F["Bosses"..i]:SetStatusBarColor(0, 0, 0, 0)
     F["Bosses"..i]:Hide()
-    self:CreateText(F["Bosses"..i], "BossName"..i, self.BossName)
-    self:CreateText(F["Bosses"..i], "BossTimer"..i, self.BossTimer)
-    self:CreateText(F["Bosses"..i], "BossSplit"..i, self.BossSplit)
+    self:CreateText(F["Bosses"..i], "BossName"..i, self.BossName, i)
+    self:CreateText(F["Bosses"..i], "BossTimer"..i, self.BossTimer, i)
+    self:CreateText(F["Bosses"..i], "BossSplit"..i, self.BossSplit, i)
     return F["Bosses"..i]
 end
 

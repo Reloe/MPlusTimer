@@ -427,13 +427,13 @@ function MPT:UpdateBosses(Start, count, preview)
             self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
             frame:SetSize(self.Bosses.Width, self.Bosses.Height)
             local BossColor = i <= 3 and self.BossName.CompletionColor or self.BossName.Color
-            self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor)
+            self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor, nil, i)
             local timercolor = (i == 1 and self.BossTimer.FailColor) or (i == 2 and self.BossTimer.EqualColor) or (i == 3 and self.BossTimer.SuccessColor) or self.BossTimer.Color
             local splitcolor = (i == 1 and self.BossSplit.FailColor) or (i == 2 and self.BossSplit.EqualColor) or (i == 3 and self.BossSplit.SuccessColor) or self.BossSplit.Color
             local splittext = (i == 2 and "+-0") or (i == 1 and "+"..self:FormatTime(math.random(20, 60))) or (i == 3 and "-"..self:FormatTime(math.random(20, 60)))
-            self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, time, timercolor)
+            self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, time, timercolor, nil, i)
             frame:Show()
-            if splittext then self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, splittext, splitcolor) end
+            if splittext then self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, splittext, splitcolor, nil, i) end
         end
     elseif Start and not self.IsPreview then
         self:SetKeyInfo()
@@ -480,21 +480,21 @@ function MPT:UpdateBosses(Start, count, preview)
                     self:SetPoint(frame, self.Bosses.Anchor, parent, self.Bosses.RelativeTo, self.Bosses.xOffset, -(i*spacing)-(i-1)*(self.Bosses.Height)+self.Bosses.yOffset)
                     frame:SetSize(self.Bosses.Width, self.Bosses.Height)
                     local BossColor = completed and self.BossName.CompletionColor or self.BossName.Color
-                    self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor)
+                    self:ApplyTextSettings(frame["BossName"..i], self.BossName, name, BossColor, nil, i)
                     if not completed then
                         frame["BossTimer"..i]:SetText("")
                         frame["BossSplit"..i]:SetText("")
                     end
                     if self.cmap == 556 and i == 3 then -- Pit of Saron Quarry liberated display
-                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, BossColor)
+                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, BossColor, nil, i)
                     elseif pb2 and pb2[i] then
                         local time = completed and (self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated) or pb2[i]
                         local timercolor = completed and ((pb2[i] == time and self.BossTimer.EqualColor) or (pb2[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor) or self.BossTimer.Color
-                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
+                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor, nil, i)
                     elseif completed then
                         local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated or 0
                         local timercolor = self.BossTimer.SuccessColor -- if there is no pb the default color should be the "success" color
-                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
+                        self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor, nil, i)
                     end
                     if completed and defeated and pb and pb[i] and not self.BossSplitted[i] then
                         local time = self.BossTimes[i] or select(2, GetWorldElapsedTime(1))-defeated or 0
@@ -503,7 +503,7 @@ function MPT:UpdateBosses(Start, count, preview)
                         local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
                         local diff = time-pb[i]
                         if diff < 0 then diff = diff*-1 end
-                        self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
+                        self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor, nil, i)
                     else
                         frame["BossSplit"..i]:SetText("")
                     end
@@ -552,18 +552,18 @@ function MPT:UpdateBosses(Start, count, preview)
                 if pb and pb[i] then
                     timercolor = (pb[i] == time and self.BossTimer.EqualColor) or (pb[i] > time and self.BossTimer.SuccessColor) or self.BossTimer.FailColor
                 end
-                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor)
+                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, self:FormatTime(time), timercolor, nil, i)
                 if defeated and pb and pb[i] then
                     local splitcolor = (pb[i] == time and self.BossSplit.EqualColor) or (pb[i] > time and self.BossSplit.SuccessColor) or self.BossSplit.FailColor
                     local prefix = (pb[i] == time and "+-0") or (pb[i] > time and "-") or "+"
                     local diff = time-pb[i]
                     if diff < 0 then diff = diff*-1 end
-                    self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor)
+                    self:ApplyTextSettings(frame["BossSplit"..i], self.BossSplit, prefix..self:FormatTime(diff), splitcolor, nil, i)
                 end
                 self.BossSplitted[i] = true
             elseif self.cmap == 556 and i == 3 and not self.BossSplitted[i] then -- Quarry Camps in Pit of Saron
                 local frame = self:CreateBossFrame(i)
-                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color)
+                self:ApplyTextSettings(frame["BossTimer"..i], self.BossTimer, criteria.quantityString.."/"..criteria.totalQuantity, self.BossName.Color, nil, i)
             end
         end
     end

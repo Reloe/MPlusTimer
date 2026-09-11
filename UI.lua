@@ -91,9 +91,24 @@ function MPT:CreateTextSetting(name, key, order, Color)
         order = order,
         args = {}
     }
+    local relativeTo = {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}
+    if self.TextAnchorTypes[key] then
+        if key ~= "BossName" then
+            relativeTo.BossNameLeft = L["Boss Name (Left)"]
+            relativeTo.BossNameRight = L["Boss Name (Right)"]
+        end
+        if key ~= "BossTimer" then
+            relativeTo.BossTimerLeft = L["Boss Timer (Left)"]
+            relativeTo.BossTimerRight = L["Boss Timer (Right)"]
+        end
+        if key ~= "BossSplit" then
+            relativeTo.BossSplitLeft = L["Boss Split (Left)"]
+            relativeTo.BossSplitRight = L["Boss Split (Right)"]
+        end
+    end
     settings.args.enabled = self:CreateToggle(1, "Enable", "Enabled", {key, "enabled"}, true)
     settings.args.Anchor = self:CreateDropDown(2, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Anchor", "", {key, "Anchor"}, true)
-    settings.args.RelativeTo = self:CreateDropDown(3, {["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT", ["CENTER"] = "CENTER", ["TOPLEFT"] = "TOPLEFT", ["TOPRIGHT"] = "TOPRIGHT", ["BOTTOMLEFT"] = "BOTTOMLEFT", ["BOTTOMRIGHT"] = "BOTTOMRIGHT"}, "Relative To", "", {key, "RelativeTo"}, true)
+    settings.args.RelativeTo = self:CreateDropDown(3, relativeTo, "Relative To", "", {key, "RelativeTo"}, true)
     settings.args.xOffset = self:CreateRange(4, "X Offset", "X Offset of the Text", -200, 200, 1, {key, "xOffset"}, true)
     settings.args.yOffset = self:CreateRange(5, "Y Offset", "Y Offset of the Text", -200, 200, 1, {key, "yOffset"}, true)
     settings.args.Font = self:CreateDropDown(6, "fonts", "Font", "", {key, "Font"}, true)
