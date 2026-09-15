@@ -5,7 +5,7 @@ MPT.SeasonData = {
     -- idk why there is a gap here but on Beta S1 is 17
     [17] = {name = L["Midnight S1"], Dungeons = {557, 558, 559, 560, 239, 402, 556, 161}},
     [18] = {name = L["Midnight S2"], Dungeons = {249, 250, 399, 584, 585, 586, 587, 588}},
-    [19] = {name = L["Midnight S3"], Dungeons = {}},
+    [19] = {name = L["Midnight S3"], Dungeons = {169, 251, 380, 403, 541, 558, 560}}, -- Missing Threagar's Stand
     [20] = {name = L["TLT S1"], Dungeons = {}},
     [21] = {name = L["TLT S2"], Dungeons = {}},
     [22] = {name = L["TLT S3"], Dungeons = {}},
@@ -122,6 +122,7 @@ MPT.maptoID = { -- MapChallengeMode = JournalInstance
     [584] = {1309, L["Blinding Vale"]},
     [585] = {1313, L["Voidscar Arena"]},
     [588] = {1322, L["Altar of Fangs"]},
+    --[590] = {1323, L["Threagar's Stand"]},
 }
 
 MPT.DefaultProfile = {
